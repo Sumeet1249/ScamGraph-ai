@@ -8,6 +8,9 @@ import {
   Search,
   FlaskConical,
   Database,
+  BellRing,
+  CheckSquare,
+  Briefcase,
   type LucideIcon,
 } from "lucide-react";
 
@@ -29,6 +32,7 @@ export const navGroups: NavGroup[] = [
     items: [
       { label: "Command Center", href: "/command", hint: "National threat telemetry", icon: LayoutDashboard },
       { label: "Outbreak Radar", href: "/radar", hint: "Regional velocity spikes", icon: Radar },
+      { label: "Alert Center", href: "/alerts", hint: "Actionable operational alerts", icon: BellRing },
     ],
   },
   {
@@ -37,13 +41,15 @@ export const navGroups: NavGroup[] = [
       { label: "Campaigns", href: "/campaigns", hint: "Syndicate clusters", icon: FolderKanban },
       { label: "Incidents", href: "/incidents", hint: "Victim reports stream", icon: AlertTriangle },
       { label: "Knowledge Graph", href: "/graph", hint: "Interactive cytoscape canvas", icon: GitFork },
+      { label: "Investigation Cases", href: "/cases", hint: "Operational analyst casefiles", icon: Briefcase },
       { label: "MuleHunter", href: "/mulehunter", hint: "Multi-hop mule tracking", icon: Boxes },
     ],
   },
   {
-    label: "Operations & Lab",
+    label: "Operations & Governance",
     items: [
       { label: "Investigate", href: "/investigate", hint: "Multi-signal correlation", icon: Search },
+      { label: "Review Queue", href: "/reviews", hint: "Human-in-the-loop decisions", icon: CheckSquare },
       { label: "Simulator Lab", href: "/lab", hint: "Synthetic outbreak simulator", icon: FlaskConical },
       { label: "Registry", href: "/registry", hint: "Mule & entity registry", icon: Database },
     ],

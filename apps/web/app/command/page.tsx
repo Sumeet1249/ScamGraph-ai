@@ -233,6 +233,40 @@ export default function CommandPage() {
         }
       />
 
+      {/* Operational Analyst Quick Action Bar */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <Link
+          href="/alerts"
+          className="p-3.5 rounded-xl border border-red-500/30 bg-red-500/5 hover:bg-red-500/10 transition-all flex items-center justify-between group"
+        >
+          <div>
+            <div className="text-[10px] font-mono uppercase font-bold text-red-400">Threat Alerts</div>
+            <div className="text-xs font-bold text-ink mt-0.5">Active Outbreak Signals</div>
+          </div>
+          <ArrowRight className="h-4 w-4 text-red-400 group-hover:translate-x-0.5 transition-transform" />
+        </Link>
+        <Link
+          href="/reviews"
+          className="p-3.5 rounded-xl border border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/10 transition-all flex items-center justify-between group"
+        >
+          <div>
+            <div className="text-[10px] font-mono uppercase font-bold text-amber-400">Human-in-the-Loop</div>
+            <div className="text-xs font-bold text-ink mt-0.5">Review Queue Pending</div>
+          </div>
+          <ArrowRight className="h-4 w-4 text-amber-400 group-hover:translate-x-0.5 transition-transform" />
+        </Link>
+        <Link
+          href="/cases"
+          className="p-3.5 rounded-xl border border-blue-500/30 bg-blue-500/5 hover:bg-blue-500/10 transition-all flex items-center justify-between group"
+        >
+          <div>
+            <div className="text-[10px] font-mono uppercase font-bold text-blue-400">Casefiles</div>
+            <div className="text-xs font-bold text-ink mt-0.5">Investigation Workspace</div>
+          </div>
+          <ArrowRight className="h-4 w-4 text-blue-400 group-hover:translate-x-0.5 transition-transform" />
+        </Link>
+      </div>
+
       {/* Dynamic KPI Metrics (Section 12.2) */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {metrics.map((m) => {
