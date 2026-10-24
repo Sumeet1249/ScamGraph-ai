@@ -61,6 +61,12 @@ export default function HomePage() {
                 Analyze an Incident
               </Button>
             </Link>
+            <Link href="/rescue">
+              <Button size="lg" variant="danger" className="border border-red-500/40 bg-red-500/15 text-red-300 hover:bg-red-500/25">
+                <span className="h-2 w-2 rounded-full bg-red-400 animate-pulse mr-1" />
+                I Already Paid (Rescue)
+              </Button>
+            </Link>
             <Link href="/lab">
               <Button size="lg" variant="outline">
                 <PlayCircle className="h-4 w-4" />
