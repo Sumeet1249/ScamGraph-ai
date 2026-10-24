@@ -220,6 +220,12 @@ class AIQualityEngine:
             r"\brecovery agents\b",
             r"\bearn ₹\d+ daily\b",
             r"\bcustoms\b.*\bpenalty\b",
+            r"\bpoints worth\b",
+            r"\bexpire tonight\b",
+            r"\bredeem at\b",
+            r"\bvideo court\b",
+            r"\blegal summons\b",
+            r"\bpolice will seize\b",
         ]
         is_threat = any(bool(re.search(p, text_lower)) for p in threat_patterns)
 

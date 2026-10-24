@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import asyncio
 import hashlib
+import inspect
 import json
 import logging
 import time
@@ -160,7 +161,7 @@ class CacheManager:
                 return cached
 
             # Compute value
-            if asyncio.iscoroutinefunction(compute_fn):
+            if inspect.iscoroutinefunction(compute_fn):
                 computed = await compute_fn()
             else:
                 computed = compute_fn()

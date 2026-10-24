@@ -92,3 +92,7 @@ Protect & Pre-Payment Guard / ScamGraph Rescue (Prompts 15–16)
 | **AI Quality (Phase 7C)** | `GoldenRegressionReport`| **CI/CD Release Gate** | `AIQualityEngine.run_golden_regression(...)`| `test_req_22_critical_regression_blocks_release` | **CONNECTED** |
 | **Drift Detector (Phase 7C)**| `DriftAlert` | **Command Center & Runbooks** | `DriftDetector.evaluate_campaign_drift(...)` | `test_req_19_scamdna_cluster_drift` | **CONNECTED** |
 | **Health Service (Phase 7C)**| `SLORecord`, `HealthStatus` | **Operator Inspection Endpoints**| `HealthCheckService.check_deep_health()` | `test_req_11_radar_freshness_transition` | **CONNECTED** |
+| **Circuit Breaker (Phase 7D)**| `CircuitState` | **Provider Call Wrapper** | `CircuitBreaker.can_execute()` | `test_load_8_provider_slowdown_circuit_breaker` | **CONNECTED** |
+| **Backpressure (Phase 7D)** | `DegradationLevel`, `Admission`| **Job Enqueue & API Gateway** | `BackpressureController.evaluate_admission()` | `test_load_30_load_shedding_critical_safety_priority` | **CONNECTED** |
+| **Capacity Engine (Phase 7D)**| `ScaleScenarioReport` | **Financial & Infrastructure Ops** | `CapacityModelEngine.calculate_scenario()` | `test_load_35_capacity_model_10k_dau` | **CONNECTED** |
+| **Final Launch Gate (Phase 7F)**| `CONDITIONAL_GO`, `CLOSED_BETA`| **Authoritative Launch Core** | `tests/scenarios/test_launch_e2e_step26.py` | `test_final_e2e_1_unknown_text_protect` | **CONNECTED** |
