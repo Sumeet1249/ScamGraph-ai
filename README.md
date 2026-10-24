@@ -234,16 +234,9 @@ ScamGraph AI features an independent clean-room implementation inspired by the p
    - **Multi-Signal Fusion**: Blends Smart Registry (0.35), Mule Intelligence (0.30), Graph Correlation (0.20), and Semantic Message NLP (0.15).
    - **Degraded-Mode Weight Redistribution**: Dynamically renormalizes weights when subsystems lack historical telemetry, explicitly logging degraded state.
 
-### 6.2 Reverse-Engineering Documentation
 
-- [Source Inventory & Public Citations](docs/reverse-engineering/source-inventory.md)
-- [Capability & Implementation Matrix](docs/reverse-engineering/capability-matrix.md)
-- [System Architecture Findings](docs/reverse-engineering/architecture-findings.md)
-- [API Contract Findings](docs/reverse-engineering/api-contract-findings.md)
-- [Assumptions & Technical Gaps](docs/reverse-engineering/assumptions-and-gaps.md)
-- [Security & Privacy Blueprint](docs/reverse-engineering/security-and-privacy.md)
 
-### 6.3 Automated Test Verification
+### 6.2 Automated Test Verification
 
 Run all clean-room module test suites:
 ```bash
