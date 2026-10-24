@@ -1,6 +1,6 @@
 {
   "model_version": "mule_rf_v1.0.0",
-  "evaluated_at": "2026-10-24T16:22:55.334261+00:00",
+  "evaluated_at": "2026-10-24T17:31:36.102748+00:00",
   "train_samples": 70,
   "test_samples": 30,
   "metrics": {
