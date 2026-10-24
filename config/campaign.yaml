@@ -1,0 +1,37 @@
+schema_version: "2.0.0"
+engine_version: "3.3.0"
+
+# -----------------------------------------------------------------------------
+# Campaign Formation & Lifecycle Thresholds (Sections 7-10, 63-65)
+# -----------------------------------------------------------------------------
+lifecycle_thresholds:
+  candidate_min_incidents: 3           # Minimum incidents to form a CandidateIncidentGroup
+  active_min_incidents: 5              # Minimum incidents to promote to ACTIVE campaign
+  relationship_density_threshold: 0.60 # Minimum internal correlation density
+  strong_edge_min_ratio: 0.50          # At least 50% edges must be STRONGLY_RELATED
+  dna_consistency_min: 0.65            # ScamDNA similarity across member incidents
+  dormant_inactivity_days: 30          # Days of no new incidents before marking DORMANT
+  resurgence_window_days: 90           # If new incidents arrive after 30+ days -> RESURGING
+
+# -----------------------------------------------------------------------------
+# Velocity & Outbreak Thresholds (Sections 17-21, 70-76)
+# -----------------------------------------------------------------------------
+velocity_thresholds:
+  baseline_window_days: 14             # Rolling window for historical baseline
+  rising_growth_multiplier: 1.50       # 1.5x above baseline -> RISING
+  surging_growth_multiplier: 2.20      # 2.2x above baseline -> SURGING
+  outbreak_growth_multiplier: 3.50     # 3.5x above baseline + volume -> OUTBREAK
+  outbreak_min_volume_24h: 8           # Absolute minimum 24h reports for OUTBREAK
+  emerging_min_volume_24h: 4           # Minimum for low-volume emerging signal
+  max_duplicate_ratio: 0.35            # Ignore duplicate report spikes
+
+# -----------------------------------------------------------------------------
+# Radar Blip & Visual Configuration (Sections 37-43)
+# -----------------------------------------------------------------------------
+radar:
+  rings:
+    critical_radius: 120               # Inner circle (Urgent / Immediate)
+    surging_radius: 220                # Middle circle (Surging)
+    emerging_radius: 320               # Outer circle (Emerging / Watch)
+  canvas_size: 700                     # Default square viewport
+  sweep_duration_seconds: 4.0          # Subtle radar sweep animation

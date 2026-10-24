@@ -241,6 +241,33 @@ class InvestigationOrchestrator:
         consolidated_reasons.extend(risk_assessment.reason_codes[:4])
         consolidated_reasons.extend(decision.reasons[:2])
 
+        # 11. Connect to Journey, ScamDNA, and Cross-Incident Correlation Ecosystem
+        try:
+            from services.dna_engine.service import scam_dna_service
+            from services.correlation_engine.service import correlation_service
+            scam_family = pattern_match.pattern_name.upper() if pattern_match else "UNKNOWN"
+            ent_dicts = [
+                {
+                    "entity_type": e.entity_type.value if hasattr(e.entity_type, "value") else str(e.entity_type),
+                    "canonical_value": getattr(e, "value", str(e)),
+                }
+                for e in entities
+            ]
+            dna = scam_dna_service.create_or_update_dna(
+                incident_id=incident_id,
+                entities=ent_dicts,
+                family_hypotheses={scam_family: 1.0} if scam_family != "UNKNOWN" else {"UNKNOWN": 1.0},
+            )
+            correlation_service.register_incident(
+                incident_id=incident_id,
+                entities=ent_dicts,
+                scam_family=scam_family,
+                dna=dna,
+                observed_at=incident.created_at,
+            )
+        except Exception as conn_err:
+            logger.debug("Optional intelligence pipeline auto-index skipped: %s", conn_err)
+
         return IncidentAssessment(
             incident_id=incident_id,
             incident=incident,

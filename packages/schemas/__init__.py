@@ -193,6 +193,22 @@ from packages.schemas.mule import (
     BatchMuleEvaluationRequest,
     BatchMuleEvaluationResponse,
 )
+from packages.schemas.campaign import (
+    CampaignLifecycleState,
+    CampaignVelocityState,
+    CampaignReviewState,
+    CampaignMembership,
+    ScamCampaign,
+    CampaignMergeSplitProposal,
+)
+from packages.schemas.radar import (
+    OutbreakSignalType,
+    RadarSeverity,
+    OutbreakSignal,
+    RadarBlip,
+    RadarSummary,
+    ConsumerCampaignSignal,
+)
 
 __all__ = [
     # Common & V2 Primitives
@@ -355,4 +371,17 @@ __all__ = [
     "ConsumerNetworkSignal",
     "AnalystCorrelationView",
     "CandidateIncidentGroup",
+    # Campaign Intelligence V2 & Outbreak Radar (Phase 3C)
+    "CampaignLifecycleState",
+    "CampaignVelocityState",
+    "CampaignReviewState",
+    "CampaignMembership",
+    "ScamCampaign",
+    "CampaignMergeSplitProposal",
+    "OutbreakSignalType",
+    "RadarSeverity",
+    "OutbreakSignal",
+    "RadarBlip",
+    "RadarSummary",
+    "ConsumerCampaignSignal",
 ]

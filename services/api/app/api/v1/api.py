@@ -13,6 +13,7 @@ from services.api.app.api.v1.endpoints import (
     risk,
     simulator,
     entities,
+    radar,
 )
 
 api_router = APIRouter()
@@ -23,6 +24,7 @@ api_router.include_router(investigate.router, prefix="/investigate", tags=["inve
 api_router.include_router(lab.router, prefix="/lab", tags=["lab"])
 api_router.include_router(simulator.router, prefix="/simulator", tags=["simulator"])
 api_router.include_router(campaigns.router, prefix="/campaigns", tags=["campaigns"])
+api_router.include_router(radar.router, prefix="/radar", tags=["radar"])
 api_router.include_router(registry.router, prefix="/registry", tags=["registry"])
 api_router.include_router(mule.router, prefix="/mule", tags=["mule"])
 api_router.include_router(graph.router, prefix="/graph", tags=["graph"])

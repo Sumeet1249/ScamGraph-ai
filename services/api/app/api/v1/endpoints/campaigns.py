@@ -1,18 +1,20 @@
-"""Campaigns endpoint for cross-incident clustering and campaign graph visualization."""
+"""Campaigns endpoint for Campaign Intelligence V2 and Outbreak Radar (Phase 3C)."""
 
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, Query, status
 from pydantic import BaseModel, Field
 
 from packages.schemas import (
+    CytoscapeEdge,
+    CytoscapeEdgeData,
     CytoscapeGraph,
     CytoscapeNode,
     CytoscapeNodeData,
-    CytoscapeEdge,
-    CytoscapeEdgeData,
     GraphNodeType,
+    ScamCampaign,
 )
-from datetime import datetime, timezone
+from services.campaign_engine.service import campaign_service
 
 router = APIRouter()
 
@@ -29,126 +31,247 @@ class CampaignSummary(BaseModel):
     tactics: List[str]
     sample_domain: Optional[str] = None
     sample_vpa: Optional[str] = None
+    lifecycle_state: Optional[str] = None
+    current_velocity: Optional[float] = None
+    confidence: Optional[float] = None
 
 
-# Demo Campaign data representing realistic clusters discovered across incidents
-DEMO_CAMPAIGNS: Dict[str, Dict[str, Any]] = {
-    "camp_kyc_syndicate": {
-        "id": "camp_kyc_syndicate",
-        "name": "State Bank Impersonation & OTP Harvest Syndicate",
-        "pattern_type": "KYC_IMPERSONATION",
-        "severity": "CRITICAL",
-        "incidents_count": 14,
-        "shared_infrastructure_count": 6,
-        "first_seen": datetime(2026, 10, 15, 8, 30, tzinfo=timezone.utc),
-        "last_seen": datetime(2026, 10, 20, 17, 45, tzinfo=timezone.utc),
-        "tactics": ["ACCOUNT_SUSPENSION_FEAR", "OFFICIAL_IMPERSONATION", "TYPOSQUAT_URL", "OTP_HARVEST", "MICRO_COLLECT"],
-        "sample_domain": "sbi-kyc-verify-portal.online",
-        "sample_vpa": "scammer.ops@oksbi",
-        "nodes": [
-            {"id": "camp_root", "label": "Campaign: SBI Syndicate", "type": GraphNodeType.CAMPAIGN, "severity": "CRITICAL"},
-            {"id": "dom_1", "label": "sbi-kyc-verify-portal.online", "type": GraphNodeType.DOMAIN, "severity": "HIGH"},
-            {"id": "ip_1", "label": "194.168.10.45", "type": GraphNodeType.IP, "severity": "MEDIUM"},
-            {"id": "vpa_1", "label": "scammer.ops@oksbi", "type": GraphNodeType.UPI_HANDLE, "severity": "HIGH"},
-            {"id": "phone_1", "label": "+919111111111", "type": GraphNodeType.PHONE, "severity": "HIGH"},
-            {"id": "inc_1", "label": "Incident #1041 (Mumbai)", "type": GraphNodeType.INCIDENT, "severity": "CRITICAL"},
-            {"id": "inc_2", "label": "Incident #1048 (Delhi)", "type": GraphNodeType.INCIDENT, "severity": "CRITICAL"},
-            {"id": "inc_3", "label": "Incident #1059 (Bengaluru)", "type": GraphNodeType.INCIDENT, "severity": "HIGH"},
-        ],
-        "edges": [
-            {"source": "camp_root", "target": "dom_1", "label": "CONTROLS"},
-            {"source": "camp_root", "target": "vpa_1", "label": "COLLECTS_VIA"},
-            {"source": "camp_root", "target": "phone_1", "label": "OUTREACH_FROM"},
-            {"source": "dom_1", "target": "ip_1", "label": "RESOLVES_TO"},
-            {"source": "inc_1", "target": "dom_1", "label": "VISITED_URL"},
-            {"source": "inc_1", "target": "vpa_1", "label": "PAID_TO"},
-            {"source": "inc_2", "target": "phone_1", "label": "CONTACTED_BY"},
-            {"source": "inc_2", "target": "dom_1", "label": "VISITED_URL"},
-            {"source": "inc_3", "target": "vpa_1", "label": "TARGETED_BY"},
-        ]
-    },
-    "camp_task_part_time": {
-        "id": "camp_task_part_time",
-        "name": "E-Commerce Rating & Telegram Task Fraud",
-        "pattern_type": "PART_TIME_JOB_FRAUD",
-        "severity": "HIGH",
-        "incidents_count": 8,
-        "shared_infrastructure_count": 4,
-        "first_seen": datetime(2026, 10, 18, 11, 0, tzinfo=timezone.utc),
-        "last_seen": datetime(2026, 10, 20, 20, 15, tzinfo=timezone.utc),
-        "tactics": ["TELEGRAM_ONBOARDING", "DAILY_GUARANTEED_RETURNS", "VIP_TASK_DEPOSIT"],
-        "sample_domain": "task-earning-hub.xyz",
-        "sample_vpa": "vip.task@paytm",
-        "nodes": [
-            {"id": "camp_root", "label": "Campaign: Task Fraud Network", "type": GraphNodeType.CAMPAIGN, "severity": "HIGH"},
-            {"id": "dom_2", "label": "task-earning-hub.xyz", "type": GraphNodeType.DOMAIN, "severity": "HIGH"},
-            {"id": "vpa_2", "label": "vip.task@paytm", "type": GraphNodeType.UPI_HANDLE, "severity": "HIGH"},
-            {"id": "inc_4", "label": "Incident #1062", "type": GraphNodeType.INCIDENT, "severity": "HIGH"},
-            {"id": "inc_5", "label": "Incident #1071", "type": GraphNodeType.INCIDENT, "severity": "HIGH"},
-        ],
-        "edges": [
-            {"source": "camp_root", "target": "dom_2", "label": "CONTROLS"},
-            {"source": "camp_root", "target": "vpa_2", "label": "COLLECTS_VIA"},
-            {"source": "inc_4", "target": "dom_2", "label": "VISITED_URL"},
-            {"source": "inc_5", "target": "vpa_2", "label": "PAID_TO"},
-        ]
-    }
-}
+class MergeSplitRequest(BaseModel):
+    action: str  # "MERGE" or "SPLIT"
+    target_campaign_id: Optional[str] = None
+    reason: str
+    evidence: List[str] = Field(default_factory=list)
 
 
-@router.get("", response_model=List[CampaignSummary])
-async def list_campaigns():
+@router.get("", response_model=List[Dict[str, Any]])
+async def list_campaigns(
+    lifecycle_state: Optional[str] = None,
+    family: Optional[str] = None,
+    limit: int = Query(default=50, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+    demo_mode: bool = False,
+):
     """Retrieve aggregated campaigns discovered across incidents."""
-    summaries = []
-    for c in DEMO_CAMPAIGNS.values():
-        summaries.append(
-            CampaignSummary(
-                id=c["id"],
-                name=c["name"],
-                pattern_type=c["pattern_type"],
-                severity=c["severity"],
-                incidents_count=c["incidents_count"],
-                shared_infrastructure_count=c["shared_infrastructure_count"],
-                first_seen=c["first_seen"],
-                last_seen=c["last_seen"],
-                tactics=c["tactics"],
-                sample_domain=c.get("sample_domain"),
-                sample_vpa=c.get("sample_vpa"),
-            )
+    # Ensure demo data is seeded if empty and requested
+    if demo_mode or not campaign_service._campaigns:
+        campaign_service.seed_demo_data()
+
+    campaigns = campaign_service.list_campaigns(
+        lifecycle_state=lifecycle_state,
+        family=family,
+        limit=limit,
+        offset=offset,
+    )
+
+    results = []
+    for c in campaigns:
+        cdict = c.model_dump()
+        # Add backward-compatible fields for legacy UI components
+        cdict["id"] = c.campaign_id
+        cdict["name"] = c.title
+        cdict["pattern_type"] = c.scam_family
+        cdict["severity"] = "CRITICAL" if c.lifecycle_state.value == "OUTBREAK" else ("HIGH" if c.lifecycle_state.value == "SURGING" else "MEDIUM")
+        cdict["incidents_count"] = c.incident_count
+        cdict["shared_infrastructure_count"] = c.unique_entity_count
+        cdict["tactics"] = c.tactic_profile
+        cdict["sample_domain"] = c.infrastructure_profile[0] if c.infrastructure_profile else None
+        cdict["sample_vpa"] = c.payment_profile[0] if c.payment_profile else None
+        results.append(cdict)
+
+    return results
+
+
+@router.get("/{campaign_id}", response_model=Dict[str, Any])
+async def get_campaign(campaign_id: str):
+    """Retrieve complete multi-dimensional ScamCampaign V2 record."""
+    if not campaign_service._campaigns:
+        campaign_service.seed_demo_data()
+
+    camp = campaign_service.get_campaign(campaign_id)
+    if not camp:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Campaign '{campaign_id}' not found.",
         )
-    return summaries
+    res = camp.model_dump()
+    res["id"] = camp.campaign_id
+    res["name"] = camp.title
+    res["pattern_type"] = camp.scam_family
+    return res
+
+
+@router.get("/{campaign_id}/velocity", response_model=Dict[str, Any])
+async def get_campaign_velocity(campaign_id: str):
+    """Retrieve normalized velocity, acceleration, baseline, and outbreak tier."""
+    if not campaign_service._campaigns:
+        campaign_service.seed_demo_data()
+
+    camp = campaign_service.get_campaign(campaign_id)
+    if not camp:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Campaign '{campaign_id}' not found.",
+        )
+
+    return {
+        "campaign_id": camp.campaign_id,
+        "velocity_state": camp.velocity_state.value,
+        "current_velocity_per_day": camp.current_velocity,
+        "baseline_velocity_per_day": camp.baseline_velocity,
+        "growth_multiplier": camp.growth_multiplier,
+        "acceleration": camp.acceleration,
+        "is_outbreak": (camp.velocity_state.value == "OUTBREAK"),
+        "last_updated": camp.updated_at.isoformat(),
+    }
+
+
+@router.get("/{campaign_id}/timeline", response_model=List[Dict[str, Any]])
+async def get_campaign_timeline(campaign_id: str):
+    """Retrieve chronological mutations, drift, and lifecycle events for this campaign."""
+    camp = campaign_service.get_campaign(campaign_id)
+    if not camp:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Campaign '{campaign_id}' not found.",
+        )
+
+    timeline = [
+        {
+            "event_type": "FIRST_SEEN",
+            "timestamp": camp.first_seen.isoformat(),
+            "description": f"Campaign established with {camp.scam_family} pattern.",
+        }
+    ]
+
+    for mut in camp.active_mutations:
+        timeline.append({
+            "event_type": "MUTATION_DETECTED",
+            "timestamp": camp.updated_at.isoformat(),
+            "description": mut,
+        })
+
+    timeline.append({
+        "event_type": "LIFECYCLE_STATE",
+        "timestamp": camp.updated_at.isoformat(),
+        "description": f"Current status: {camp.lifecycle_state.value} ({camp.current_velocity} reports/day).",
+    })
+
+    return timeline
+
+
+@router.post("/{campaign_id}/merge-split", response_model=Dict[str, Any])
+async def propose_merge_split(campaign_id: str, req: MergeSplitRequest):
+    """Submit an auditable proposal to merge or split campaigns."""
+    if req.action.upper() == "MERGE":
+        if not req.target_campaign_id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="target_campaign_id required for MERGE action.",
+            )
+        prop = campaign_service.propose_merge(
+            campaign_id,
+            req.target_campaign_id,
+            req.reason,
+            req.evidence,
+        )
+        if not prop:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="One or both campaigns not found for merge.",
+            )
+        return prop.model_dump()
+
+    elif req.action.upper() == "SPLIT":
+        prop = campaign_service.propose_split(
+            campaign_id,
+            req.reason,
+            req.evidence,
+        )
+        if not prop:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Campaign '{campaign_id}' not found for split.",
+            )
+        return prop.model_dump()
+
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Unknown action '{req.action}'. Expected MERGE or SPLIT.",
+        )
 
 
 @router.get("/{campaign_id}/graph", response_model=CytoscapeGraph)
 async def get_campaign_graph(campaign_id: str):
     """Retrieve the multi-incident campaign correlation graph for Cytoscape.js canvas."""
-    camp = DEMO_CAMPAIGNS.get(campaign_id)
-    if not camp:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Campaign '{campaign_id}' not found.")
+    if not campaign_service._campaigns:
+        campaign_service.seed_demo_data()
 
-    nodes: List[CytoscapeNode] = []
-    for n in camp["nodes"]:
+    camp = campaign_service.get_campaign(campaign_id)
+    if not camp:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Campaign '{campaign_id}' not found.",
+        )
+
+    nodes: List[CytoscapeNode] = [
+        CytoscapeNode(
+            data=CytoscapeNodeData(
+                id=camp.campaign_id,
+                label=camp.title,
+                node_type=GraphNodeType.CAMPAIGN,
+                severity="CRITICAL" if camp.lifecycle_state.value == "OUTBREAK" else "HIGH",
+            )
+        )
+    ]
+    edges: List[CytoscapeEdge] = []
+
+    # Map infrastructure
+    for idx, infra in enumerate(camp.infrastructure_profile[:6]):
+        nid = f"infra_{camp.campaign_id}_{idx}"
         nodes.append(
             CytoscapeNode(
                 data=CytoscapeNodeData(
-                    id=n["id"],
-                    label=n["label"],
-                    node_type=n["type"],
-                    severity=n.get("severity", "INFO"),
+                    id=nid,
+                    label=infra,
+                    node_type=GraphNodeType.DOMAIN if "." in infra else GraphNodeType.PHONE,
+                    severity="HIGH",
+                )
+            )
+        )
+        edges.append(
+            CytoscapeEdge(
+                data=CytoscapeEdgeData(
+                    id=f"e_infra_{idx}",
+                    source=camp.campaign_id,
+                    target=nid,
+                    label="USES_INFRASTRUCTURE",
+                    relationship_type="USES_INFRASTRUCTURE",
                 )
             )
         )
 
-    edges: List[CytoscapeEdge] = []
-    for idx, e in enumerate(camp["edges"]):
+    # Map payment accounts
+    for idx, pay in enumerate(camp.payment_profile[:4]):
+        nid = f"pay_{camp.campaign_id}_{idx}"
+        nodes.append(
+            CytoscapeNode(
+                data=CytoscapeNodeData(
+                    id=nid,
+                    label=pay,
+                    node_type=GraphNodeType.UPI_HANDLE,
+                    severity="CRITICAL",
+                )
+            )
+        )
         edges.append(
             CytoscapeEdge(
                 data=CytoscapeEdgeData(
-                    id=f"e_{campaign_id}_{idx}",
-                    source=e["source"],
-                    target=e["target"],
-                    label=e["label"],
-                    relationship_type=e["label"],
+                    id=f"e_pay_{idx}",
+                    source=camp.campaign_id,
+                    target=nid,
+                    label="COLLECTS_VIA",
+                    relationship_type="COLLECTS_VIA",
                 )
             )
         )

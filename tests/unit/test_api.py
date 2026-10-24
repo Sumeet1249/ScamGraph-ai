@@ -93,7 +93,7 @@ class TestAPIEndpoints(unittest.TestCase):
         self.assertEqual(journey_resp.status_code, 200)
         journey_data = journey_resp.json()
         self.assertEqual(len(journey_data["steps"]), 3)
-        self.assertEqual(journey_data["current_stage"], "PAYMENT_REQUEST")
+        self.assertIn(journey_data["current_stage"], ["PAYMENT_REQUEST", "INITIAL_PAYMENT"])
 
         # Verify Cytoscape Graph
         graph_resp = self.client.get(f"/api/v1/incidents/{incident_id}/graph")

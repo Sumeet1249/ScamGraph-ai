@@ -171,6 +171,8 @@ async def create_incident(
     )
     
     await repo.create_incident(incident)
+    _INCIDENTS_METADATA[inc_id] = req.metadata or {}
+    _INCIDENT_EVENTS[inc_id] = []
     
     return IncidentRecord(
         id=inc_id,
@@ -328,10 +330,18 @@ async def get_incident_events(incident_id: str):
 
 
 @router.post("/{incident_id}/evidence", status_code=status.HTTP_201_CREATED)
-async def add_incident_evidence(incident_id: str, payload: Dict[str, Any]):
+async def add_incident_evidence(
+    incident_id: str,
+    payload: Dict[str, Any],
+    repo: IncidentRepository = Depends(get_incident_repository),
+):
     """Attach canonical Evidence observation to an incident."""
     if incident_id not in _INCIDENT_EVENTS and incident_id not in _INCIDENTS_METADATA:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Incident {incident_id} not found.")
+        inc_obj = await repo.get_incident(incident_id)
+        if not inc_obj:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Incident {incident_id} not found.")
+        _INCIDENTS_METADATA[incident_id] = inc_obj.metadata or {}
+        _INCIDENT_EVENTS[incident_id] = []
 
     from services.api.app.domain import Evidence
     from pydantic import ValidationError
@@ -492,8 +502,10 @@ def _reconstruct_v2_journey(incident_id: str) -> ScamJourney:
 
         tactics_list = []
         for s in step_signals:
-            if s.signal_dimension == SignalDimension.PSYCHOLOGICAL_TACTIC and s.rule_id:
-                tactics_list.append(s.rule_id)
+            sig_dim = getattr(s, "dimension", None) or getattr(s, "signal_dimension", None)
+            rid = getattr(s, "rule_id", None) or getattr(s, "signal_type", None)
+            if (sig_dim == SignalDimension.SEMANTIC or str(sig_dim) == "PSYCHOLOGICAL_TACTIC") and rid:
+                tactics_list.append(str(rid))
 
         jrev_list.append(
             JourneyEvent(
