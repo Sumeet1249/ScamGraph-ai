@@ -45,6 +45,7 @@ class InvestigateResponse(BaseModel):
     pattern_match: Optional[Dict[str, Any]] = None
     graph_correlation: Optional[Dict[str, Any]] = None
     unified_assessment: Optional[Dict[str, Any]] = None
+    tripartite_decision: Optional[Dict[str, Any]] = None
     is_simulated: bool = False  # Set true if using DEMO_MODE or mock data
 
 
@@ -215,6 +216,29 @@ async def investigate_target(req: InvestigateRequest, response: Response):
     except Exception as e:
         pass
 
+    # 7.5 Unified Decision Engine (Phase 4A Tripartite Decision)
+    tripartite_dict = None
+    try:
+        from services.decision_engine.service import unified_decision_service
+        stg = (
+            pattern_dict.get("current_stage", "PAYMENT_REQUEST" if is_payment_proximate else "INITIAL_CONTACT")
+            if pattern_dict
+            else ("PAYMENT_REQUEST" if is_payment_proximate else "INITIAL_CONTACT")
+        )
+        tactics = [pattern_dict.get("pattern_id")] if pattern_dict and pattern_dict.get("pattern_id") else []
+        tripartite_res = unified_decision_service.evaluate(
+            incident_id=inc_id,
+            message_text=req.message_text,
+            url=target_url,
+            vpa=target_vpa,
+            phone=req.sender_phone,
+            journey_stage=stg,
+            tactics_observed=tactics,
+        )
+        tripartite_dict = tripartite_res.model_dump()
+    except Exception as e:
+        pass
+
     # 8. Persist investigated incident to repository so it appears in the Incidents tab
     pattern_name = pattern_dict.get("pattern_name", "Unclassified") if pattern_dict else "Ad-hoc Investigation"
     risk_lvl_str = assessment.risk_level.value if hasattr(assessment.risk_level, "value") else str(assessment.risk_level)
@@ -243,6 +267,7 @@ async def investigate_target(req: InvestigateRequest, response: Response):
                 "target_url": target_url,
                 "target_vpa": target_vpa,
                 "raw_text": req.message_text or "",
+                "tripartite_action": tripartite_dict.get("action") if tripartite_dict else None,
             }
         )
         repo = get_incident_repository()
@@ -260,6 +285,7 @@ async def investigate_target(req: InvestigateRequest, response: Response):
         pattern_match=pattern_dict,
         graph_correlation=graph_dict,
         unified_assessment=unified_dict,
+        tripartite_decision=tripartite_dict,
         is_simulated=is_simulated,
     )
 

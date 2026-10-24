@@ -244,6 +244,8 @@ class CampaignIntelligenceService:
             regions=["Delhi NCR", "Maharashtra", "Karnataka"],
             journey_profile=["CONTACT", "AUTHORITY_FEAR", "ISOLATION", "DEMAND_TRANSFER"],
             tactic_profile=["AUTHORITY_IMPERSONATION", "EXTREME_URGENCY", "LEGAL_THREAT"],
+            infrastructure_profile=["+919876543210", "cbi-verification-portal.org"],
+            payment_profile=["mumbai.police.audit@sbi", "cbi.investigation.funds@icici"],
             confidence=0.94,
             current_velocity=18.0,
             baseline_velocity=4.2,

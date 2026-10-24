@@ -1,0 +1,58 @@
+schema_version: "2.0.0"
+engine_version: "4.1.0"
+
+# -----------------------------------------------------------------------------
+# Tripartite Decision Fusion Weights (Phase 4A)
+# -----------------------------------------------------------------------------
+dimension_weights:
+  message_nlp: 0.15           # Semantic manipulation and linguistic signals
+  url_safety: 0.15            # Lexical, domain age, typosquatting, brand spoof
+  entity_trust: 0.15          # Verified identity, registry flags, trust tier
+  tactic_manipulation: 0.15   # Fear, extreme urgency, legal threat, reward lure
+  journey_stage: 0.15         # Position in attack lifecycle (e.g., PAYMENT_INTENT)
+  scam_dna: 0.10              # Behavioral similarity to known scam variants
+  campaign_outbreak: 0.15     # Network outbreak velocity and resurgence status
+
+# -----------------------------------------------------------------------------
+# Stage Urgency Multipliers (Pre-Loss Escalation)
+# -----------------------------------------------------------------------------
+journey_urgency_multipliers:
+  INITIAL_CONTACT: 0.25
+  ENGAGEMENT_GROOMING: 0.40
+  PLATFORM_MIGRATION: 0.55
+  CREDENTIAL_OTP_HARVEST: 0.85
+  PAYMENT_REQUEST: 0.90
+  PAYMENT_INTENT: 1.00
+  EXTORTION_PRESSURE: 0.95
+  WITHDRAWAL_BLOCK: 0.70
+
+# -----------------------------------------------------------------------------
+# Calibrated Action Decision Thresholds
+# -----------------------------------------------------------------------------
+action_thresholds:
+  block_pre_loss:
+    min_risk: 0.85
+    min_confidence: 0.75
+    min_urgency: 0.70
+    outbreak_override: true   # If active campaign is in OUTBREAK tier, immediately escalate
+  delay_payment:
+    min_risk: 0.65
+    min_urgency: 0.60
+  strong_warning:
+    min_risk: 0.65
+    min_confidence: 0.60
+  warn:
+    min_risk: 0.40
+  verify_independently:
+    min_risk: 0.25
+    max_confidence: 0.55     # High ambiguity / unverified source -> verify independently
+  educate:
+    min_risk: 0.20
+  allow:
+    max_risk: 0.20
+
+# -----------------------------------------------------------------------------
+# Contradictory Evidence & Uncertainty Penalties
+# -----------------------------------------------------------------------------
+counter_evidence_discount_factor: 0.40  # Verified benign signals discount up to 40% risk
+missing_dimension_uncertainty_penalty: 0.08

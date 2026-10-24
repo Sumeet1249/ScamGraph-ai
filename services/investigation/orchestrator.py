@@ -58,6 +58,7 @@ class IncidentAssessment(BaseModel):
     risk_assessment: RiskAssessment
     intervention: InterventionDecision
     reason_codes: List[str] = Field(default_factory=list)
+    tripartite_decision: Optional[Any] = None
     assessed_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
@@ -268,6 +269,33 @@ class InvestigationOrchestrator:
         except Exception as conn_err:
             logger.debug("Optional intelligence pipeline auto-index skipped: %s", conn_err)
 
+        # 12. Run Unified Decision Engine (Phase 4A)
+        tripartite = None
+        try:
+            from services.decision_engine.service import unified_decision_service
+            sample_text = " ".join([str(getattr(e, "description", "") or "") for e in timeline])
+            first_url = urls_to_investigate[0] if urls_to_investigate else None
+            first_vpa = None
+            first_phone = None
+            for ent in entities:
+                etype = getattr(getattr(ent, "entity_type", None), "value", str(getattr(ent, "entity_type", "")))
+                if etype in ("UPI_HANDLE", "VPA"):
+                    first_vpa = getattr(ent, "canonical_value", getattr(ent, "raw_value", None))
+                elif etype == "PHONE":
+                    first_phone = getattr(ent, "canonical_value", getattr(ent, "raw_value", None))
+
+            tripartite = unified_decision_service.evaluate(
+                incident_id=incident_id,
+                message_text=sample_text if sample_text.strip() else None,
+                url=first_url,
+                vpa=first_vpa,
+                phone=first_phone,
+                journey_stage=current_stage,
+                tactics_observed=[p.pattern_id for p in pattern_matches],
+            )
+        except Exception as dec_err:
+            logger.debug("Tripartite decision evaluation skipped: %s", dec_err)
+
         return IncidentAssessment(
             incident_id=incident_id,
             incident=incident,
@@ -279,6 +307,7 @@ class InvestigationOrchestrator:
             risk_assessment=risk_assessment,
             intervention=decision,
             reason_codes=consolidated_reasons,
+            tripartite_decision=tripartite,
         )
 
     @staticmethod

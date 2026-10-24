@@ -209,6 +209,15 @@ from packages.schemas.radar import (
     RadarSummary,
     ConsumerCampaignSignal,
 )
+from packages.schemas.unified_decision import (
+    TripartiteRiskBand,
+    TripartiteConfidenceBand,
+    TripartiteUrgencyBand,
+    ActionDecision,
+    DecisionDimension,
+    SignalContribution,
+    TripartiteDecision,
+)
 
 __all__ = [
     # Common & V2 Primitives
@@ -384,4 +393,12 @@ __all__ = [
     "RadarBlip",
     "RadarSummary",
     "ConsumerCampaignSignal",
+    # Unified Decision & Tripartite Risk (Phase 4A)
+    "TripartiteRiskBand",
+    "TripartiteConfidenceBand",
+    "TripartiteUrgencyBand",
+    "ActionDecision",
+    "DecisionDimension",
+    "SignalContribution",
+    "TripartiteDecision",
 ]
