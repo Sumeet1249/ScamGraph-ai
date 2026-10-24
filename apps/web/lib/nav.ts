@@ -29,23 +29,29 @@ export const navGroups: NavGroup[] = [
     items: [
       { label: "Command Center", href: "/command", hint: "National threat telemetry", icon: LayoutDashboard },
       { label: "Outbreak Radar", href: "/radar", hint: "Regional velocity spikes", icon: Radar },
-    ],
-  },
-  {
-    label: "Investigations",
-    items: [
       { label: "Campaigns", href: "/campaigns", hint: "Syndicate clusters", icon: FolderKanban },
       { label: "Incidents", href: "/incidents", hint: "Victim reports stream", icon: AlertTriangle },
+      { label: "Investigate", href: "/investigate", hint: "Multi-signal correlation bench", icon: Search },
       { label: "Knowledge Graph", href: "/graph", hint: "Interactive cytoscape canvas", icon: GitFork },
-      { label: "MuleHunter", href: "/mulehunter", hint: "Multi-hop mule tracking", icon: Boxes },
+      { label: "Entities", href: "/entities", hint: "VPA & phone intelligence registry", icon: Database },
     ],
   },
   {
-    label: "Operations & Lab",
+    label: "Operations & Enforcement",
     items: [
-      { label: "Investigate", href: "/investigate", hint: "Multi-signal correlation", icon: Search },
-      { label: "Simulator Lab", href: "/lab", hint: "Synthetic outbreak simulator", icon: FlaskConical },
-      { label: "Registry", href: "/registry", hint: "Mule & entity registry", icon: Database },
+      { label: "Alert Center", href: "/alerts", hint: "Real-time velocity spikes", icon: AlertTriangle },
+      { label: "Review Queue", href: "/review", hint: "Human-in-the-loop triage", icon: FolderKanban },
+      { label: "Cases", href: "/cases", hint: "Formal statutory FIR & BSA cases", icon: Boxes },
+      { label: "MuleHunter", href: "/mulehunter", hint: "Multi-hop mule tracking", icon: GitFork },
+    ],
+  },
+  {
+    label: "Management & Governance",
+    items: [
+      { label: "Global Search", href: "/search", hint: "1.4M node search", icon: Search },
+      { label: "Saved Views", href: "/saved", hint: "Bookmarked monitors", icon: FolderKanban },
+      { label: "Members & Access", href: "/access", hint: "RBAC governance", icon: Database },
+      { label: "Audit Log", href: "/audit", hint: "Tamper-evident logs", icon: LayoutDashboard },
     ],
   },
 ];
@@ -53,7 +59,11 @@ export const navGroups: NavGroup[] = [
 export function activeItem(pathname: string): NavItem | undefined {
   for (const group of navGroups) {
     for (const item of group.items) {
-      if (pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href))) {
+      if (
+        pathname === item.href ||
+        (item.href !== "/" && pathname.startsWith(item.href)) ||
+        (pathname.startsWith("/analyst") && pathname.replace(/^\/analyst/, "") === item.href)
+      ) {
         return item;
       }
     }
