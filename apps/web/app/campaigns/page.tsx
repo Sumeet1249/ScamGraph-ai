@@ -208,11 +208,11 @@ const CANONICAL_CAMPAIGNS: CampaignRecord[] = [
 
 export default function CampaignsPage() {
   const [campaigns, setCampaigns] = useState<CampaignRecord[]>(CANONICAL_CAMPAIGNS);
-  const [selectedId, setSelectedId] = useState<string>("camp-power-urgent");
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterPreset, setFilterPreset] = useState<"ALL" | "OUTBREAK" | "SURGING" | "REVIEW">("ALL");
-  const [starredMap, setStarredMap] = useState<Record<string, boolean>>({ "camp-power-urgent": true });
-  const [selectedRows, setSelectedRows] = useState<Record<string, boolean>>({ "camp-power-urgent": true });
+  const [starredMap, setStarredMap] = useState<Record<string, boolean>>({});
+  const [selectedRows, setSelectedRows] = useState<Record<string, boolean>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [lastSync, setLastSync] = useState<Date>(new Date());
 
@@ -274,7 +274,7 @@ export default function CampaignsPage() {
   }, [campaigns, filterPreset, searchQuery]);
 
   const selectedCampaign = useMemo(() => {
-    return campaigns.find((c) => c.id === selectedId) || campaigns[0];
+    return selectedId ? campaigns.find((c) => c.id === selectedId) || null : null;
   }, [campaigns, selectedId]);
 
   const toggleStar = (id: string, e: React.MouseEvent) => {
@@ -437,10 +437,9 @@ export default function CampaignsPage() {
         </div>
       </div>
 
-      {/* 3. Main Split Console (§3.2, §4.4) */}
-      <div className="flex flex-1 w-full overflow-hidden min-h-[calc(100vh-14rem)]">
-        {/* Left Data Work Surface: 36px Compact Rows */}
-        <div className="flex-1 overflow-x-auto bg-surface" data-density="compact">
+      {/* 2. Main Campaigns Table: Full width */}
+      <div className="w-full bg-surface rounded-xl border border-border-divider overflow-hidden shadow-xs" data-density="compact">
+        <div className="overflow-x-auto w-full">
           <table className="w-full text-left border-collapse select-text min-w-[900px]">
             <thead>
               <tr className="h-9 bg-surface-subtle border-b border-border-divider text-[11px] font-semibold text-viz-neutral uppercase tracking-wider">
@@ -612,121 +611,140 @@ export default function CampaignsPage() {
             </tbody>
           </table>
         </div>
+      </div>
 
-        {/* Right-Hand Campaign Detail Quick Drawer (380px wide docked §4.4 & §7.A) */}
-        <aside className="w-80 xl:w-[380px] shrink-0 bg-surface-subtle border-l border-border-divider flex flex-col justify-between overflow-y-auto">
-          {selectedCampaign ? (
-            <div className="flex flex-col">
-              {/* Drawer Header */}
-              <div className="px-4 py-3 bg-surface border-b border-border-divider flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded bg-[#0B6256]/10 flex items-center justify-center text-viz-primary font-bold">
-                    <FolderKanban className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <span className="text-[10px] uppercase text-viz-neutral font-bold tracking-wider block">
-                      Selected Syndicate Cluster
-                    </span>
-                    <h2 className="text-sm font-bold text-viz-text leading-tight">{selectedCampaign.cluster_id}</h2>
-                  </div>
+      {/* Centered Modal Popup with blurred backdrop */}
+      {selectedCampaign && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-200">
+          {/* Blurred Backdrop */}
+          <div
+            className="fixed inset-0 bg-black/50 backdrop-blur-md transition-opacity"
+            onClick={() => setSelectedId(null)}
+            aria-hidden="true"
+          />
+
+          {/* Centered Modal Card */}
+          <div
+            role="dialog"
+            aria-modal="true"
+            className="relative w-full max-w-2xl bg-surface rounded-2xl shadow-2xl border border-border-divider overflow-hidden z-10 max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-200"
+          >
+            {/* Modal Header */}
+            <div className="px-6 py-4 bg-surface-subtle border-b border-border-divider flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-[#0B6256]/15 text-viz-primary flex items-center justify-center font-bold">
+                  <FolderKanban className="w-5 h-5 text-viz-primary" />
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <Link
-                    href={`/campaigns/${selectedCampaign.id}`}
-                    className="h-7 px-2.5 bg-viz-primary hover:bg-[#00483f] text-white rounded text-xs font-semibold flex items-center gap-1 transition-colors"
-                  >
-                    <span>Full Workspace</span>
-                    <ArrowUpRight className="w-3.5 h-3.5" />
-                  </Link>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono font-bold text-sm text-viz-primary">{selectedCampaign.cluster_id}</span>
+                    <span className="text-[10px] uppercase bg-surface border border-border-divider px-1.5 py-0.5 rounded text-viz-neutral font-semibold">
+                      Syndicate Cluster
+                    </span>
+                  </div>
+                  <h2 className="text-base font-bold text-viz-text leading-tight">{selectedCampaign.name}</h2>
                 </div>
               </div>
+              <button
+                onClick={() => setSelectedId(null)}
+                className="h-8 w-8 rounded-lg hover:bg-surface-container-high flex items-center justify-center text-viz-neutral hover:text-viz-text transition-colors"
+                aria-label="Close modal"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
 
-              {/* Outbreak Status Alert Banner */}
+            {/* Modal Body */}
+            <div className="p-6 overflow-y-auto space-y-4 text-xs">
               {selectedCampaign.is_outbreak_candidate && (
-                <div className="m-3 p-3 rounded bg-tone-danger-strong-bg border border-error/50 flex items-start gap-2.5">
+                <div className="p-3.5 rounded-xl bg-tone-danger-strong-bg border border-error/40 flex items-start gap-3">
                   <ShieldAlert className="w-5 h-5 text-error shrink-0 mt-0.5" />
                   <div>
                     <div className="text-[11px] font-bold text-tone-danger-strong-text uppercase tracking-wide">
                       Outbreak Candidate Active
                     </div>
                     <p className="text-xs text-tone-danger-text mt-0.5 leading-snug">
-                      Surge threshold exceeded: <strong>{selectedCampaign.velocity_label}</strong> with {selectedCampaign.incidents_count} confirmed victims.
+                      Surge threshold exceeded: <strong>{selectedCampaign.velocity_label}</strong> with {selectedCampaign.incidents_count} confirmed victim reports.
                     </p>
                   </div>
                 </div>
               )}
 
-              {/* Title & Description */}
-              <div className="px-4 py-2">
-                <h3 className="text-sm font-bold text-viz-text">{selectedCampaign.name}</h3>
-                <p className="text-xs text-viz-neutral mt-1 leading-relaxed">{selectedCampaign.description}</p>
-              </div>
+              <p className="text-xs text-viz-neutral leading-relaxed">{selectedCampaign.description}</p>
 
-              {/* Financial Quantum Box */}
-              <div className="px-4 py-2">
-                <div className="p-3 rounded bg-surface border border-border-divider grid grid-cols-2 gap-2">
-                  <div>
-                    <div className="text-[10px] uppercase font-bold text-viz-neutral">Drained Quantum</div>
-                    <div className="text-base font-bold font-mono text-error mt-0.5">
-                      {formatINR(selectedCampaign.financial_loss_total)}
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-[10px] uppercase font-bold text-viz-neutral">Active Bank Lien</div>
-                    <div className="text-base font-bold font-mono text-viz-primary mt-0.5">
-                      {formatINR(selectedCampaign.financial_loss_lien)}
-                    </div>
-                  </div>
+              {/* Metrics Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="p-3 rounded-lg bg-surface border border-border-divider">
+                  <span className="text-[10px] text-viz-neutral uppercase block font-semibold">Lifecycle</span>
+                  <div className="mt-1 font-bold text-viz-text">{selectedCampaign.lifecycle}</div>
+                </div>
+                <div className="p-3 rounded-lg bg-surface border border-border-divider">
+                  <span className="text-[10px] text-viz-neutral uppercase block font-semibold">Velocity</span>
+                  <div className="mt-1 font-mono font-bold text-sm text-error">{selectedCampaign.velocity_label}</div>
+                </div>
+                <div className="p-3 rounded-lg bg-surface border border-border-divider">
+                  <span className="text-[10px] text-viz-neutral uppercase block font-semibold">Total Drained</span>
+                  <div className="mt-1 font-mono font-bold text-sm text-error">{formatINR(selectedCampaign.financial_loss_total)}</div>
+                </div>
+                <div className="p-3 rounded-lg bg-surface border border-border-divider">
+                  <span className="text-[10px] text-viz-neutral uppercase block font-semibold">Active Lien</span>
+                  <div className="mt-1 font-mono font-bold text-sm text-viz-primary">{formatINR(selectedCampaign.financial_loss_lien)}</div>
                 </div>
               </div>
 
-              {/* Top Shared IOCs */}
-              <div className="px-4 py-2 space-y-2">
-                <div className="text-[11px] font-bold uppercase tracking-wider text-viz-neutral">
-                  Top Shared Infrastructure
-                </div>
-                <div className="space-y-1.5 text-xs">
+              {/* Top Shared Infrastructure */}
+              <div className="space-y-2">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-viz-neutral block">
+                  Top Shared Infrastructure &amp; Indicators
+                </span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   {selectedCampaign.sample_vpa && (
-                    <div className="p-2 rounded bg-surface border border-border-divider">
+                    <div className="p-3 rounded-lg bg-surface-subtle border border-border-divider">
                       <span className="text-[10px] text-viz-neutral uppercase block font-semibold">Primary Collect VPA</span>
-                      <code className="text-xs font-mono font-bold text-viz-text">{selectedCampaign.sample_vpa}</code>
+                      <code className="text-xs font-mono font-bold text-viz-text select-all">{selectedCampaign.sample_vpa}</code>
                     </div>
                   )}
                   {selectedCampaign.sample_domain && (
-                    <div className="p-2 rounded bg-surface border border-border-divider">
+                    <div className="p-3 rounded-lg bg-surface-subtle border border-border-divider">
                       <span className="text-[10px] text-viz-neutral uppercase block font-semibold">Spoofed Phishing Domain</span>
-                      <code className="text-xs font-mono font-bold text-viz-text">{selectedCampaign.sample_domain}</code>
+                      <code className="text-xs font-mono font-bold text-viz-text select-all">{selectedCampaign.sample_domain}</code>
                     </div>
                   )}
                   {selectedCampaign.lac_pool && (
-                    <div className="p-2 rounded bg-surface border border-border-divider">
+                    <div className="p-3 rounded-lg bg-surface-subtle border border-border-divider">
                       <span className="text-[10px] text-viz-neutral uppercase block font-semibold">Telephony SIM Rotation Pool</span>
-                      <code className="text-xs font-mono font-bold text-viz-text">{selectedCampaign.lac_pool}</code>
+                      <code className="text-xs font-mono font-bold text-viz-text select-all">{selectedCampaign.lac_pool}</code>
                     </div>
                   )}
+                  <div className="p-3 rounded-lg bg-surface-subtle border border-border-divider">
+                    <span className="text-[10px] text-viz-neutral uppercase block font-semibold">Primary Vector</span>
+                    <span className="text-xs font-medium text-viz-text">{selectedCampaign.target_vector}</span>
+                  </div>
                 </div>
-              </div>
-
-              {/* Fast Action Controls */}
-              <div className="p-4 mt-2 border-t border-border-divider bg-surface space-y-2">
-                <div className="text-[10px] uppercase font-bold text-viz-neutral tracking-wider">
-                  Enforcement Actions
-                </div>
-                <button className="w-full h-8 px-3 rounded bg-error hover:bg-[#851313] text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors">
-                  <ShieldAlert className="w-3.5 h-3.5" />
-                  <span>Section 102 CrPC Lien Freeze</span>
-                </button>
-                <button className="w-full h-8 px-3 rounded bg-surface-subtle hover:bg-surface-container-high border border-border-control text-xs font-medium text-viz-text flex items-center justify-center gap-1.5 transition-colors">
-                  <FileText className="w-3.5 h-3.5 text-viz-neutral" />
-                  <span>Generate §65B BSA Evidence Packet</span>
-                </button>
               </div>
             </div>
-          ) : (
-            <div className="p-8 text-center text-xs text-viz-neutral">Select a campaign cluster to inspect details.</div>
-          )}
-        </aside>
-      </div>
+
+            {/* Modal Footer Actions */}
+            <div className="px-6 py-4 bg-surface-subtle border-t border-border-divider flex items-center justify-between gap-3">
+              <button
+                onClick={() => setSelectedId(null)}
+                className="h-9 px-4 rounded-lg bg-surface border border-border-divider text-viz-text hover:bg-surface-container-high text-xs font-semibold transition-colors"
+              >
+                Dismiss
+              </button>
+              <div className="flex items-center gap-2">
+                <Link
+                  href={`/campaigns/${selectedCampaign.id}`}
+                  className="h-9 px-4 bg-viz-primary hover:bg-[#00483f] text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs"
+                >
+                  <span>Full Workspace</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

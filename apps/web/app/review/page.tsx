@@ -17,6 +17,7 @@ import {
   ChevronRight,
   Layers,
   Sparkles,
+  X,
 } from "lucide-react";
 import { formatDateTime } from "@/lib/utils/format";
 
@@ -88,18 +89,20 @@ const CANONICAL_REVIEWS: ReviewItem[] = [
 
 export default function ReviewQueuePage() {
   const [reviews, setReviews] = useState<ReviewItem[]>(CANONICAL_REVIEWS);
-  const [selectedId, setSelectedId] = useState<string>("REV-2026-041");
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [decisionNotes, setDecisionNotes] = useState<string>("");
 
-  const selectedReview = reviews.find((r) => r.id === selectedId) || reviews[0];
+  const selectedReview = reviews.find((r) => r.id === selectedId) || null;
 
   const handleDecision = (action: "APPROVE" | "OVERRIDE") => {
+    if (!selectedId) return;
     setReviews((prev) =>
       prev.map((r) =>
         r.id === selectedId ? { ...r, status: action === "APPROVE" ? "APPROVED" : "OVERRIDDEN" } : r
       )
     );
     setDecisionNotes("");
+    setSelectedId(null);
   };
 
   return (
@@ -127,31 +130,31 @@ export default function ReviewQueuePage() {
         </div>
       </div>
 
-      {/* 3. Dual-Pane Adjudication Work Surface */}
-      <div className="flex flex-1 w-full overflow-hidden min-h-[calc(100vh-12rem)]">
-        {/* Left Side: Pending Reviews Queue */}
-        <div className="w-full lg:w-1/2 overflow-y-auto border-r border-border-divider p-4 space-y-3 bg-surface">
-          <div className="text-xs font-bold uppercase tracking-wider text-viz-neutral">
-            Queue Items ({reviews.length})
-          </div>
+      {/* 2. Full Width Review Items Grid / List */}
+      <div className="w-full bg-surface border border-border-divider rounded-lg p-5 min-h-[calc(100vh-14rem)] space-y-3">
+        <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-viz-neutral pb-2 border-b border-border-divider">
+          <span>Adjudication Queue ({reviews.length} items)</span>
+          <span className="text-[11px] font-normal normal-case text-viz-neutral">Click any item to inspect evidence and adjudicate</span>
+        </div>
 
-          <div className="space-y-2">
-            {reviews.map((r) => {
-              const isSelected = selectedId === r.id;
-              return (
-                <div
-                  key={r.id}
-                  onClick={() => setSelectedId(r.id)}
-                  className={`p-3.5 rounded-lg border transition-all cursor-pointer ${
-                    isSelected
-                      ? "bg-[#0B6256]/[0.08] border-viz-primary shadow-xs"
-                      : "bg-surface hover:bg-surface-subtle border-border-divider"
-                  }`}
-                >
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+          {reviews.map((r) => {
+            const isSelected = selectedId === r.id;
+            return (
+              <div
+                key={r.id}
+                onClick={() => setSelectedId(r.id)}
+                className={`p-4 rounded-lg border transition-all cursor-pointer flex flex-col justify-between ${
+                  isSelected
+                    ? "bg-[#0B6256]/[0.08] border-viz-primary shadow-xs ring-1 ring-viz-primary"
+                    : "bg-surface-subtle hover:bg-surface border-border-divider hover:border-viz-primary/40 shadow-xs"
+                }`}
+              >
+                <div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className="font-mono text-xs font-bold text-viz-text">#{r.id}</span>
-                      <span className="px-1.5 py-0.2 rounded bg-surface-subtle border border-border-divider text-[10px] uppercase font-semibold text-viz-neutral">
+                      <span className="px-1.5 py-0.5 rounded bg-surface border border-border-divider text-[10px] uppercase font-semibold text-viz-neutral">
                         {r.item_type}
                       </span>
                     </div>
@@ -161,97 +164,161 @@ export default function ReviewQueuePage() {
                           ? "bg-tone-warning-bg text-tone-warning-text"
                           : r.status === "APPROVED"
                           ? "bg-tone-info-bg text-tone-info-text"
-                          : "bg-surface-subtle text-viz-neutral"
+                          : "bg-surface text-viz-neutral border border-border-divider"
                       }`}
                     >
                       {r.status}
                     </span>
                   </div>
 
-                  <h3 className="text-xs font-bold text-viz-text mt-1.5">{r.title}</h3>
+                  <h3 className="text-xs font-bold text-viz-text mt-2">{r.title}</h3>
                   <p className="text-[11px] text-viz-neutral mt-1 leading-relaxed line-clamp-2">
                     {r.disagreement_reason}
                   </p>
-
-                  <div className="flex items-center justify-between mt-2 pt-2 border-t border-border-divider/50 text-[11px] text-viz-neutral">
-                    <span>Model: {r.model_recommendation} ({r.model_score}%)</span>
-                    <span>{formatDateTime(r.submitted_at)}</span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Right Side: Evidence Inspector & Adjudication Deck */}
-        <div className="w-full lg:w-1/2 overflow-y-auto p-5 bg-surface-subtle space-y-4">
-          {selectedReview ? (
-            <div className="space-y-4">
-              <div className="bg-surface rounded-xl p-5 border border-border-divider shadow-sm space-y-3">
-                <div className="flex items-center justify-between pb-2 border-b border-border-divider">
-                  <div className="flex items-center gap-2">
-                    <FileCheck className="w-4 h-4 text-viz-primary" />
-                    <h2 className="text-sm font-bold text-viz-text">Evidence Inspector</h2>
-                  </div>
-                  <span className="font-mono text-xs font-bold text-viz-primary">{selectedReview.target_ref}</span>
                 </div>
 
-                <div className="space-y-2">
-                  <h3 className="text-sm font-bold text-viz-text">{selectedReview.title}</h3>
-                  <div className="p-3 rounded bg-surface-subtle border border-border-divider text-xs text-viz-neutral space-y-1">
-                    <span className="font-bold text-viz-text block">Disagreement / Appeal Rationale:</span>
-                    <p className="leading-relaxed">{selectedReview.disagreement_reason}</p>
-                  </div>
-                </div>
-
-                <div className="space-y-2 text-xs">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-viz-neutral block">
-                    Forensic Artifacts
+                <div className="mt-3 pt-3 border-t border-border-divider/50 flex items-center justify-between text-[11px]">
+                  <span className="text-viz-neutral">
+                    Model: <strong className="text-viz-text">{r.model_recommendation}</strong> ({r.model_score}%)
                   </span>
-                  {selectedReview.evidence_snippets.map((snip, idx) => (
-                    <div key={idx} className="p-2.5 rounded bg-surface border border-border-divider font-mono text-[11px] text-viz-text">
-                      {snip}
-                    </div>
-                  ))}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedId(r.id);
+                    }}
+                    className="px-2.5 py-1 bg-viz-primary hover:bg-[#00483f] text-white text-[11px] font-semibold rounded transition-colors inline-flex items-center gap-1"
+                  >
+                    <span>Adjudicate</span>
+                    <ChevronRight className="w-3 h-3" />
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Centered Modal Popup with Backdrop Blur */}
+      {selectedReview && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-md transition-opacity duration-200"
+          onClick={() => setSelectedId(null)}
+        >
+          <div
+            className="bg-surface border border-border-divider rounded-xl shadow-2xl max-w-xl w-full max-h-[90vh] overflow-y-auto flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="px-5 py-3.5 bg-surface-subtle border-b border-border-divider flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded bg-viz-primary/10 text-viz-primary flex items-center justify-center font-bold">
+                  <FileCheck className="w-4 h-4" />
+                </div>
+                <div>
+                  <span className="text-[10px] uppercase text-viz-neutral font-bold tracking-wider block">
+                    Evidence Inspector &amp; Adjudication
+                  </span>
+                  <h2 className="text-base font-mono font-bold text-viz-text leading-tight">{selectedReview.id} ({selectedReview.target_ref})</h2>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
+                  selectedReview.status === "PENDING"
+                    ? "bg-tone-warning-bg text-tone-warning-text"
+                    : selectedReview.status === "APPROVED"
+                    ? "bg-tone-info-bg text-tone-info-text"
+                    : "bg-surface text-viz-neutral border border-border-divider"
+                }`}>
+                  {selectedReview.status}
+                </span>
+                <button
+                  onClick={() => setSelectedId(null)}
+                  className="p-1 rounded hover:bg-surface-subtle text-viz-neutral hover:text-viz-text transition-colors"
+                  aria-label="Close modal"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-5 space-y-4 text-xs">
+              <div>
+                <h3 className="text-sm font-bold text-viz-text leading-tight">{selectedReview.title}</h3>
+                <div className="flex items-center gap-2 text-[11px] text-viz-neutral mt-1">
+                  <span>Submitted by: <strong className="text-viz-text">{selectedReview.submitted_by}</strong></span>
+                  <span>•</span>
+                  <span>Timestamp: <strong className="text-viz-text">{formatDateTime(selectedReview.submitted_at)}</strong></span>
                 </div>
               </div>
 
-              {/* Adjudication Decision Card */}
-              <div className="bg-surface rounded-xl p-5 border border-border-divider shadow-sm space-y-3">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-viz-neutral">
-                  Analyst Adjudication
-                </h3>
+              {/* Disagreement Rationale Box */}
+              <div className="p-3.5 rounded bg-surface-subtle border border-border-divider space-y-1.5 text-xs">
+                <span className="font-bold text-viz-text block uppercase tracking-wider text-[10px] text-viz-neutral">
+                  Disagreement / Appeal Rationale:
+                </span>
+                <p className="leading-relaxed text-viz-text">{selectedReview.disagreement_reason}</p>
+                <div className="pt-1 flex items-center gap-2 text-[11px] text-viz-neutral">
+                  <span>Model Recommendation: <strong className="text-viz-primary">{selectedReview.model_recommendation}</strong></span>
+                  <span>•</span>
+                  <span>Model Score: <strong className="text-viz-text">{selectedReview.model_score}%</strong></span>
+                </div>
+              </div>
 
+              {/* Forensic Artifacts */}
+              <div className="space-y-1.5 text-xs">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-viz-neutral block">
+                  Forensic Artifacts
+                </span>
+                {selectedReview.evidence_snippets.map((snip, idx) => (
+                  <div key={idx} className="p-2.5 rounded bg-surface-subtle border border-border-divider font-mono text-[11px] text-viz-text">
+                    {snip}
+                  </div>
+                ))}
+              </div>
+
+              {/* Adjudication Notes Box */}
+              <div className="space-y-1.5 text-xs">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-viz-neutral block">
+                  Analyst Adjudication Notes (§65B statutory rationale)
+                </label>
                 <textarea
                   value={decisionNotes}
                   onChange={(e) => setDecisionNotes(e.target.value)}
-                  placeholder="Enter §65B statutory rationale for confirming or overriding model assessment..."
-                  className="w-full h-24 p-3 bg-surface-subtle border border-border-divider rounded-lg text-xs text-viz-text placeholder:text-viz-neutral focus:bg-surface focus:outline-none focus:border-viz-primary"
+                  placeholder="Enter statutory rationale for confirming or overriding model assessment..."
+                  className="w-full h-20 p-2.5 bg-surface-subtle border border-border-divider rounded-lg text-xs text-viz-text placeholder:text-viz-neutral focus:bg-surface focus:outline-none focus:border-viz-primary"
                 />
-
-                <div className="grid grid-cols-2 gap-3 pt-2">
-                  <button
-                    onClick={() => handleDecision("APPROVE")}
-                    className="h-9 px-4 rounded bg-viz-primary hover:bg-[#00483f] text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-xs"
-                  >
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    <span>Confirm Model Assessment</span>
-                  </button>
-                  <button
-                    onClick={() => handleDecision("OVERRIDE")}
-                    className="h-9 px-4 rounded bg-tone-danger-strong-bg hover:bg-[#f0c3bf] text-tone-danger-strong-text text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
-                  >
-                    <XCircle className="w-3.5 h-3.5 text-error" />
-                    <span>Override / Downgrade Risk</span>
-                  </button>
-                </div>
               </div>
             </div>
-          ) : (
-            <div className="p-8 text-center text-xs text-viz-neutral">Select an item from queue to adjudicate.</div>
-          )}
+
+            {/* Modal Footer / Action Buttons */}
+            <div className="p-4 border-t border-border-divider bg-surface-subtle space-y-2">
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => handleDecision("APPROVE")}
+                  className="h-8 px-3 rounded bg-viz-primary hover:bg-[#00483f] text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-xs"
+                >
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  <span>Confirm Model Assessment</span>
+                </button>
+                <button
+                  onClick={() => handleDecision("OVERRIDE")}
+                  className="h-8 px-3 rounded bg-tone-danger-strong-bg hover:bg-[#f0c3bf] text-tone-danger-strong-text text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
+                >
+                  <XCircle className="w-3.5 h-3.5 text-error" />
+                  <span>Override / Downgrade Risk</span>
+                </button>
+              </div>
+              <button
+                onClick={() => setSelectedId(null)}
+                className="w-full h-7 rounded bg-surface border border-border-control hover:bg-surface-container-high text-xs font-medium text-viz-neutral hover:text-viz-text transition-colors"
+              >
+                Dismiss
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

@@ -19,6 +19,7 @@ import {
   CheckCircle2,
   AlertTriangle,
   Scale,
+  X,
 } from "lucide-react";
 import { formatDateTime } from "@/lib/utils/format";
 
@@ -92,10 +93,10 @@ const CANONICAL_CASES: CaseRecord[] = [
 
 export default function CasesListPage() {
   const [cases, setCases] = useState<CaseRecord[]>(CANONICAL_CASES);
-  const [selectedId, setSelectedId] = useState<string>("CASE-2026-KA-0941");
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const selectedCase = cases.find((c) => c.id === selectedId) || cases[0];
+  const selectedCase = cases.find((c) => c.id === selectedId) || null;
 
   const filteredCases = cases.filter(
     (c) =>
@@ -152,154 +153,205 @@ export default function CasesListPage() {
         </div>
       </div>
 
-      {/* 3. Main Split Console */}
-      <div className="flex flex-1 w-full overflow-hidden min-h-[calc(100vh-14rem)]">
-        {/* Table View */}
-        <div className="flex-1 overflow-x-auto bg-surface" data-density="compact">
-          <table className="w-full text-left border-collapse select-text min-w-[900px]">
-            <thead>
-              <tr className="h-9 bg-surface-subtle border-b border-border-divider text-[11px] font-semibold text-viz-neutral uppercase tracking-wider">
-                <th className="px-3 font-semibold">FIR Number &amp; Title</th>
-                <th className="px-3 font-semibold">Jurisdiction &amp; Station</th>
-                <th className="px-3 font-semibold">Lead Officer</th>
-                <th className="px-3 font-semibold">Statutory Sections</th>
-                <th className="px-3 font-semibold">Loss / Lien</th>
-                <th className="px-3 font-semibold">Status</th>
-                <th className="px-3 text-right font-semibold">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border-divider text-xs text-viz-text">
-              {filteredCases.map((c) => {
-                const isSelected = selectedId === c.id;
+      {/* 3. Main Case Table */}
+      <div className="w-full bg-surface border border-border-divider rounded-lg overflow-x-auto min-h-[calc(100vh-14rem)]" data-density="compact">
+        <table className="w-full text-left border-collapse select-text min-w-[900px]">
+          <thead>
+            <tr className="h-9 bg-surface-subtle border-b border-border-divider text-[11px] font-semibold text-viz-neutral uppercase tracking-wider">
+              <th className="px-3 font-semibold">FIR Number &amp; Title</th>
+              <th className="px-3 font-semibold">Jurisdiction &amp; Station</th>
+              <th className="px-3 font-semibold">Lead Officer</th>
+              <th className="px-3 font-semibold">Statutory Sections</th>
+              <th className="px-3 font-semibold">Loss / Lien</th>
+              <th className="px-3 font-semibold">Status</th>
+              <th className="px-3 text-right font-semibold">Action</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border-divider text-xs text-viz-text">
+            {filteredCases.map((c) => {
+              const isSelected = selectedId === c.id;
 
-                return (
-                  <tr
-                    key={c.id}
-                    onClick={() => setSelectedId(c.id)}
-                    className={`h-9 transition-colors cursor-pointer group ${
-                      isSelected
-                        ? "bg-[#0B6256]/[0.08] border-l-[3px] border-l-viz-primary font-medium"
-                        : "hover:bg-surface-container-low border-l-[3px] border-l-transparent"
-                    }`}
-                  >
-                    <td className="px-3">
-                      <div className="flex flex-col truncate max-w-[280px]">
-                        <span className="font-mono text-[11px] font-bold text-viz-primary">{c.fir_number}</span>
-                        <span className="font-semibold text-viz-text truncate">{c.title}</span>
-                      </div>
-                    </td>
-                    <td className="px-3 text-viz-neutral text-[11px] truncate max-w-[180px]">
-                      {c.police_station}
-                    </td>
-                    <td className="px-3 font-medium text-[11px]">{c.lead_officer}</td>
-                    <td className="px-3">
-                      <div className="flex flex-wrap gap-1">
-                        {c.legal_sections.slice(0, 2).map((sec) => (
-                          <span key={sec} className="px-1 bg-surface-subtle border border-border-divider rounded text-[10px] font-mono">
-                            {sec}
-                          </span>
-                        ))}
-                      </div>
-                    </td>
-                    <td className="px-3">
-                      <div className="flex flex-col text-[11px] font-mono">
-                        <span className="text-error font-semibold">₹{(c.total_loss / 100000).toFixed(1)} L</span>
-                        <span className="text-viz-primary">Lien: ₹{(c.lien_recovered / 100000).toFixed(1)} L</span>
-                      </div>
-                    </td>
-                    <td className="px-3">
-                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-tone-info-bg text-tone-info-text text-[11px] font-medium">
-                        {c.status}
-                      </span>
-                    </td>
-                    <td className="px-3 text-right whitespace-nowrap">
-                      <Link
-                        href={`/cases/${c.id}`}
-                        onClick={(e) => e.stopPropagation()}
-                        className="h-6 px-2 bg-viz-primary hover:bg-[#00483f] text-white rounded text-[11px] font-semibold inline-flex items-center transition-colors"
-                      >
-                        Open Case
-                      </Link>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Right-Hand Docked Detail Inspector (380px) */}
-        <aside className="w-80 xl:w-[380px] shrink-0 bg-surface-subtle border-l border-border-divider flex flex-col justify-between overflow-y-auto">
-          {selectedCase ? (
-            <div className="flex flex-col">
-              <div className="px-4 py-3 bg-surface border-b border-border-divider flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded bg-[#0B6256]/10 text-viz-primary flex items-center justify-center font-bold">
-                    <Scale className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <span className="text-[10px] uppercase text-viz-neutral font-bold tracking-wider block">
-                      Statutory Docket
-                    </span>
-                    <h2 className="text-xs font-mono font-bold text-viz-text leading-tight">{selectedCase.id}</h2>
-                  </div>
-                </div>
-                <Link
-                  href={`/cases/${selectedCase.id}`}
-                  className="h-7 px-2.5 bg-viz-primary hover:bg-[#00483f] text-white rounded text-xs font-semibold flex items-center gap-1 transition-colors"
+              return (
+                <tr
+                  key={c.id}
+                  onClick={() => setSelectedId(c.id)}
+                  className={`h-9 transition-colors cursor-pointer group ${
+                    isSelected
+                      ? "bg-[#0B6256]/[0.08] border-l-[3px] border-l-viz-primary font-medium"
+                      : "hover:bg-surface-container-low border-l-[3px] border-l-transparent"
+                  }`}
                 >
-                  <span>Full Workspace</span>
-                  <ChevronRight className="w-3.5 h-3.5" />
-                </Link>
+                  <td className="px-3">
+                    <div className="flex flex-col truncate max-w-[280px]">
+                      <span className="font-mono text-[11px] font-bold text-viz-primary">{c.fir_number}</span>
+                      <span className="font-semibold text-viz-text truncate">{c.title}</span>
+                    </div>
+                  </td>
+                  <td className="px-3 text-viz-neutral text-[11px] truncate max-w-[180px]">
+                    {c.police_station}
+                  </td>
+                  <td className="px-3 font-medium text-[11px]">{c.lead_officer}</td>
+                  <td className="px-3">
+                    <div className="flex flex-wrap gap-1">
+                      {c.legal_sections.slice(0, 2).map((sec) => (
+                        <span key={sec} className="px-1 bg-surface-subtle border border-border-divider rounded text-[10px] font-mono">
+                          {sec}
+                        </span>
+                      ))}
+                    </div>
+                  </td>
+                  <td className="px-3">
+                    <div className="flex flex-col text-[11px] font-mono">
+                      <span className="text-error font-semibold">₹{(c.total_loss / 100000).toFixed(1)} L</span>
+                      <span className="text-viz-primary">Lien: ₹{(c.lien_recovered / 100000).toFixed(1)} L</span>
+                    </div>
+                  </td>
+                  <td className="px-3">
+                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-tone-info-bg text-tone-info-text text-[11px] font-medium">
+                      {c.status}
+                    </span>
+                  </td>
+                  <td className="px-3 text-right whitespace-nowrap">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedId(c.id);
+                      }}
+                      className="h-6 px-2.5 bg-viz-primary hover:bg-[#00483f] text-white rounded text-[11px] font-semibold inline-flex items-center transition-colors"
+                    >
+                      Inspect Docket
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Centered Modal Popup with Backdrop Blur */}
+      {selectedCase && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-md transition-opacity duration-200"
+          onClick={() => setSelectedId(null)}
+        >
+          <div
+            className="bg-surface border border-border-divider rounded-xl shadow-2xl max-w-xl w-full max-h-[90vh] overflow-y-auto flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="px-5 py-3.5 bg-surface-subtle border-b border-border-divider flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded bg-[#0B6256]/10 text-viz-primary flex items-center justify-center font-bold">
+                  <Scale className="w-4 h-4" />
+                </div>
+                <div>
+                  <span className="text-[10px] uppercase text-viz-neutral font-bold tracking-wider block">
+                    Statutory Docket
+                  </span>
+                  <h2 className="text-base font-mono font-bold text-viz-text leading-tight">{selectedCase.id}</h2>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-tone-info-bg text-tone-info-text text-xs font-semibold">
+                  {selectedCase.status}
+                </span>
+                <button
+                  onClick={() => setSelectedId(null)}
+                  className="p-1 rounded hover:bg-surface-subtle text-viz-neutral hover:text-viz-text transition-colors"
+                  aria-label="Close modal"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-5 space-y-4 text-xs">
+              <div>
+                <h3 className="text-base font-bold text-viz-text leading-tight">{selectedCase.title}</h3>
+                <p className="text-xs text-viz-primary font-mono mt-1 font-semibold">{selectedCase.fir_number}</p>
               </div>
 
-              {/* Title & Police Station */}
-              <div className="p-4 bg-surface border-b border-border-divider space-y-2">
-                <h3 className="text-sm font-bold text-viz-text leading-tight">{selectedCase.title}</h3>
-                <p className="text-xs text-viz-neutral">{selectedCase.fir_number}</p>
-                <div className="p-2.5 rounded bg-surface-subtle border border-border-divider text-xs space-y-1">
-                  <span className="font-bold text-viz-text block">Lead Investigating Officer:</span>
-                  <span className="text-viz-neutral">{selectedCase.lead_officer}</span>
+              {/* Police Station & Lead Officer */}
+              <div className="p-3.5 rounded bg-surface-subtle border border-border-divider space-y-2 text-xs">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <span className="font-bold text-viz-text block">Jurisdiction &amp; Station:</span>
+                    <span className="text-viz-neutral">{selectedCase.police_station}</span>
+                  </div>
+                  <div className="text-right">
+                    <span className="font-bold text-viz-text block">Lead Investigating Officer:</span>
+                    <span className="text-viz-neutral">{selectedCase.lead_officer}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Financial Impact */}
+              <div className="grid grid-cols-3 gap-2">
+                <div className="p-2.5 rounded bg-surface-subtle border border-border-divider">
+                  <span className="text-[10px] uppercase font-bold text-viz-neutral block">Total Loss</span>
+                  <span className="font-mono font-bold text-error text-sm">
+                    ₹{selectedCase.total_loss.toLocaleString("en-IN")}
+                  </span>
+                </div>
+                <div className="p-2.5 rounded bg-surface-subtle border border-border-divider">
+                  <span className="text-[10px] uppercase font-bold text-viz-neutral block">Lien Recovered</span>
+                  <span className="font-mono font-bold text-viz-primary text-sm">
+                    ₹{selectedCase.lien_recovered.toLocaleString("en-IN")}
+                  </span>
+                </div>
+                <div className="p-2.5 rounded bg-surface-subtle border border-border-divider">
+                  <span className="text-[10px] uppercase font-bold text-viz-neutral block">Victims Count</span>
+                  <span className="font-mono font-bold text-viz-text text-sm">
+                    {selectedCase.victims_count} Victims
+                  </span>
                 </div>
               </div>
 
               {/* Legal Sections Box */}
-              <div className="p-4 space-y-2 text-xs">
+              <div className="space-y-2 text-xs">
                 <span className="text-[10px] uppercase font-bold text-viz-neutral tracking-wider block">
                   Applicable Penal Provisions
                 </span>
-                <div className="space-y-1">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5">
                   {selectedCase.legal_sections.map((sec) => (
-                    <div key={sec} className="p-2 rounded bg-surface border border-border-divider font-mono text-[11px] text-viz-text font-semibold">
+                    <div key={sec} className="p-2 rounded bg-surface-subtle border border-border-divider font-mono text-[11px] text-viz-text font-semibold">
                       {sec}
                     </div>
                   ))}
                 </div>
               </div>
+            </div>
 
-              {/* Action Deck */}
-              <div className="p-4 mt-auto border-t border-border-divider bg-surface space-y-2">
-                <div className="text-[10px] uppercase font-bold text-viz-neutral tracking-wider">
-                  Statutory Exports
-                </div>
-                <button className="w-full h-8 px-3 rounded bg-viz-primary hover:bg-[#00483f] text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-xs">
-                  <Download className="w-3.5 h-3.5" />
-                  <span>Export Cryptographic §65B Certificate</span>
-                </button>
+            {/* Modal Footer / Action Deck */}
+            <div className="p-4 border-t border-border-divider bg-surface-subtle space-y-2">
+              <div className="text-[10px] uppercase font-bold text-viz-neutral tracking-wider">
+                Statutory Exports &amp; Action
+              </div>
+              <button className="w-full h-8 px-3 rounded bg-viz-primary hover:bg-[#00483f] text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-xs">
+                <Download className="w-3.5 h-3.5" />
+                <span>Export Cryptographic §65B Certificate</span>
+              </button>
+              <div className="flex items-center gap-2">
                 <Link
-                  href={`/campaigns/${selectedCase.syndicate_cluster}`}
-                  className="w-full h-8 px-3 rounded bg-surface-subtle hover:bg-surface-container-high border border-border-control text-xs font-medium text-viz-text flex items-center justify-center gap-1.5 transition-colors"
+                  href={`/cases/${selectedCase.id}`}
+                  className="flex-1 h-8 px-3 rounded bg-surface hover:bg-surface-container-high border border-border-control text-xs font-medium text-viz-text flex items-center justify-center gap-1.5 transition-colors"
                 >
-                  <span>Inspect Linked Campaign ({selectedCase.syndicate_cluster})</span>
+                  <span>Open Full Investigation Workspace</span>
                   <ChevronRight className="w-3.5 h-3.5" />
                 </Link>
+                <button
+                  onClick={() => setSelectedId(null)}
+                  className="h-8 px-3 rounded bg-surface border border-border-control hover:bg-surface-container-high text-xs font-medium text-viz-neutral hover:text-viz-text transition-colors"
+                >
+                  Dismiss
+                </button>
               </div>
             </div>
-          ) : (
-            <div className="p-8 text-center text-xs text-viz-neutral">Select a case to inspect formal docket.</div>
-          )}
-        </aside>
-      </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

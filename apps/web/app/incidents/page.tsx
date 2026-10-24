@@ -21,6 +21,7 @@ import {
   Timer,
   CheckCircle2,
   Lock,
+  X,
 } from "lucide-react";
 import { formatDateTime } from "@/lib/utils/format";
 import { CANONICAL_INCIDENTS } from "@/lib/demo/incidents-db";
@@ -152,7 +153,7 @@ const SEED_INCIDENTS: IncidentRecord[] = [
 
 export default function IncidentsPage() {
   const [incidents, setIncidents] = useState<IncidentRecord[]>(SEED_INCIDENTS);
-  const [selectedId, setSelectedId] = useState<string>("SG-2026-84920");
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [filterSegment, setFilterSegment] = useState<"ALL" | "SURGE" | "URGENT" | "ACTIVE" | "UNASSIGNED">("ALL");
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -237,7 +238,7 @@ export default function IncidentsPage() {
   }, [incidents, filterSegment, searchQuery]);
 
   const selectedIncident = useMemo(() => {
-    return incidents.find((inc) => inc.id === selectedId) || incidents[0];
+    return selectedId ? incidents.find((inc) => inc.id === selectedId) || null : null;
   }, [incidents, selectedId]);
 
   return (
@@ -346,11 +347,10 @@ export default function IncidentsPage() {
         </div>
       </div>
 
-      {/* 3. Main Incident Table & Docked Quick Detail View */}
-      <div className="flex flex-1 w-full overflow-hidden min-h-[calc(100vh-14rem)]">
-        {/* Table Surface: 36px Compact Rows */}
-        <div className="flex-1 overflow-x-auto bg-surface" data-density="compact">
-          <table className="w-full text-left border-collapse select-text min-w-[950px]">
+      {/* 2. Main Incident Table: Full width */}
+      <div className="w-full bg-surface rounded-xl border border-border-divider overflow-hidden shadow-xs" data-density="compact">
+        <div className="overflow-x-auto w-full">
+          <table className="w-full text-left border-collapse select-text">
             <thead>
               <tr className="h-9 bg-surface-subtle border-b border-border-divider text-[11px] font-semibold text-viz-neutral uppercase tracking-wider">
                 <th className="w-9 px-3 text-center">
@@ -377,20 +377,20 @@ export default function IncidentsPage() {
                     onClick={() => setSelectedId(inc.id)}
                     className={`h-9 transition-colors cursor-pointer group ${
                       isSelected
-                        ? "bg-[#0B6256]/[0.08] border-l-[3px] border-l-viz-primary font-medium"
-                        : "hover:bg-surface-container-low border-l-[3px] border-l-transparent"
+                        ? "bg-[#0B6256]/[0.08] font-medium"
+                        : "hover:bg-surface-subtle"
                     }`}
                   >
-                    <td className="w-9 px-3 text-center">
+                    <td className="w-9 px-3 text-center" onClick={(e) => e.stopPropagation()}>
                       <input
                         type="checkbox"
                         checked={isSelected}
-                        onChange={() => setSelectedId(inc.id)}
+                        onChange={() => setSelectedId(isSelected ? null : inc.id)}
                         className="w-3.5 h-3.5 accent-viz-primary rounded cursor-pointer"
                       />
                     </td>
                     <td className="px-3">
-                      <div className="flex items-center gap-1.5 truncate max-w-[260px]">
+                      <div className="flex items-center gap-1.5 truncate max-w-[280px]">
                         <span className="font-mono font-semibold text-viz-primary">{inc.ref}</span>
                         <span className="text-viz-neutral">·</span>
                         <span className="font-semibold text-viz-text truncate">{inc.title}</span>
@@ -460,14 +460,13 @@ export default function IncidentsPage() {
                         {inc.assignee}
                       </span>
                     </td>
-                    <td className="px-3 text-right whitespace-nowrap">
-                      <Link
-                        href={`/incidents/${inc.id}`}
-                        onClick={(e) => e.stopPropagation()}
-                        className="h-6 px-2 bg-viz-primary hover:bg-[#00483f] text-white rounded text-[11px] font-semibold inline-flex items-center transition-colors"
+                    <td className="px-3 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                      <button
+                        onClick={() => setSelectedId(inc.id)}
+                        className="h-6 px-2.5 bg-viz-primary hover:bg-[#00483f] text-white rounded text-[11px] font-semibold inline-flex items-center transition-colors shadow-xs"
                       >
                         Inspect
-                      </Link>
+                      </button>
                     </td>
                   </tr>
                 );
@@ -475,92 +474,143 @@ export default function IncidentsPage() {
             </tbody>
           </table>
         </div>
+      </div>
 
-        {/* Right-Hand Docked Detail Inspector (380px wide) */}
-        <aside className="w-80 xl:w-[380px] shrink-0 bg-surface-subtle border-l border-border-divider flex flex-col justify-between overflow-y-auto">
-          {selectedIncident ? (
-            <div className="flex flex-col">
-              {/* Header */}
-              <div className="px-4 py-3 bg-surface border-b border-border-divider flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded bg-tone-danger-bg text-tone-danger-text flex items-center justify-center font-bold">
-                    <ShieldAlert className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <span className="text-[10px] uppercase text-viz-neutral font-bold tracking-wider block">
-                      Selected Incident Node
+      {/* Centered Modal Popup with blurred backdrop */}
+      {selectedIncident && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-200">
+          {/* Blurred Backdrop */}
+          <div
+            className="fixed inset-0 bg-black/50 backdrop-blur-md transition-opacity"
+            onClick={() => setSelectedId(null)}
+            aria-hidden="true"
+          />
+
+          {/* Centered Modal Card */}
+          <div
+            role="dialog"
+            aria-modal="true"
+            className="relative w-full max-w-2xl bg-surface rounded-2xl shadow-2xl border border-border-divider overflow-hidden z-10 max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-200"
+          >
+            {/* Modal Header */}
+            <div className="px-6 py-4 bg-surface-subtle border-b border-border-divider flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-tone-danger-bg text-tone-danger-text flex items-center justify-center font-bold">
+                  <ShieldAlert className="w-5 h-5 text-error" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono font-bold text-sm text-viz-primary">{selectedIncident.ref}</span>
+                    <span className="text-[10px] uppercase bg-surface border border-border-divider px-1.5 py-0.5 rounded text-viz-neutral font-semibold">
+                      Incident Triage
                     </span>
-                    <h2 className="text-sm font-bold text-viz-text leading-tight">{selectedIncident.ref}</h2>
+                  </div>
+                  <h2 className="text-base font-bold text-viz-text leading-tight">{selectedIncident.title}</h2>
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedId(null)}
+                className="h-8 w-8 rounded-lg hover:bg-surface-container-high flex items-center justify-center text-viz-neutral hover:text-viz-text transition-colors"
+                aria-label="Close modal"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-6 overflow-y-auto space-y-4 text-xs">
+              {/* Assessment & Metrics Strip */}
+              <div className="grid grid-cols-3 gap-3">
+                <div className="p-3 rounded-lg bg-surface border border-border-divider">
+                  <span className="text-[10px] text-viz-neutral uppercase block font-semibold">Assessment</span>
+                  <div className="mt-1">
+                    {selectedIncident.assessment === "HIGH_RISK" ? (
+                      <span className="inline-flex items-center gap-1 text-tone-danger-text font-bold">
+                        <ShieldAlert className="w-3.5 h-3.5 text-error" />
+                        High Risk
+                      </span>
+                    ) : selectedIncident.assessment === "ACT_NOW" ? (
+                      <span className="inline-flex items-center gap-1 text-tone-danger-strong-text font-bold">
+                        <Timer className="w-3.5 h-3.5 text-error" />
+                        Act Now
+                      </span>
+                    ) : (
+                      <span className="font-bold text-viz-text">{selectedIncident.assessment}</span>
+                    )}
                   </div>
                 </div>
+                <div className="p-3 rounded-lg bg-surface border border-border-divider">
+                  <span className="text-[10px] text-viz-neutral uppercase block font-semibold">Confidence</span>
+                  <div className="mt-1 font-mono font-bold text-sm text-viz-text">
+                    {selectedIncident.confidence}% <span className="text-[10px] font-normal text-viz-neutral">({selectedIncident.artifacts_count} Artf)</span>
+                  </div>
+                </div>
+                <div className="p-3 rounded-lg bg-surface border border-border-divider">
+                  <span className="text-[10px] text-viz-neutral uppercase block font-semibold">Loss Quantum</span>
+                  <div className="mt-1 font-mono font-bold text-sm text-error">
+                    {selectedIncident.victim_loss ? `₹${selectedIncident.victim_loss.toLocaleString("en-IN")}` : "—"}
+                  </div>
+                </div>
+              </div>
+
+              {/* Identified Fraud Vectors */}
+              <div className="space-y-2">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-viz-neutral block">
+                  Identified Fraud Vectors &amp; Telemetry
+                </span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  {selectedIncident.target_vpa && (
+                    <div className="p-3 rounded-lg bg-surface-subtle border border-border-divider">
+                      <span className="text-[10px] text-viz-neutral uppercase block font-semibold">Beneficiary VPA</span>
+                      <code className="text-xs font-mono font-bold text-viz-text select-all">{selectedIncident.target_vpa}</code>
+                    </div>
+                  )}
+                  {selectedIncident.target_phone && (
+                    <div className="p-3 rounded-lg bg-surface-subtle border border-border-divider">
+                      <span className="text-[10px] text-viz-neutral uppercase block font-semibold">Caller Telephony</span>
+                      <code className="text-xs font-mono font-bold text-viz-text select-all">{selectedIncident.target_phone}</code>
+                    </div>
+                  )}
+                  <div className="p-3 rounded-lg bg-surface-subtle border border-border-divider">
+                    <span className="text-[10px] text-viz-neutral uppercase block font-semibold">Syndicate Attribution</span>
+                    <span className="text-xs font-semibold text-viz-primary">{selectedIncident.cluster_name}</span>
+                  </div>
+                  <div className="p-3 rounded-lg bg-surface-subtle border border-border-divider">
+                    <span className="text-[10px] text-viz-neutral uppercase block font-semibold">Vector / Modality</span>
+                    <span className="text-xs font-medium text-viz-text">{selectedIncident.modality}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer Actions */}
+            <div className="px-6 py-4 bg-surface-subtle border-t border-border-divider flex items-center justify-between gap-3">
+              <button
+                onClick={() => setSelectedId(null)}
+                className="h-9 px-4 rounded-lg bg-surface border border-border-divider text-viz-text hover:bg-surface-container-high text-xs font-semibold transition-colors"
+              >
+                Dismiss
+              </button>
+              <div className="flex items-center gap-2">
+                <Link
+                  href={`/investigate?q=${encodeURIComponent(selectedIncident.target_vpa || selectedIncident.ref)}`}
+                  className="h-9 px-3.5 rounded-lg bg-surface border border-border-control hover:bg-surface-subtle text-xs font-medium text-viz-text flex items-center gap-1.5 transition-colors"
+                >
+                  <Search className="w-3.5 h-3.5 text-viz-neutral" />
+                  <span>Cross-Correlate</span>
+                </Link>
                 <Link
                   href={`/incidents/${selectedIncident.id}`}
-                  className="h-7 px-2.5 bg-viz-primary hover:bg-[#00483f] text-white rounded text-xs font-semibold flex items-center gap-1 transition-colors"
+                  className="h-9 px-4 bg-viz-primary hover:bg-[#00483f] text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs"
                 >
                   <span>Full Dossier</span>
                   <ChevronRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
-
-              {/* Title & Core Details */}
-              <div className="p-4 bg-surface border-b border-border-divider space-y-2">
-                <h3 className="text-sm font-bold text-viz-text">{selectedIncident.title}</h3>
-                <div className="flex items-center gap-2 flex-wrap text-xs">
-                  <span className="px-2 py-0.5 rounded bg-surface-subtle border border-border-divider font-mono">
-                    Loss: {selectedIncident.victim_loss ? `₹${selectedIncident.victim_loss.toLocaleString("en-IN")}` : "Unspecified"}
-                  </span>
-                  <span className="px-2 py-0.5 rounded bg-tone-info-bg text-tone-info-text font-medium">
-                    {selectedIncident.artifacts_count} Correlated Artifacts
-                  </span>
-                </div>
-              </div>
-
-              {/* Targets & Identifiers */}
-              <div className="p-4 space-y-2 text-xs">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-viz-neutral block">
-                  Identified Fraud Vectors
-                </span>
-                {selectedIncident.target_vpa && (
-                  <div className="p-2.5 rounded bg-surface border border-border-divider">
-                    <span className="text-[10px] text-viz-neutral uppercase block font-semibold">Beneficiary VPA</span>
-                    <code className="text-xs font-mono font-bold text-viz-text">{selectedIncident.target_vpa}</code>
-                  </div>
-                )}
-                {selectedIncident.target_phone && (
-                  <div className="p-2.5 rounded bg-surface border border-border-divider">
-                    <span className="text-[10px] text-viz-neutral uppercase block font-semibold">Caller Telephony</span>
-                    <code className="text-xs font-mono font-bold text-viz-text">{selectedIncident.target_phone}</code>
-                  </div>
-                )}
-                <div className="p-2.5 rounded bg-surface border border-border-divider">
-                  <span className="text-[10px] text-viz-neutral uppercase block font-semibold">Syndicate Attribution</span>
-                  <span className="text-xs font-semibold text-viz-primary">{selectedIncident.cluster_name}</span>
-                </div>
-              </div>
-
-              {/* Action Deck */}
-              <div className="p-4 mt-auto border-t border-border-divider bg-surface space-y-2">
-                <div className="text-[10px] uppercase font-bold text-viz-neutral tracking-wider">
-                  Nodal Escalation
-                </div>
-                <button className="w-full h-8 px-3 rounded bg-error hover:bg-[#851313] text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors">
-                  <ShieldAlert className="w-3.5 h-3.5" />
-                  <span>Issue Golden Hour Bank Freeze</span>
-                </button>
-                <Link
-                  href={`/investigate?q=${encodeURIComponent(selectedIncident.target_vpa || selectedIncident.ref)}`}
-                  className="w-full h-8 px-3 rounded bg-surface-subtle hover:bg-surface-container-high border border-border-control text-xs font-medium text-viz-text flex items-center justify-center gap-1.5 transition-colors"
-                >
-                  <Search className="w-3.5 h-3.5 text-viz-neutral" />
-                  <span>Cross-Correlate in Investigate (A07)</span>
-                </Link>
-              </div>
             </div>
-          ) : (
-            <div className="p-8 text-center text-xs text-viz-neutral">Select an incident to view live triage details.</div>
-          )}
-        </aside>
-      </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -22,6 +22,7 @@ import {
   Timer,
   CheckCircle2,
   SlidersHorizontal,
+  X,
 } from "lucide-react";
 import { formatDateTime } from "@/lib/utils/format";
 
@@ -157,7 +158,7 @@ const CANONICAL_ALERTS: AlertRecord[] = [
 
 export default function AlertCenterPage() {
   const [alerts, setAlerts] = useState<AlertRecord[]>(CANONICAL_ALERTS);
-  const [selectedId, setSelectedId] = useState<string>("ALT-9041");
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [severityFilter, setSeverityFilter] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState<string>("");
 
@@ -176,7 +177,8 @@ export default function AlertCenterPage() {
   }, [alerts, severityFilter, searchQuery]);
 
   const selectedAlert = useMemo(() => {
-    return alerts.find((a) => a.id === selectedId) || alerts[0];
+    if (!selectedId) return null;
+    return alerts.find((a) => a.id === selectedId) || null;
   }, [alerts, selectedId]);
 
   return (
@@ -289,172 +291,220 @@ export default function AlertCenterPage() {
         </div>
       </div>
 
-      {/* 3. Main Alert Table + Docked 380px Detail Drawer */}
-      <div className="flex flex-1 w-full overflow-hidden min-h-[calc(100vh-14rem)]">
-        {/* Table View */}
-        <div className="flex-1 overflow-x-auto bg-surface" data-density="compact">
-          <table className="w-full text-left border-collapse select-text min-w-[900px]">
-            <thead>
-              <tr className="h-9 bg-surface-subtle border-b border-border-divider text-[11px] font-semibold text-viz-neutral uppercase tracking-wider">
-                <th className="w-9 px-3 text-center">
-                  <input type="checkbox" className="w-3.5 h-3.5 accent-viz-primary rounded cursor-pointer" />
-                </th>
-                <th className="px-3 font-semibold">Alert ID &amp; Type</th>
-                <th className="px-3 font-semibold">Correlated Campaign / Target</th>
-                <th className="px-3 font-semibold">Severity</th>
-                <th className="px-3 font-semibold">Conf.</th>
-                <th className="px-3 font-semibold">Trigger Metric &amp; Baseline</th>
-                <th className="px-3 font-semibold">Last Seen</th>
-                <th className="px-3 font-semibold">Lifecycle</th>
-                <th className="px-3 text-right font-semibold">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border-divider text-xs text-viz-text">
-              {filteredAlerts.map((a) => {
-                const isSelected = selectedId === a.id;
+      {/* 3. Main Alert Table */}
+      <div className="w-full bg-surface border border-border-divider rounded-lg overflow-x-auto min-h-[calc(100vh-14rem)]" data-density="compact">
+        <table className="w-full text-left border-collapse select-text min-w-[900px]">
+          <thead>
+            <tr className="h-9 bg-surface-subtle border-b border-border-divider text-[11px] font-semibold text-viz-neutral uppercase tracking-wider">
+              <th className="w-9 px-3 text-center">
+                <input type="checkbox" className="w-3.5 h-3.5 accent-viz-primary rounded cursor-pointer" />
+              </th>
+              <th className="px-3 font-semibold">Alert ID &amp; Type</th>
+              <th className="px-3 font-semibold">Correlated Campaign / Target</th>
+              <th className="px-3 font-semibold">Severity</th>
+              <th className="px-3 font-semibold">Conf.</th>
+              <th className="px-3 font-semibold">Trigger Metric &amp; Baseline</th>
+              <th className="px-3 font-semibold">Last Seen</th>
+              <th className="px-3 font-semibold">Lifecycle</th>
+              <th className="px-3 text-right font-semibold">Action</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border-divider text-xs text-viz-text">
+            {filteredAlerts.map((a) => {
+              const isSelected = selectedId === a.id;
 
-                return (
-                  <tr
-                    key={a.id}
-                    onClick={() => setSelectedId(a.id)}
-                    className={`h-9 transition-colors cursor-pointer group ${
-                      isSelected
-                        ? "bg-[#0B6256]/[0.08] border-l-[3px] border-l-viz-primary font-medium"
-                        : "hover:bg-surface-container-low border-l-[3px] border-l-transparent"
-                    }`}
-                  >
-                    <td className="w-9 px-3 text-center">
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => setSelectedId(a.id)}
-                        className="w-3.5 h-3.5 accent-viz-primary rounded cursor-pointer"
-                      />
-                    </td>
-                    <td className="px-3 font-medium">
-                      <div className="flex items-center gap-1.5">
-                        <span className="font-mono font-bold text-viz-text">#{a.id}</span>
-                        <span className="px-1.5 py-0.2 rounded bg-tone-danger-strong-bg text-tone-danger-strong-text font-mono text-[10px] uppercase font-bold">
-                          {a.type}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-3 text-viz-primary font-semibold truncate max-w-[200px]">
-                      {a.target_name}
-                    </td>
-                    <td className="px-3">
-                      {a.severity === "CRITICAL" ? (
-                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-tone-danger-strong-bg text-tone-danger-strong-text text-[11px] font-bold">
-                          <Timer className="w-3 h-3 text-error" />
-                          Critical · Octagon
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-tone-danger-bg text-tone-danger-text text-[11px] font-semibold">
-                          <ShieldAlert className="w-3 h-3 text-error" />
-                          High · Shield
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-3 font-mono font-bold">{a.confidence}%</td>
-                    <td className="px-3">
-                      <div className="flex items-center gap-1.5 text-[11px]">
-                        <span className="font-semibold text-error">{a.trigger_metric}</span>
-                        <span className="text-viz-neutral">vs {a.baseline}</span>
-                        <span className="px-1 rounded bg-tone-danger-bg text-tone-danger-text font-bold text-[10px]">
-                          {a.delta_label}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-3 text-[11px] text-viz-neutral whitespace-nowrap">
-                      {formatDateTime(a.last_seen)}
-                    </td>
-                    <td className="px-3 whitespace-nowrap">
-                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-surface-subtle text-viz-neutral text-[11px] font-medium">
-                        <span className="w-1.5 h-1.5 rounded-full bg-viz-primary" />
-                        {a.status} ({a.assignee})
+              return (
+                <tr
+                  key={a.id}
+                  onClick={() => setSelectedId(a.id)}
+                  className={`h-9 transition-colors cursor-pointer group ${
+                    isSelected
+                      ? "bg-[#0B6256]/[0.08] border-l-[3px] border-l-viz-primary font-medium"
+                      : "hover:bg-surface-container-low border-l-[3px] border-l-transparent"
+                  }`}
+                >
+                  <td className="w-9 px-3 text-center" onClick={(e) => e.stopPropagation()}>
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => setSelectedId(isSelected ? null : a.id)}
+                      className="w-3.5 h-3.5 accent-viz-primary rounded cursor-pointer"
+                    />
+                  </td>
+                  <td className="px-3 font-medium">
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-mono font-bold text-viz-text">#{a.id}</span>
+                      <span className="px-1.5 py-0.2 rounded bg-tone-danger-strong-bg text-tone-danger-strong-text font-mono text-[10px] uppercase font-bold">
+                        {a.type}
                       </span>
-                    </td>
-                    <td className="px-3 text-right whitespace-nowrap">
-                      <button className="text-viz-primary hover:underline text-[12px] font-semibold inline-flex items-center gap-0.5">
-                        Open alert
-                        <ArrowUpRight className="w-3.5 h-3.5" />
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Right-Hand Docked Detail Drawer (380px) */}
-        <aside className="w-80 xl:w-[380px] shrink-0 bg-surface-subtle border-l border-border-divider flex flex-col justify-between overflow-y-auto">
-          {selectedAlert ? (
-            <div className="flex flex-col">
-              <div className="px-4 py-3 bg-surface border-b border-border-divider flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded bg-tone-danger-strong-bg text-tone-danger-strong-text flex items-center justify-center font-bold">
-                    <ShieldAlert className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <span className="text-[10px] uppercase text-viz-neutral font-bold tracking-wider block">
-                      Focused Alert Node
+                    </div>
+                  </td>
+                  <td className="px-3 text-viz-primary font-semibold truncate max-w-[200px]">
+                    {a.target_name}
+                  </td>
+                  <td className="px-3">
+                    {a.severity === "CRITICAL" ? (
+                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-tone-danger-strong-bg text-tone-danger-strong-text text-[11px] font-bold">
+                        <Timer className="w-3 h-3 text-error" />
+                        Critical · Octagon
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-tone-danger-bg text-tone-danger-text text-[11px] font-semibold">
+                        <ShieldAlert className="w-3 h-3 text-error" />
+                        High · Shield
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-3 font-mono font-bold">{a.confidence}%</td>
+                  <td className="px-3">
+                    <div className="flex items-center gap-1.5 text-[11px]">
+                      <span className="font-semibold text-error">{a.trigger_metric}</span>
+                      <span className="text-viz-neutral">vs {a.baseline}</span>
+                      <span className="px-1 rounded bg-tone-danger-bg text-tone-danger-text font-bold text-[10px]">
+                        {a.delta_label}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-3 text-[11px] text-viz-neutral whitespace-nowrap">
+                    {formatDateTime(a.last_seen)}
+                  </td>
+                  <td className="px-3 whitespace-nowrap">
+                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-surface-subtle text-viz-neutral text-[11px] font-medium">
+                      <span className="w-1.5 h-1.5 rounded-full bg-viz-primary" />
+                      {a.status} ({a.assignee})
                     </span>
-                    <h2 className="text-sm font-bold text-viz-text leading-tight">#{selectedAlert.id}</h2>
-                  </div>
+                  </td>
+                  <td className="px-3 text-right whitespace-nowrap">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedId(a.id);
+                      }}
+                      className="text-viz-primary hover:underline text-[12px] font-semibold inline-flex items-center gap-0.5"
+                    >
+                      Open alert
+                      <ArrowUpRight className="w-3.5 h-3.5" />
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Centered Modal Popup with Backdrop Blur */}
+      {selectedAlert && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-md transition-opacity duration-200"
+          onClick={() => setSelectedId(null)}
+        >
+          <div
+            className="bg-surface border border-border-divider rounded-xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="px-5 py-3.5 bg-surface-subtle border-b border-border-divider flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded bg-tone-danger-strong-bg text-tone-danger-strong-text flex items-center justify-center font-bold">
+                  <ShieldAlert className="w-4 h-4" />
                 </div>
+                <div>
+                  <span className="text-[10px] uppercase text-viz-neutral font-bold tracking-wider block">
+                    Focused Alert Node
+                  </span>
+                  <h2 className="text-base font-bold text-viz-text leading-tight">#{selectedAlert.id}</h2>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
                 <span className="px-2 py-0.5 rounded bg-tone-danger-bg text-tone-danger-text font-bold text-xs">
                   {selectedAlert.severity}
                 </span>
+                <button
+                  onClick={() => setSelectedId(null)}
+                  className="p-1 rounded hover:bg-surface-subtle text-viz-neutral hover:text-viz-text transition-colors"
+                  aria-label="Close modal"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-5 space-y-4 text-xs">
+              <div>
+                <h3 className="text-sm font-bold text-viz-text">{selectedAlert.target_name}</h3>
+                <div className="flex items-center gap-2 text-[11px] text-viz-neutral mt-1">
+                  <span>Type: <strong className="text-viz-text">{selectedAlert.type}</strong></span>
+                  <span>•</span>
+                  <span>Confidence: <strong className="text-viz-text">{selectedAlert.confidence}%</strong></span>
+                </div>
               </div>
 
               {/* Blast Radius Box */}
-              <div className="p-4 bg-surface border-b border-border-divider space-y-2">
-                <h3 className="text-sm font-bold text-viz-text">{selectedAlert.target_name}</h3>
-                <div className="p-3 rounded bg-surface-subtle border border-border-divider space-y-2 text-xs">
-                  <span className="text-[10px] uppercase font-bold text-viz-neutral block">Blast Radius Analysis</span>
-                  <div className="flex justify-between items-center">
-                    <span className="text-viz-neutral">Quantum at Risk:</span>
-                    <span className="font-mono font-bold text-error">
-                      ₹{selectedAlert.quantum_at_risk.toLocaleString("en-IN")}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-viz-neutral block mb-1">Affected Institutions:</span>
-                    <div className="flex flex-wrap gap-1">
-                      {selectedAlert.blast_radius_banks.map((b) => (
-                        <span key={b} className="px-1.5 py-0.5 rounded bg-surface border border-border-divider text-[10px] font-medium text-viz-text">
-                          {b}
-                        </span>
-                      ))}
-                    </div>
+              <div className="p-3.5 rounded bg-surface-subtle border border-border-divider space-y-2.5">
+                <span className="text-[10px] uppercase font-bold text-viz-neutral block">Blast Radius Analysis</span>
+                <div className="flex justify-between items-center">
+                  <span className="text-viz-neutral">Quantum at Risk:</span>
+                  <span className="font-mono font-bold text-error text-sm">
+                    ₹{selectedAlert.quantum_at_risk.toLocaleString("en-IN")}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center text-[11px]">
+                  <span className="text-viz-neutral">Trigger Metric:</span>
+                  <span className="font-semibold text-error">{selectedAlert.trigger_metric} ({selectedAlert.delta_label})</span>
+                </div>
+                <div>
+                  <span className="text-viz-neutral block mb-1">Affected Institutions:</span>
+                  <div className="flex flex-wrap gap-1">
+                    {selectedAlert.blast_radius_banks.map((b) => (
+                      <span key={b} className="px-2 py-0.5 rounded bg-surface border border-border-divider text-[11px] font-medium text-viz-text">
+                        {b}
+                      </span>
+                    ))}
                   </div>
                 </div>
-              </div>
-
-              {/* Action Deck */}
-              <div className="p-4 mt-auto border-t border-border-divider bg-surface space-y-2">
-                <div className="text-[10px] uppercase font-bold text-viz-neutral tracking-wider">
-                  Automated Escalation Workflow
+                <div>
+                  <span className="text-viz-neutral block mb-1">Impacted Jurisdictions:</span>
+                  <div className="flex flex-wrap gap-1">
+                    {selectedAlert.blast_radius_states.map((st) => (
+                      <span key={st} className="px-2 py-0.5 rounded bg-surface border border-border-divider text-[11px] font-medium text-viz-text">
+                        {st}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-                <button className="w-full h-8 px-3 rounded bg-error hover:bg-[#851313] text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors">
-                  <ShieldAlert className="w-3.5 h-3.5" />
-                  <span>Dispatch Section 91 CrPC Restraint Notice</span>
-                </button>
-                <Link
-                  href={`/campaigns/${selectedAlert.target_id}`}
-                  className="w-full h-8 px-3 rounded bg-surface-subtle hover:bg-surface-container-high border border-border-control text-xs font-medium text-viz-text flex items-center justify-center gap-1.5 transition-colors"
-                >
-                  <span>Open Correlated Campaign Workspace</span>
-                  <ChevronRight className="w-3.5 h-3.5" />
-                </Link>
               </div>
             </div>
-          ) : (
-            <div className="p-8 text-center text-xs text-viz-neutral">Select an alert to inspect blast radius.</div>
-          )}
-        </aside>
-      </div>
+
+            {/* Modal Footer / Action Deck */}
+            <div className="p-4 border-t border-border-divider bg-surface-subtle space-y-2">
+              <div className="text-[10px] uppercase font-bold text-viz-neutral tracking-wider">
+                Automated Escalation Workflow
+              </div>
+              <button className="w-full h-8 px-3 rounded bg-error hover:bg-[#851313] text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors">
+                <ShieldAlert className="w-3.5 h-3.5" />
+                <span>Dispatch Section 91 CrPC Restraint Notice</span>
+              </button>
+              <div className="flex items-center gap-2">
+                <Link
+                  href={`/campaigns/${selectedAlert.target_id}`}
+                  className="flex-1 h-8 px-3 rounded bg-surface hover:bg-surface-container-high border border-border-control text-xs font-medium text-viz-text flex items-center justify-center gap-1.5 transition-colors"
+                >
+                  <span>Open Correlated Campaign</span>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </Link>
+                <button
+                  onClick={() => setSelectedId(null)}
+                  className="h-8 px-3 rounded bg-surface border border-border-control hover:bg-surface-container-high text-xs font-medium text-viz-neutral hover:text-viz-text transition-colors"
+                >
+                  Dismiss
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
