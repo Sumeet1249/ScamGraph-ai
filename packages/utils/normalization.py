@@ -67,3 +67,13 @@ def normalize_domain_or_url(url_or_domain: str) -> str:
         return hostname
     except Exception:
         return url_or_domain.strip().lower()
+
+
+def normalize_text(text: str) -> str:
+    """Canonical text normalization: lowercase, collapse whitespace, and strip leading/trailing spaces."""
+    if not text:
+        return ""
+    # Collapse multiple spaces, newlines, and tabs
+    clean = re.sub(r"\s+", " ", text).strip().lower()
+    return clean
+

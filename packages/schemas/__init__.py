@@ -14,6 +14,15 @@ from packages.schemas.artifact import (
 from packages.schemas.entity import (
     EntityType,
     EntityVerificationState,
+    EntityObservationRole,
+    EntityRelationshipType,
+    TrustLevel,
+    EntityObservation,
+    EntityRelationship,
+    TrustAssessment,
+    EntityClaim,
+    EntityMergeRecord,
+    EntitySplitRecord,
     Entity,
 )
 from packages.schemas.incident import (
@@ -43,6 +52,10 @@ from packages.schemas.conversation import (
 from packages.schemas.tactics import (
     TacticType,
     ActionRequestedType,
+    EvidenceSpan,
+    TacticSignal,
+    TacticTimeline,
+    ConsumerTacticWarning,
     ManipulationSignal,
 )
 from packages.schemas.payment_context import (
@@ -89,6 +102,16 @@ from packages.schemas.signals import (
 )
 from packages.schemas.journey import (
     JourneyStage,
+    StageCategory,
+    get_stage_category,
+    MonetizationStatus,
+    LossStatus,
+    JourneyEvent,
+    StageObservation,
+    EarlyWarningCandidate,
+    JourneyProgress,
+    JourneyFeatureVector,
+    ConsumerJourneyView,
     JourneyStep,
     NextStepPrediction,
     ScamJourney,
@@ -187,6 +210,10 @@ __all__ = [
     # Tactics & Manipulation
     "TacticType",
     "ActionRequestedType",
+    "EvidenceSpan",
+    "TacticSignal",
+    "TacticTimeline",
+    "ConsumerTacticWarning",
     "ManipulationSignal",
     # Payment Context Guard
     "ClaimedPaymentReason",
@@ -224,6 +251,16 @@ __all__ = [
     "EvidenceSignal",
     # Journey
     "JourneyStage",
+    "StageCategory",
+    "get_stage_category",
+    "MonetizationStatus",
+    "LossStatus",
+    "JourneyEvent",
+    "StageObservation",
+    "EarlyWarningCandidate",
+    "JourneyProgress",
+    "JourneyFeatureVector",
+    "ConsumerJourneyView",
     "JourneyStep",
     "NextStepPrediction",
     "ScamJourney",

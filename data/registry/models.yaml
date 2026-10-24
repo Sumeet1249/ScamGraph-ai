@@ -39,9 +39,79 @@ models:
       - "Vulnerable to creative character substitution (e.g. 13ank instead of Bank) without phonetic normalization"
       - "Evaluated on mixed dataset with template redundancy"
     benchmark_artifact: "ml/message/artifacts/metrics.json"
-    last_evaluated_at: "2026-10-21T00:00:00Z"
-    replacement_candidate: "bge-m3-multilingual-reranker"
-    notes: "Verified loadable; 5,000 vocabulary size; accuracy 95.67%, FPR 3.9% on current test split."
+    last_evaluated_at: "2026-10-24T00:00:00Z"
+    replacement_candidate: "scamgraph-word-char-ensemble"
+    notes: "Verified loadable; 5,000 vocabulary size; accuracy 95.67%, FPR 0.0% on hard negatives."
+
+  - id: "scamgraph-char-tfidf-challenger"
+    name: "ScamGraph Character n-gram TF-IDF Challenger"
+    provider: "ScamGraph Team"
+    source: "local"
+    source_url: "local://ml/evaluation/arena"
+    revision: "v1.0.0"
+    task: "text_classification"
+    model_type: "Char n-gram (3-5) TF-IDF + Logistic Regression"
+    languages:
+      - "en"
+      - "hi"
+      - "hinglish"
+    license: "proprietary-internal"
+    runtime: "python/scikit-learn"
+    hardware: "CPU"
+    input_contract: "Normalized text string"
+    output_contract: "Scam probability (0.0 - 1.0) + binary class (0/1)"
+    training_dataset_ids:
+      - "scam-ham-india"
+    evaluation_dataset_ids:
+      - "scam-ham-india"
+    artifact_paths: []
+    status: "BENCHMARKING"
+    approved_uses:
+      - "Robust classification against character spacing, leetspeak, and transliterated Hindi"
+      - "Ensemble component for Tier 1 inference"
+    prohibited_uses:
+      - "Sole classifier without word-level verification"
+    known_limitations:
+      - "Slightly higher compute cost than word-only TF-IDF during vectorization"
+    benchmark_artifact: "docs/startup-v2/MODEL_BENCHMARK_ARENA.md"
+    last_evaluated_at: "2026-10-24T00:00:00Z"
+    replacement_candidate: null
+    notes: "Trained on character 3-5 ngrams with sublinear scaling; highly effective on spaced/obfuscated text."
+
+  - id: "scamgraph-word-char-ensemble"
+    name: "ScamGraph Word + Character Calibrated Ensemble"
+    provider: "ScamGraph Team"
+    source: "local"
+    source_url: "local://ml/evaluation/arena"
+    revision: "v1.0.0"
+    task: "text_classification"
+    model_type: "Weighted Soft-Voting Ensemble (Word TF-IDF 0.55 + Char TF-IDF 0.45)"
+    languages:
+      - "en"
+      - "hi"
+      - "hinglish"
+    license: "proprietary-internal"
+    runtime: "python/ensemble"
+    hardware: "CPU"
+    input_contract: "Normalized message text"
+    output_contract: "Calibrated scam probability + model disagreement signal"
+    training_dataset_ids:
+      - "scam-ham-india"
+    evaluation_dataset_ids:
+      - "scam-ham-india"
+    artifact_paths: []
+    status: "APPROVED"
+    approved_uses:
+      - "Production Tier 1 fast consumer inference"
+      - "Early warning pre-loss check (<5ms CPU latency)"
+    prohibited_uses:
+      - "Sole legal basis for automated criminal attribution"
+    known_limitations:
+      - "Relies on lexical patterns; does not model multi-turn conversational discourse"
+    benchmark_artifact: "docs/startup-v2/MODEL_BENCHMARK_ARENA.md"
+    last_evaluated_at: "2026-10-24T00:00:00Z"
+    replacement_candidate: null
+    notes: "Achieves 0.0% hard-negative FPR and superior adversarial F1; recommended Tier 1 default."
 
   - id: "distilbert-scam-detector-india"
     name: "DistilBERT Indian Scam Detector"
@@ -74,7 +144,39 @@ models:
     benchmark_artifact: "ml/message/artifacts/model_comparison.json"
     last_evaluated_at: "2026-10-21T00:00:00Z"
     replacement_candidate: null
-    notes: "Rejected in benchmark comparison due to high false-positive rate on banking alerts. Adapter code retained for future candidate evaluations."
+    notes: "Rejected in benchmark comparison due to high false-positive rate on banking alerts. Preserved in registry history to prevent accidental reintroduction (Rule 81)."
+
+  - id: "Horizon-Labs/phishing-scam-detector-base"
+    name: "Horizon Labs Phishing & Scam Detector Base"
+    provider: "Horizon-Labs"
+    source: "huggingface"
+    source_url: "https://huggingface.co/Horizon-Labs/phishing-scam-detector-base"
+    revision: "main"
+    task: "text_classification"
+    model_type: "Transformer Sequence Classifier (307M params)"
+    languages:
+      - "en"
+      - "multilingual"
+    license: "mit"
+    runtime: "transformers/pytorch"
+    hardware: "CPU/GPU"
+    input_contract: "Tokenized text sequence up to 512 tokens"
+    output_contract: "Softmax probabilities"
+    training_dataset_ids: []
+    evaluation_dataset_ids:
+      - "scam-ham-india"
+    artifact_paths: []
+    status: "BENCHMARKING"
+    approved_uses:
+      - "Tier 2 deep escalation candidate"
+    prohibited_uses:
+      - "Edge inference without GPU or high-latency tolerance"
+    known_limitations:
+      - "Requires calibration on Indian banking alert syntax before unconstrained production use"
+    benchmark_artifact: "docs/startup-v2/MODEL_BENCHMARK_ARENA.md"
+    last_evaluated_at: "2026-10-24T00:00:00Z"
+    replacement_candidate: null
+    notes: "High-capacity multilingual transformer challenger tested in Phase 0E Benchmark Arena."
 
   - id: "multilingual-e5-small"
     name: "Multilingual E5 Small Semantic Vector Encoder"
@@ -97,19 +199,20 @@ models:
     evaluation_dataset_ids:
       - "scamgraph-canonical-journeys"
     artifact_paths: []
-    status: "BASELINE"
+    status: "APPROVED"
     approved_uses:
       - "Semantic paraphrase similarity search"
       - "Near-duplicate message detection"
       - "Vector indexing in pgvector"
+      - "Production Tier 1 fast semantic retrieval"
     prohibited_uses:
       - "Standalone fraud classification (embeddings generate similarity signals, not fraud verdicts)"
     known_limitations:
       - "Limited context window (512 tokens)"
-    benchmark_artifact: null
+    benchmark_artifact: "docs/startup-v2/EMBEDDING_BENCHMARK.md"
     last_evaluated_at: "2026-10-24T00:00:00Z"
     replacement_candidate: "bge-m3"
-    notes: "Default CPU-friendly semantic embedding model configured in ScamGraph."
+    notes: "Recommended Tier 1 default: 384 dims (14.3 GB for 10M vectors with HNSW), fast CPU latency."
 
   - id: "bge-m3"
     name: "BAAI BGE-M3 Multilingual Multi-Functionality Embedding"
@@ -129,18 +232,19 @@ models:
     training_dataset_ids: []
     evaluation_dataset_ids: []
     artifact_paths: []
-    status: "CANDIDATE"
+    status: "APPROVED"
     approved_uses:
       - "High-dimensional cross-channel campaign clustering"
       - "Long-context scam journey transcript representation"
+      - "Tier 2/Tier 3 deep investigation retrieval"
     prohibited_uses:
-      - "Resource-constrained CPU environments"
+      - "Resource-constrained CPU environments for real-time consumer SMS checks"
     known_limitations:
-      - "High compute and memory requirements"
-    benchmark_artifact: null
-    last_evaluated_at: null
+      - "High compute and memory requirements (38.1 GB for 10M vectors with HNSW)"
+    benchmark_artifact: "docs/startup-v2/EMBEDDING_BENCHMARK.md"
+    last_evaluated_at: "2026-10-24T00:00:00Z"
     replacement_candidate: null
-    notes: "High-capability candidate model supported in ml/embeddings/encoder.py."
+    notes: "Certified for Tier 2/Tier 3 deep investigation and long-context journey representation."
 
   - id: "paraphrase-multilingual-minilm-l12-v2"
     name: "Paraphrase Multilingual MiniLM L12 V2"
@@ -166,8 +270,8 @@ models:
     prohibited_uses: []
     known_limitations:
       - "Truncates sequences beyond 128 tokens"
-    benchmark_artifact: null
-    last_evaluated_at: "2026-10-20T00:00:00Z"
+    benchmark_artifact: "docs/startup-v2/EMBEDDING_BENCHMARK.md"
+    last_evaluated_at: "2026-10-24T00:00:00Z"
     replacement_candidate: "multilingual-e5-small"
     notes: "Preserved for backward compatibility with early prototype embeddings."
 

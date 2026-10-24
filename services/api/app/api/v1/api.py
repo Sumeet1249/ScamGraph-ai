@@ -12,10 +12,12 @@ from services.api.app.api.v1.endpoints import (
     registry,
     risk,
     simulator,
+    entities,
 )
 
 api_router = APIRouter()
 api_router.include_router(incidents.router, prefix="/incidents", tags=["incidents"])
+api_router.include_router(entities.router)
 api_router.include_router(analyze.router, prefix="/analyze", tags=["analyze"])
 api_router.include_router(investigate.router, prefix="/investigate", tags=["investigate"])
 api_router.include_router(lab.router, prefix="/lab", tags=["lab"])

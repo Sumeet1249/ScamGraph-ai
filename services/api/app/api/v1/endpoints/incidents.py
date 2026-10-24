@@ -33,11 +33,62 @@ from services.investigation.url_analysis.safety import URLAnalyzer
 from services.pattern_engine.semantic.nlp import SemanticSignalExtractor
 from services.pattern_engine.matcher.fusion import EvidenceFusionEngine
 from services.api.app.repository import get_incident_repository, IncidentRepository
+from services.journey_engine.service import JourneyEngineService
+from packages.schemas.journey import JourneyEvent
 
 from datetime import datetime, timezone
 from uuid import uuid4
 
 router = APIRouter()
+
+# In-memory storage for active sessions / timeline signals
+_INCIDENT_EVENTS: Dict[str, List[Event]] = {}
+_INCIDENT_SIGNALS: Dict[str, List[EvidenceSignal]] = {}
+_INCIDENTS_METADATA: Dict[str, Dict[str, Any]] = {}
+
+
+def _extract_signals_for_event(incident_id: str, event: Any) -> List[EvidenceSignal]:
+    """Extracts specialized signals for an event across semantic, URL, and payment extractors."""
+    new_signals: List[EvidenceSignal] = []
+    ev_type = getattr(event, "event_type", None)
+    payload = getattr(event, "payload", {})
+    if hasattr(payload, "model_dump"):
+        payload = payload.model_dump()
+    elif not isinstance(payload, dict):
+        payload = {}
+
+    if ev_type == EventType.MESSAGE_RECEIVED:
+        text = payload.get("text", "")
+        if text:
+            new_signals = SemanticSignalExtractor.extract_signals(incident_id, text)
+    elif ev_type == EventType.LINK_CLICKED:
+        raw_url = payload.get("raw_url", "")
+        if raw_url:
+            res = URLAnalyzer.analyze_lexical_risk(incident_id, raw_url)
+            new_signals = res.get("signals", [])
+    elif ev_type in (EventType.COLLECT_REQUEST_RECEIVED, EventType.PAYMENT_INTENT_INITIATED):
+        vpa = payload.get("vpa", "")
+        claimed_payee = payload.get("claimed_payee_name", "")
+        if vpa and any(psb in vpa for psb in ["@oksbi", "@paytm", "@ybl", "@axl", "@ibl"]):
+            new_signals.append(
+                EvidenceSignal(
+                    incident_id=incident_id,
+                    event_id=getattr(event, "event_id", getattr(event, "id", str(uuid4()))),
+                    dimension=SignalDimension.PAYMENT,
+                    signal_type="INDIVIDUAL_VPA_PAYMENT_TARGETED",
+                    severity=SignalSeverity.MEDIUM,
+                    confidence=0.85,
+                    weight=1.5,
+                    description=f"Transaction targets an individual personal VPA handle: {vpa}",
+                    provenance=ProvenanceRecord(
+                        source_service="services/api",
+                        detector_name="PaymentContextExtractor",
+                        target_artifact=vpa,
+                        raw_evidence={"vpa": vpa, "claimed_payee": claimed_payee},
+                    ),
+                )
+            )
+    return new_signals
 
 
 class CreateIncidentRequest(BaseModel):
@@ -193,12 +244,14 @@ async def add_incident_event(
     seq = req.sequence_number or ((await repo.get_events(incident_id) or []).__len__() + 1)
     ev = Event(
         incident_id=incident_id,
+        sequence_number=seq,
         event_type=req.event_type,
         timestamp=req.timestamp or datetime.now(timezone.utc),
         source="USER_INPUT",
         payload=req.payload,
     )
     await repo.add_event(incident_id, ev)
+    _INCIDENT_EVENTS.setdefault(incident_id, []).append(ev)
     
     # Extract signals via specialized intelligence engines
     new_signals = _extract_signals_for_event(incident_id, ev)
@@ -215,7 +268,7 @@ async def add_incident_event(
 
     return IngestResponse(
         status="received",
-        event_id=ev.id,
+        event_id=getattr(ev, "event_id", getattr(ev, "id", str(uuid4()))),
         incident_id=incident_id,
         sequence_number=seq,
         current_stage=current_stage,
@@ -378,9 +431,10 @@ async def ingest_event(event: Event):
     )
 
 
-@router.get("/{incident_id}/journey", response_model=ScamJourney)
-async def get_journey(incident_id: str):
-    """Retrieve the reconstructed sequential scam journey for an incident."""
+_journey_service = JourneyEngineService()
+
+
+def _reconstruct_v2_journey(incident_id: str) -> ScamJourney:
     events = _INCIDENT_EVENTS.get(incident_id)
     if not events:
         raise HTTPException(
@@ -394,6 +448,7 @@ async def get_journey(incident_id: str):
         if s.event_id:
             signals_by_event.setdefault(s.event_id, []).append(s)
 
+    jrev_list: List[JourneyEvent] = []
     steps: List[JourneyStep] = []
     prev_time = None
     stage_map = {
@@ -426,9 +481,26 @@ async def get_journey(incident_id: str):
             )
         )
 
-    last_stage = steps[-1].stage if steps else JourneyStage.INITIAL_CONTACT
+        tactics_list = []
+        for s in step_signals:
+            if s.signal_dimension == SignalDimension.PSYCHOLOGICAL_TACTIC and s.rule_id:
+                tactics_list.append(s.rule_id)
 
-    # Predictive next stage lookup
+        jrev_list.append(
+            JourneyEvent(
+                event_id=ev.event_id,
+                timestamp=ev.timestamp,
+                sequence_number=idx - 1,
+                event_type=ev.event_type.value if hasattr(ev.event_type, "value") else str(ev.event_type),
+                tactics=tactics_list,
+                evidence_ids=[s.signal_id for s in step_signals],
+            )
+        )
+
+    journey = _journey_service.create_journey(incident_id, jrev_list)
+    journey.steps = steps
+
+    last_stage = steps[-1].stage if steps else JourneyStage.INITIAL_CONTACT
     next_stage_map = {
         JourneyStage.INITIAL_CONTACT: JourneyStage.SUSPICIOUS_LINK,
         JourneyStage.IMPERSONATION: JourneyStage.SUSPICIOUS_LINK,
@@ -438,19 +510,53 @@ async def get_journey(incident_id: str):
         JourneyStage.PAYMENT_REQUEST: JourneyStage.PAYMENT_INTENT,
     }
     predicted_next = next_stage_map.get(last_stage, JourneyStage.UNKNOWN)
-
-    return ScamJourney(
-        incident_id=incident_id,
-        session_id=f"session_{incident_id}",
+    journey.prediction = NextStepPrediction(
         current_stage=last_stage,
-        steps=steps,
-        prediction=NextStepPrediction(
-            current_stage=last_stage,
-            predicted_next_stage=predicted_next,
-            rationale=f"Historical scam progression follows {last_stage.value} -> {predicted_next.value}",
-            recommended_preventive_action="Verify entity via official phone book before continuing.",
-        ),
+        predicted_next_stage=predicted_next,
+        rationale=f"Historical scam progression follows {last_stage.value} -> {predicted_next.value}",
+        recommended_preventive_action="Verify entity via official phone book before continuing.",
     )
+    return journey
+
+
+@router.get("/{incident_id}/journey", response_model=ScamJourney)
+async def get_journey(incident_id: str):
+    """Retrieve the reconstructed sequential scam journey for an incident."""
+    return _reconstruct_v2_journey(incident_id)
+
+
+@router.get("/{incident_id}/journey/timeline")
+async def get_journey_timeline(incident_id: str):
+    """Retrieve forensic timeline of stages and events."""
+    journey = _reconstruct_v2_journey(incident_id)
+    return _journey_service.serialize_analyst_view(journey)
+
+
+@router.get("/{incident_id}/journey/progress")
+async def get_journey_progress(incident_id: str):
+    """Retrieve consumer-friendly progress meter representation."""
+    journey = _reconstruct_v2_journey(incident_id)
+    return _journey_service.serialize_consumer_view(journey)
+
+
+@router.get("/{incident_id}/journey/warnings")
+async def get_journey_warnings(incident_id: str):
+    """Retrieve proactive pre-loss early warning candidates."""
+    journey = _reconstruct_v2_journey(incident_id)
+    return {
+        "incident_id": incident_id,
+        "early_warnings": [w.dict() for w in journey.early_warnings],
+        "monetization_boundary_event_id": journey.monetization_boundary_event_id,
+        "pre_loss_warning_issued": journey.pre_loss_warning_issued,
+        "warning_lead_time_seconds": journey.warning_lead_time_seconds,
+    }
+
+
+@router.post("/{incident_id}/journey/recompute", response_model=ScamJourney)
+async def recompute_journey(incident_id: str):
+    """Recomputes scam journey state across all accumulated events."""
+    journey = _reconstruct_v2_journey(incident_id)
+    return _journey_service.recompute_journey(journey)
 
 
 @router.get("/{incident_id}/assessment", response_model=AssessmentResult)

@@ -1,0 +1,61 @@
+version: "1.0.0"
+routing_policy:
+  default_inference_tier: "TIER_1_FAST_ML"
+  enable_caching: true
+  cache_ttl_seconds: 3600
+  strict_hard_negative_gate: true
+
+tiers:
+  TIER_0_DETERMINISTIC:
+    enabled: true
+    timeout_ms: 5.0
+    cost_class: "NEGLIGIBLE"
+    components:
+      - "normalization"
+      - "entity_extraction_regex"
+      - "fast_cache"
+
+  TIER_1_FAST_ML:
+    enabled: true
+    timeout_ms: 50.0
+    cost_class: "LOW"
+    default_classifier: "scamgraph-word-char-ensemble"
+    fallback_classifier: "scamgraph-message-baseline"
+    default_embedding: "intfloat/multilingual-e5-small"
+    fallback_embedding: "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+    batch_size: 64
+
+  TIER_2_DEEP_INTELLIGENCE:
+    enabled: true
+    timeout_ms: 250.0
+    cost_class: "MEDIUM"
+    default_classifier: "Horizon-Labs/phishing-scam-detector-base"
+    default_embedding: "BAAI/bge-m3"
+    batch_size: 16
+
+  TIER_3_INVESTIGATION:
+    enabled: true
+    timeout_ms: 5000.0
+    cost_class: "HIGH"
+    async_execution: true
+
+escalation_policy:
+  # When classifier confidence is in ambiguous zone [0.35, 0.65], check for risky tactics or entities
+  ambiguity_low: 0.35
+  ambiguity_high: 0.65
+  # Disagreement delta between word and character classifiers that triggers deep escalation
+  disagreement_threshold: 0.35
+  # High-risk entities that automatically escalate to Tier 2
+  escalation_entities:
+    - "POLICE"
+    - "CBI"
+    - "COURT"
+    - "INCOME_TAX"
+    - "CUSTOMS"
+    - "ELECTRICITY"
+  # Risky tactics that trigger escalation
+  escalation_tactics:
+    - "AUTHORITY"
+    - "SECRECY"
+    - "PAYMENT_PRESSURE"
+    - "ISOLATION"
