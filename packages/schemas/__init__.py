@@ -130,6 +130,15 @@ from packages.schemas.fingerprint import (
     ScamFingerprintV2,
     FingerprintSimilarityResult,
 )
+from packages.schemas.dna import (
+    DNADimensionType,
+    DNAQuality,
+    VariantStatus,
+    DNADimension,
+    ScamDNA,
+    ScamDNAMatch,
+    ConsumerDNAView,
+)
 from packages.schemas.graph import (
     GraphNodeType,
     CytoscapeNodeData,
@@ -276,6 +285,14 @@ __all__ = [
     "ScamFingerprint",
     "ScamFingerprintV2",
     "FingerprintSimilarityResult",
+    # ScamDNA V3
+    "DNADimensionType",
+    "DNAQuality",
+    "VariantStatus",
+    "DNADimension",
+    "ScamDNA",
+    "ScamDNAMatch",
+    "ConsumerDNAView",
     # Graph
     "GraphNodeType",
     "CytoscapeNodeData",

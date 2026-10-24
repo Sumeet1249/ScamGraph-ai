@@ -21,6 +21,8 @@ from packages.schemas.fingerprint import (
     ScamFingerprint,
     ScamFingerprintV2,
 )
+from packages.schemas.dna import ScamDNA
+from services.dna_engine.adapter import ScamFingerprintV2Adapter
 from services.pattern_engine.patterns.scam_patterns import PatternMatch
 from services.pattern_engine.semantic.similarity_engine import ScamFingerprintSimilarityEngine
 
@@ -116,7 +118,7 @@ class EmergingVariantDetector:
     def evaluate(
         cls,
         incident_id: str,
-        fingerprint: Union[ScamFingerprint, ScamFingerprintV2],
+        fingerprint: Union[ScamFingerprint, ScamFingerprintV2, ScamDNA],
         historical_phones: Optional[List[str]] = None,
         historical_domains: Optional[List[str]] = None,
         historical_vpas: Optional[List[str]] = None,
@@ -128,6 +130,10 @@ class EmergingVariantDetector:
         graph_correlation: Optional[Any] = None,
     ) -> EmergingVariantEvaluation:
         """Evaluates incident fingerprint against known indicators and historical fingerprints."""
+        # Convert ScamDNA to ScamFingerprintV2 if needed for backwards compatibility
+        if isinstance(fingerprint, ScamDNA):
+            fingerprint = ScamFingerprintV2Adapter.to_fingerprint_v2(fingerprint)
+
         config = cls._load_config()
         thresholds = config.get("thresholds", cls.DEFAULT_CONFIG["thresholds"])
         temporal_bounds = config.get("temporal_bounds", cls.DEFAULT_CONFIG["temporal_bounds"])

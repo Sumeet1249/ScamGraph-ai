@@ -35,6 +35,8 @@ from services.pattern_engine.matcher.fusion import EvidenceFusionEngine
 from services.api.app.repository import get_incident_repository, IncidentRepository
 from services.journey_engine.service import JourneyEngineService
 from packages.schemas.journey import JourneyEvent
+from packages.schemas.dna import ScamDNA, ConsumerDNAView
+from services.dna_engine.service import ScamDNAService
 
 from datetime import datetime, timezone
 from uuid import uuid4
@@ -557,6 +559,90 @@ async def recompute_journey(incident_id: str):
     """Recomputes scam journey state across all accumulated events."""
     journey = _reconstruct_v2_journey(incident_id)
     return _journey_service.recompute_journey(journey)
+
+
+_dna_service = ScamDNAService()
+
+
+def _reconstruct_or_get_dna(incident_id: str) -> ScamDNA:
+    existing = _dna_service.get_dna_by_incident(incident_id)
+    if existing:
+        return existing
+    try:
+        journey = _reconstruct_v2_journey(incident_id)
+    except HTTPException:
+        journey = None
+
+    events = _INCIDENT_EVENTS.get(incident_id, [])
+    summary_text = ""
+    for ev in events:
+        if hasattr(ev, "payload") and isinstance(ev.payload, dict) and "text" in ev.payload:
+            summary_text += " " + ev.payload["text"]
+
+    all_signals = _INCIDENT_SIGNALS.get(incident_id, [])
+    tactics = [s.rule_id for s in all_signals if s.signal_dimension == SignalDimension.PSYCHOLOGICAL_TACTIC and s.rule_id]
+    
+    return _dna_service.create_or_update_dna(
+        incident_id=incident_id,
+        journey=journey,
+        tactics=tactics,
+        message_text=summary_text.strip(),
+        message_summary=summary_text.strip()[:100] if summary_text else None,
+        family_hypotheses=journey.family_hypotheses if journey else {"UNKNOWN": 1.0},
+        evidence_ids=[s.signal_id for s in all_signals],
+    )
+
+
+@router.get("/{incident_id}/dna", response_model=ScamDNA)
+async def get_incident_dna(incident_id: str):
+    """Retrieve canonical ScamDNA V3 behavioral fingerprint for an incident."""
+    return _reconstruct_or_get_dna(incident_id)
+
+
+@router.post("/{incident_id}/dna/rebuild", response_model=ScamDNA)
+async def rebuild_incident_dna(incident_id: str):
+    """Rebuilds and indexes ScamDNA V3 for an incident."""
+    try:
+        journey = _reconstruct_v2_journey(incident_id)
+    except HTTPException:
+        journey = None
+
+    events = _INCIDENT_EVENTS.get(incident_id, [])
+    summary_text = ""
+    for ev in events:
+        if hasattr(ev, "payload") and isinstance(ev.payload, dict) and "text" in ev.payload:
+            summary_text += " " + ev.payload["text"]
+
+    all_signals = _INCIDENT_SIGNALS.get(incident_id, [])
+    tactics = [s.rule_id for s in all_signals if s.signal_dimension == SignalDimension.PSYCHOLOGICAL_TACTIC and s.rule_id]
+
+    return _dna_service.create_or_update_dna(
+        incident_id=incident_id,
+        journey=journey,
+        tactics=tactics,
+        message_text=summary_text.strip(),
+        message_summary=summary_text.strip()[:100] if summary_text else None,
+        family_hypotheses=journey.family_hypotheses if journey else {"UNKNOWN": 1.0},
+        evidence_ids=[s.signal_id for s in all_signals],
+    )
+
+
+@router.get("/{incident_id}/dna/similar")
+async def get_similar_dna_patterns(incident_id: str, top_k: int = 5):
+    """Retrieve most similar known scam patterns and variants using 2-stage DNA matching."""
+    _reconstruct_or_get_dna(incident_id)
+    matches = _dna_service.find_similar_patterns(incident_id, top_k=top_k)
+    return [m.dict() for m in matches]
+
+
+@router.get("/{incident_id}/dna/consumer", response_model=ConsumerDNAView)
+async def get_consumer_dna_view(incident_id: str):
+    """Retrieve plain-language consumer explanation of behavioral DNA match."""
+    view = _dna_service.serialize_consumer_view(incident_id)
+    if not view:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"No DNA available for incident {incident_id}")
+    return view
+
 
 
 @router.get("/{incident_id}/assessment", response_model=AssessmentResult)
