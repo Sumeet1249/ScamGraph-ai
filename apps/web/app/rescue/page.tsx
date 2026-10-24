@@ -215,17 +215,51 @@ export default function RescuePage() {
     }
   };
 
-  const handleCopySummary = async () => {
+  const [downloadingDossier, setDownloadingDossier] = useState(false);
+
+  const handleDownloadDossier = async () => {
+    setDownloadingDossier(true);
     try {
-      const res = await fetch(`/api/v1/rescue/${incidentId}/case-package`);
+      const records = [
+        ...lossEvents.map((l) => ({
+          type: "LOSS_EVENT",
+          value: `₹${l.amount} via ${l.payment_method} to ${l.recipient_identifier || "Unknown"}`,
+          category: "FINANCIAL_LOSS",
+          time: l.occurred_at,
+        })),
+        ...timeline.map((t) => ({
+          type: "TIMELINE_EVENT",
+          value: `${t.title}: ${t.description}`,
+          category: "TIMELINE",
+          time: t.occurred_at,
+        })),
+      ];
+
+      const res = await fetch("/api/v1/exports", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          incident_id: incidentId || `SG-${Date.now()}`,
+          export_type: "SECTION_65B_CSV",
+          records,
+        }),
+      });
+
       if (res.ok) {
-        const pkg = await res.json();
-        navigator.clipboard.writeText(pkg.copyable_incident_summary || "");
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2500);
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `scamgraph_section65b_${incidentId || "export"}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
       }
-    } catch (err) {
-      console.error(err);
+    } catch (e) {
+      console.error("Dossier download error:", e);
+    } finally {
+      setDownloadingDossier(false);
     }
   };
 
@@ -797,7 +831,15 @@ export default function RescuePage() {
                   Structured technical document for 1930 / Bank Nodal Officer / NCRP complaint filing.
                 </p>
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  onClick={handleDownloadDossier}
+                  disabled={downloadingDossier}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-emerald-700 px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-emerald-800 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50"
+                >
+                  <FileCheck className="h-3.5 w-3.5 text-emerald-300" />
+                  <span>{downloadingDossier ? "Generating Section 65B..." : "Download Section 65B Dossier (CSV)"}</span>
+                </button>
                 <button
                   onClick={handleCopySummary}
                   className="inline-flex items-center gap-1.5 rounded-full bg-viz-primary px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-primary hover:-translate-y-0.5 active:translate-y-0"

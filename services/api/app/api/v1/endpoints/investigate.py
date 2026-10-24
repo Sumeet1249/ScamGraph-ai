@@ -48,6 +48,8 @@ class InvestigateResponse(BaseModel):
     tripartite_decision: Optional[Dict[str, Any]] = None
     contextual_intervention: Optional[Dict[str, Any]] = None
     multilingual_text: Optional[Dict[str, Any]] = None
+    dataset_evidence: Optional[Dict[str, Any]] = None
+    scam_dna: Optional[Dict[str, Any]] = None
     is_simulated: bool = False  # Set true if using DEMO_MODE or mock data
 
 
@@ -325,6 +327,51 @@ async def investigate_target(req: InvestigateRequest, response: Response):
     except Exception:
         pass
 
+    # 7.7 Dataset Grounding & Forensic Proof (Verified against registered datasets)
+    dataset_dict = None
+    try:
+        from services.pattern_engine.semantic.dataset_evidence import dataset_evidence_service
+        dataset_dict = dataset_evidence_service.match_datasets(
+            query_text=req.message_text or "",
+            target_url=target_url,
+            target_vpa=target_vpa,
+            sender_phone=req.sender_phone,
+        )
+    except Exception as d_err:
+        pass
+
+    # 7.8 ScamDNA Multi-Dimensional Behavioral Fingerprint (8 Decoupled Dimensions)
+    dna_dict = None
+    try:
+        from services.dna_engine.service import scam_dna_service
+        dna_inst = scam_dna_service.create_or_update_dna(
+            incident_id=inc_id,
+            tactics=tactics if "tactics" in locals() and tactics else [],
+            payment_context={"vpa": target_vpa} if target_vpa else None,
+            infrastructure={"url": target_url} if target_url else None,
+            message_text=req.message_text,
+        )
+        c_view = scam_dna_service.serialize_consumer_view(inc_id)
+        dna_dict = {
+            "dna_id": dna_inst.dna_id,
+            "quality": dna_inst.quality.value if hasattr(dna_inst.quality, "value") else str(dna_inst.quality),
+            "confidence": dna_inst.confidence,
+            "canonical_signature": dna_inst.canonical_signature,
+            "dimensions": {
+                k: {
+                    "available": v.available,
+                    "confidence": round(v.confidence, 2),
+                    "quality": v.quality.value if hasattr(v.quality, "value") else str(v.quality),
+                    "features": v.features,
+                }
+                for k, v in dna_inst.dimensions.items()
+            },
+            "available_dimensions": dna_inst.available_dimensions,
+            "consumer_view": c_view.model_dump() if c_view else None,
+        }
+    except Exception as dna_err:
+        pass
+
     return InvestigateResponse(
         incident_id=inc_id,
         analyzed_at=datetime.now(timezone.utc),
@@ -336,6 +383,8 @@ async def investigate_target(req: InvestigateRequest, response: Response):
         tripartite_decision=tripartite_dict,
         contextual_intervention=contextual_dict,
         multilingual_text=multilingual_dict,
+        dataset_evidence=dataset_dict,
+        scam_dna=dna_dict,
         is_simulated=is_simulated,
     )
 

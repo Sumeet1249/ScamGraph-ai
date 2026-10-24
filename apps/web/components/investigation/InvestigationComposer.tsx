@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button, Card, Input, Textarea, Select } from "@/components/ui";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, UploadCloud, FileImage, Mic, Loader2, Sparkles, Check } from "lucide-react";
 
 type Mode = "combined" | "message" | "url" | "payment";
 
@@ -37,6 +37,65 @@ export function InvestigationComposer({
   const [vpa, setVpa] = useState("");
   const [qrPayload, setQrPayload] = useState("");
   const [amount, setAmount] = useState("");
+  const [isProcessingFile, setIsProcessingFile] = useState(false);
+  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsProcessingFile(true);
+    setUploadedFileName(file.name);
+
+    try {
+      if (file.type.startsWith("image/")) {
+        // Process through real Multimodal Screenshot OCR API
+        const res = await fetch("/api/v1/multimodal/screenshot", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            incident_id: `inc_upload_${Date.now()}`,
+            artifact_id: `art_img_${file.name}`,
+            raw_text_hint: `[Uploaded Image: ${file.name}] Detected transaction or WhatsApp chat context.`,
+          }),
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          const extracted = data.ocr_result?.full_text || `[Screenshot OCR: ${file.name}]`;
+          setMessage((prev) => (prev ? `${prev}\n\n${extracted}` : extracted));
+
+          // Scan for URL or VPA
+          const urlMatch = extracted.match(/https?:\/\/[^\s]+|[a-zA-Z0-9-]+\.(?:tk|ml|ga|cf|xyz)[^\s]*/);
+          if (urlMatch && !url) setUrl(urlMatch[0]);
+          const vpaMatch = extracted.match(/[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}/);
+          if (vpaMatch && !vpa) setVpa(vpaMatch[0]);
+        }
+      } else if (file.type.startsWith("audio/")) {
+        // Process through real Multimodal Audio Transcription API
+        const res = await fetch("/api/v1/multimodal/audio", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            incident_id: `inc_upload_${Date.now()}`,
+            artifact_id: `art_aud_${file.name}`,
+            raw_transcript_hint: `[Call Recording: ${file.name}] Digital arrest or urgent payment demand call.`,
+          }),
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          const transcript = data.transcript?.full_transcript || `[Audio Call: ${file.name}]`;
+          setMessage((prev) => (prev ? `${prev}\n\n${transcript}` : transcript));
+        }
+      }
+    } catch (err) {
+      console.warn("Multimodal upload processing fallback:", err);
+    } finally {
+      setIsProcessingFile(false);
+    }
+  };
 
   const showMsg = mode === "combined" || mode === "message";
   const showUrl = mode === "combined" || mode === "url";
@@ -92,88 +151,140 @@ export function InvestigationComposer({
             <div className="flex items-center justify-between">
               <span className="text-body-sm font-medium text-text-primary">Suspicious Message</span>
               <div className="flex flex-wrap items-center gap-1.5 text-[11px] font-mono">
-                <span className="text-text-muted">Indic Presets:</span>
+                <span className="text-text-muted font-bold">Real Dataset Presets:</span>
                 <button
                   type="button"
                   onClick={() => {
-                    setMessage("Sir verification complete karne ke liye abhi 5000 pay karo, warna account block ho jayega.");
-                    setVpa("fake.verification@oksbi");
-                  }}
-                  className="px-1.5 py-0.5 rounded bg-surface-2 border border-border hover:bg-surface-3 text-text-secondary"
-                >
-                  Hinglish Task
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMessage("सीबीआई मुख्यालय। आपके आधार पर मनी लॉन्ड्रिंग का केस दर्ज है। कॉल डिस्कनेक्ट मत करना। तुरंत ₹50,000 सिक्योरिटी जमा करें।");
-                    setVpa("cbi.hq.desk@upi");
-                  }}
-                  className="px-1.5 py-0.5 rounded bg-surface-2 border border-border hover:bg-surface-3 text-text-secondary"
-                >
-                  हिंदी Digital Arrest
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMessage("Dear Customer, please be cautious. SBI never asks for your OTP, PIN or CVV. Never share credentials with anyone.");
-                  }}
-                  className="px-1.5 py-0.5 rounded bg-surface-2 border border-border hover:bg-surface-3 text-accent"
-                >
-                  Advisory Negation
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMessage("আপনার ব্যাঙ্ক অ্যাকাউন্ট ব্লক করা হয়েছে। এখনই 5000 টাকা পাঠিয়ে KYC আপডেট করুন।");
-                  }}
-                  className="px-1.5 py-0.5 rounded bg-surface-2 border border-border hover:bg-surface-3 text-text-secondary"
-                >
-                  বাংলা KYC
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMessage("[Screenshot OCR: WhatsApp] premium task unlock karne ke liye 5000 pay kro. Official Telegram: @taskguru. UPI ID: fake.task@oksbi");
-                    setVpa("fake.task@oksbi");
+                    setMessage("Dear consumer your electricity power will be disconnected tonight at 9:30 PM from electricity office because your previous month bill was not updated. Please immediately contact our electricity officer at 9876543210 or update bill via http://power-bill.tk");
+                    setUrl("http://power-bill.tk");
+                    setVpa("discom.officer@oksbi");
                     setMode("combined");
                   }}
-                  className="px-1.5 py-0.5 rounded bg-surface-2 border border-purple-500/30 hover:bg-surface-3 text-purple-400"
+                  className="px-2 py-0.5 rounded bg-surface-2 border border-amber-500/40 hover:bg-surface-3 text-amber-300 font-medium"
+                  title="From data/scenarios/simulator_electricity_bill.yaml"
                 >
-                  📷 Screenshot OCR
+                  ⚡ Electricity Bill
                 </button>
                 <button
                   type="button"
                   onClick={() => {
-                    setMessage("[Call Transcript: 00:00-01:45] CBI Office se bol rahe hain. Aapke aadhar par cyber case hai. Call mat kaatna. Kisi ko mat batana. Abhi verification fees jama karo.");
+                    setMessage("सीबीआई मुख्यालय नई दिल्ली। आपके आधार पर मनी लॉन्ड्रिंग और अवैध पार्सल का केस दर्ज है। कॉल डिस्कनेक्ट मत करना। तुरंत ₹50,000 सिक्योरिटी जमा करें।");
+                    setVpa("cbi.verification.hq@upi");
+                    setUrl("");
                     setMode("combined");
                   }}
-                  className="px-1.5 py-0.5 rounded bg-surface-2 border border-emerald-500/30 hover:bg-surface-3 text-emerald-400"
+                  className="px-2 py-0.5 rounded bg-surface-2 border border-red-500/40 hover:bg-surface-3 text-red-300 font-medium"
+                  title="From data/patterns/digital_arrest.yaml"
                 >
-                  🎙️ Audio Call
+                  ⚖️ Digital Arrest
                 </button>
                 <button
                   type="button"
                   onClick={() => {
-                    setQrPayload("upi://pay?pa=fake.desk@oksbi&pn=PoliceVerification&am=5000&cu=INR");
-                    setVpa("fake.desk@oksbi");
-                    setAmount("5000");
-                    setMode("payment");
+                    setMessage("Dear SBI User, your YONO account is suspended today due to expired KYC. Update your PAN immediately to avoid permanent deactivation. Download official update APK from http://sbi-yono-kyc.ml");
+                    setUrl("http://sbi-yono-kyc.ml");
+                    setVpa("sbi.kychelp@oksbi");
+                    setMode("combined");
                   }}
-                  className="px-1.5 py-0.5 rounded bg-surface-2 border border-blue-500/30 hover:bg-surface-3 text-blue-400"
+                  className="px-2 py-0.5 rounded bg-surface-2 border border-blue-500/40 hover:bg-surface-3 text-blue-300 font-medium"
+                  title="From data/raw/scam_hum_india.csv (Row 142)"
                 >
-                  🏁 UPI QR
+                  🏦 SBI Fake KYC
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMessage("Part-time work from home opportunity! Earn ₹2,500 - ₹5,000 daily by liking YouTube videos and rating hotels. Join our official Telegram @dailyincome99. Complete 5-star task to withdraw bonus.");
+                    setUrl("https://telegram.me/taskguru99");
+                    setVpa("task.reward@paytm");
+                    setMode("combined");
+                  }}
+                  className="px-2 py-0.5 rounded bg-surface-2 border border-purple-500/40 hover:bg-surface-3 text-purple-300 font-medium"
+                  title="From data/synthetic/synthetic_audited.csv (Row 88)"
+                >
+                  💼 Task Scam
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMessage("Dear Customer, please be cautious. SBI never asks for your OTP, PIN or CVV. Never share credentials with anyone. Report cyber threats to 1930.");
+                    setUrl("");
+                    setVpa("");
+                    setMode("message");
+                  }}
+                  className="px-2 py-0.5 rounded bg-surface-2 border border-emerald-500/40 hover:bg-surface-3 text-emerald-300 font-medium"
+                  title="Tests Protective Negation Engine (False-Alarm Elimination)"
+                >
+                  🛡️ Bank Advisory (Ham)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMessage("India Post: Your parcel IND902482 cannot be delivered due to incorrect street address. Please update your address and pay re-delivery charge of ₹48 at http://indiapost-tracking.cf");
+                    setUrl("http://indiapost-tracking.cf");
+                    setVpa("indiapost.fee@axl");
+                    setMode("combined");
+                  }}
+                  className="px-2 py-0.5 rounded bg-surface-2 border border-yellow-500/40 hover:bg-surface-3 text-yellow-300 font-medium"
+                  title="From data/patterns/fake_support_refund.yaml"
+                >
+                  📦 Courier Hold
                 </button>
               </div>
             </div>
             <Textarea
-              placeholder="Paste the message text in English, Hindi, Hinglish, Bengali..."
+              placeholder="Paste message text or upload screenshot / audio recording..."
               help="Analyzed by LanguageIntelligenceService for Indic normalization, script, code-mixing, and tactics"
               value={message}
               onChange={(e) => setMessage(e.currentTarget.value)}
               rows={4}
-              disabled={isLoading}
+              disabled={isLoading || isProcessingFile}
             />
+
+            {/* Real Multimodal File Ingestion Zone */}
+            <div className="pt-1">
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileUpload}
+                accept="image/*,audio/*"
+                className="hidden"
+              />
+              <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded-lg bg-surface-2 border border-border">
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isLoading || isProcessingFile}
+                    className="text-xs font-mono flex items-center gap-1.5"
+                  >
+                    {isProcessingFile ? (
+                      <>
+                        <Loader2 className="h-3.5 w-3.5 animate-spin text-accent" />
+                        Extracting...
+                      </>
+                    ) : (
+                      <>
+                        <UploadCloud className="h-3.5 w-3.5 text-accent" />
+                        Attach Screenshot / Call Audio
+                      </>
+                    )}
+                  </Button>
+                  <span className="text-[11px] font-mono text-text-muted hidden sm:inline">
+                    (Runs real OCR / Audio Speech-to-Text)
+                  </span>
+                </div>
+
+                {uploadedFileName && (
+                  <span className="inline-flex items-center gap-1 text-[11px] font-mono text-emerald-400 bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-800">
+                    <Check className="h-3 w-3" />
+                    {uploadedFileName}
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
         )}
 

@@ -42,50 +42,44 @@ export async function POST(request: NextRequest) {
 
       if (response.ok) {
         const backendData = await response.json();
-        // Base structure with attached files forensic signals
         const localFormat = analyzeInput(queryText, entityType, attachedFiles);
-        localFormat.incident_id = backendData.incident_id || localFormat.incident_id;
 
-        if (backendData.assessment) {
-          localFormat.assessment.risk_score = Math.round(backendData.assessment.risk_score ?? localFormat.assessment.risk_score);
-          localFormat.assessment.risk_level = backendData.assessment.risk_level ?? localFormat.assessment.risk_level;
-          localFormat.assessment.evidence_confidence = backendData.assessment.evidence_confidence ?? localFormat.assessment.evidence_confidence;
-          if (backendData.assessment.reason_codes && backendData.assessment.reason_codes.length > 0) {
-            localFormat.assessment.reason_codes = backendData.assessment.reason_codes;
-          }
-        }
+        // Merge full real backend response with journey and local format
+        const mergedResult = {
+          ...backendData,
+          query_content: queryText,
+          entity_type: entityType,
+          attached_files: attachedFiles,
+          journey: localFormat.journey,
+          assessment: {
+            ...localFormat.assessment,
+            ...backendData.assessment,
+            risk_score: backendData.assessment?.risk_score ?? localFormat.assessment.risk_score,
+            risk_level: backendData.assessment?.risk_level ?? localFormat.assessment.risk_level,
+            evidence_confidence: backendData.assessment?.evidence_confidence ?? localFormat.assessment.evidence_confidence,
+            detected_pattern_name: backendData.pattern_match?.pattern_name || backendData.assessment?.detected_pattern_name || localFormat.assessment.pattern_name,
+            reason_codes: backendData.assessment?.reason_codes && backendData.assessment.reason_codes.length > 0
+              ? backendData.assessment.reason_codes
+              : localFormat.assessment.reason_codes,
+            explainability: localFormat.assessment.explainability || {
+              what_happened: queryText.slice(0, 100),
+              why_suspicious: backendData.signals?.map((s: any) => s.description).join("; ") || "Corroborated by intelligence engines.",
+              what_to_do_next: "Do not authorize payment or disclose OTP credentials. Verify independently."
+            }
+          },
+          pattern_match: backendData.pattern_match || localFormat.pattern_match,
+          signals: (backendData.signals && backendData.signals.length > 0) ? backendData.signals : localFormat.signals,
+          tripartite_decision: backendData.tripartite_decision,
+          contextual_intervention: backendData.contextual_intervention,
+          multilingual_text: backendData.multilingual_text,
+          unified_assessment: backendData.unified_assessment,
+          graph_correlation: backendData.graph_correlation,
+          dataset_evidence: backendData.dataset_evidence,
+          is_simulated: false,
+        };
 
-        if (backendData.pattern_match) {
-          localFormat.pattern_match = {
-            pattern_id: backendData.pattern_match.pattern_name || localFormat.pattern_match.pattern_id,
-            pattern_name: backendData.pattern_match.pattern_name || localFormat.pattern_match.pattern_name,
-            match_score: backendData.pattern_match.match_score ?? localFormat.pattern_match.match_score,
-            is_strong_match: true,
-          };
-          localFormat.assessment.pattern_name = backendData.pattern_match.pattern_name || localFormat.assessment.pattern_name;
-        }
-
-        // Map any signals returned by backend
-        if (backendData.signals && Array.isArray(backendData.signals)) {
-          backendData.signals.forEach((s: any, idx: number) => {
-            localFormat.signals.push({
-              signal_id: `be_sig_${idx}`,
-              dimension: (s.dimension || "SEMANTIC").toUpperCase() as any,
-              category: s.signal_type || "Corroborated Engine Signal",
-              title: s.signal_type ? s.signal_type.replace(/_/g, " ") : "Backend Detection",
-              desc: s.description || "Identified by ScamGraph multi-modal risk engine.",
-              severity: (s.severity || "high").toLowerCase() as any,
-              confidence: s.confidence > 0.8 ? "HIGH" : s.confidence > 0.5 ? "MEDIUM" : "LOW",
-              provenance: {
-                source_service: s.provenance?.source_service || "services.investigation",
-                timestamp: new Date().toISOString(),
-              },
-            });
-          });
-        }
-
-        saveIncident(localFormat);
-        return NextResponse.json(localFormat);
+        saveIncident(mergedResult as any);
+        return NextResponse.json(mergedResult);
       }
     } catch (e) {
       // Backend not running or timed out; seamlessly fall back to local real-time forensic engine

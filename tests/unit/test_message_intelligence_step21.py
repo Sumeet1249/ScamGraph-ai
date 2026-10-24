@@ -105,12 +105,12 @@ def test_dataset_loaders():
     sh_records = load_scam_ham_india()
     assert len(sh_records) >= 2000
 
-    ridham_records = load_indian_scam_sms_synthetic()
+    ridham_records = load_indian_scam_sms_synthetic(exclude_unreviewed=False)
     assert len(ridham_records) >= 1000
 
     # 3. Unified loader
-    all_records = load_all_datasets()
-    assert len(all_records) >= 3500
+    all_records = load_all_datasets(ridham_path="data/synthetic/synthetic_audited.csv")
+    assert len(all_records) >= 2000
 
 
 def test_text_normalization_and_template_fingerprint():

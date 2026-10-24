@@ -1,0 +1,279 @@
+{
+  "schema_version": "2.0.0",
+  "updated_at": "2026-10-24T15:35:00Z",
+  "governance_status": "ACTIVE",
+  "tactics_taxonomy": {
+    "version": "2.0",
+    "total_tactics": 20,
+    "tactics": [
+      {
+        "name": "AUTHORITY",
+        "severity": "HIGH",
+        "languages": [
+          "en",
+          "hi",
+          "hinglish"
+        ],
+        "primary_actions": [
+          "DO_NOT_DISCONNECT",
+          "REPLY"
+        ]
+      },
+      {
+        "name": "URGENCY",
+        "severity": "MEDIUM",
+        "languages": [
+          "en",
+          "hi",
+          "hinglish"
+        ],
+        "primary_actions": [
+          "CLICK_LINK",
+          "SEND_PAYMENT",
+          "REPLY"
+        ]
+      },
+      {
+        "name": "FEAR",
+        "severity": "HIGH",
+        "languages": [
+          "en",
+          "hi",
+          "hinglish"
+        ],
+        "primary_actions": [
+          "DO_NOT_DISCONNECT",
+          "SEND_PAYMENT"
+        ]
+      },
+      {
+        "name": "GREED",
+        "severity": "MEDIUM",
+        "languages": [
+          "en",
+          "hi",
+          "hinglish"
+        ],
+        "primary_actions": [
+          "MOVE_PLATFORM",
+          "CLICK_LINK"
+        ]
+      },
+      {
+        "name": "SCARCITY",
+        "severity": "LOW",
+        "languages": [
+          "en",
+          "hi",
+          "hinglish"
+        ],
+        "primary_actions": [
+          "CLICK_LINK",
+          "REPLY"
+        ]
+      },
+      {
+        "name": "SOCIAL_PROOF",
+        "severity": "LOW",
+        "languages": [
+          "en",
+          "hi",
+          "hinglish"
+        ],
+        "primary_actions": [
+          "MOVE_PLATFORM"
+        ]
+      },
+      {
+        "name": "ROMANCE",
+        "severity": "MEDIUM",
+        "languages": [
+          "en",
+          "hi",
+          "hinglish"
+        ],
+        "primary_actions": [
+          "SEND_PAYMENT",
+          "PAY_FEE"
+        ]
+      },
+      {
+        "name": "TRUST_BUILDING",
+        "severity": "LOW",
+        "languages": [
+          "en",
+          "hi",
+          "hinglish"
+        ],
+        "primary_actions": [
+          "REPLY",
+          "INVEST_MORE"
+        ]
+      },
+      {
+        "name": "SECRECY",
+        "severity": "HIGH",
+        "languages": [
+          "en",
+          "hi",
+          "hinglish"
+        ],
+        "primary_actions": [
+          "KEEP_SECRET"
+        ]
+      },
+      {
+        "name": "ISOLATION",
+        "severity": "CRITICAL",
+        "languages": [
+          "en",
+          "hi",
+          "hinglish"
+        ],
+        "primary_actions": [
+          "DO_NOT_DISCONNECT",
+          "KEEP_SECRET"
+        ]
+      },
+      {
+        "name": "RECIPROCITY",
+        "severity": "MEDIUM",
+        "languages": [
+          "en",
+          "hi",
+          "hinglish"
+        ],
+        "primary_actions": [
+          "SEND_PAYMENT",
+          "INVEST_MORE"
+        ]
+      },
+      {
+        "name": "LOSS_AVERSION",
+        "severity": "HIGH",
+        "languages": [
+          "en",
+          "hi",
+          "hinglish"
+        ],
+        "primary_actions": [
+          "SEND_PAYMENT",
+          "PAY_FEE"
+        ]
+      },
+      {
+        "name": "FAKE_REWARD",
+        "severity": "MEDIUM",
+        "languages": [
+          "en",
+          "hi",
+          "hinglish"
+        ],
+        "primary_actions": [
+          "CLICK_LINK",
+          "SCAN_QR"
+        ]
+      },
+      {
+        "name": "THREAT",
+        "severity": "CRITICAL",
+        "languages": [
+          "en",
+          "hi",
+          "hinglish"
+        ],
+        "primary_actions": [
+          "SEND_PAYMENT",
+          "DO_NOT_DISCONNECT"
+        ]
+      },
+      {
+        "name": "IMPERSONATION",
+        "severity": "HIGH",
+        "languages": [
+          "en",
+          "hi",
+          "hinglish"
+        ],
+        "primary_actions": [
+          "CALL_NUMBER",
+          "CLICK_LINK",
+          "REPLY"
+        ]
+      },
+      {
+        "name": "PAYMENT_PRESSURE",
+        "severity": "CRITICAL",
+        "languages": [
+          "en",
+          "hi",
+          "hinglish"
+        ],
+        "primary_actions": [
+          "SEND_PAYMENT",
+          "APPROVE_UPI_REQUEST",
+          "PAY_FEE"
+        ]
+      },
+      {
+        "name": "CREDENTIAL_PRESSURE",
+        "severity": "CRITICAL",
+        "languages": [
+          "en",
+          "hi",
+          "hinglish"
+        ],
+        "primary_actions": [
+          "SHARE_OTP",
+          "SHARE_CREDENTIAL"
+        ]
+      },
+      {
+        "name": "REMOTE_ACCESS_PRESSURE",
+        "severity": "CRITICAL",
+        "languages": [
+          "en",
+          "hi",
+          "hinglish"
+        ],
+        "primary_actions": [
+          "INSTALL_APP",
+          "SHARE_SCREEN",
+          "DOWNLOAD_FILE"
+        ]
+      },
+      {
+        "name": "PLATFORM_MIGRATION",
+        "severity": "MEDIUM",
+        "languages": [
+          "en",
+          "hi",
+          "hinglish"
+        ],
+        "primary_actions": [
+          "MOVE_PLATFORM",
+          "ADD_CONTACT"
+        ]
+      },
+      {
+        "name": "COMPLIANCE_PRESSURE",
+        "severity": "HIGH",
+        "languages": [
+          "en",
+          "hi",
+          "hinglish"
+        ],
+        "primary_actions": [
+          "DO_NOT_DISCONNECT",
+          "REPLY"
+        ]
+      }
+    ]
+  },
+  "rules_catalog": {
+    "version": "2.0.0",
+    "total_rules": 38,
+    "engine": "RuleBasedTacticEngine",
+    "status": "PRODUCTION_CERTIFIED"
+  }
+}

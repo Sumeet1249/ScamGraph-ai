@@ -12,6 +12,9 @@ import {
   Share2,
   Scale,
   Layers,
+  Cpu,
+  Brain,
+  LifeBuoy,
   type LucideIcon,
 } from "lucide-react";
 
@@ -78,6 +81,24 @@ export const navGroups: NavGroup[] = [
           { label: "Review Queue", href: "/review", hint: "Human-in-the-loop triage", icon: CheckSquare },
           { label: "Investigation Cases", href: "/cases", hint: "Formal statutory FIR & BSA cases", icon: Boxes },
         ],
+      },
+      {
+        label: "AI Model Arena",
+        href: "/arena",
+        hint: "Benchmark gates & shadow models",
+        icon: Cpu,
+      },
+      {
+        label: "Tactics Matrix",
+        href: "/tactics",
+        hint: "20 Canonical persuasion vectors",
+        icon: Brain,
+      },
+      {
+        label: "Citizen Lifeline",
+        href: "/rescue",
+        hint: "Golden hour triage & Section 65B dossier",
+        icon: LifeBuoy,
       },
     ],
   },
