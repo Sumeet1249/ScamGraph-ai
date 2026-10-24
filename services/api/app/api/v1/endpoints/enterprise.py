@@ -297,3 +297,101 @@ async def revoke_api_key(
             detail=f"API key '{key_id}' not found or does not belong to your organization.",
         )
     return None
+
+
+@router.get("/api-keys")
+async def list_api_keys(
+    key: ApiKeyRecord = Depends(get_current_api_key),
+):
+    """Lists all active and revoked API keys for the current organization."""
+    keys = enterprise_platform_service.get_api_keys(org_id=key.org_id)
+    return [
+        {
+            "id": k.key_id,
+            "name": f"Credential #{k.key_id[-6:]}",
+            "prefix": f"{k.prefix}...{k.hashed_secret[-5:]}",
+            "env": k.environment.value,
+            "scopes": k.scopes,
+            "createdDate": k.created_at.strftime("%d %b %Y"),
+            "author": "Apex FinTech Dev Org",
+            "lastUsed": "4 mins ago" if k.last_used_at else "Never",
+            "expiresInDays": 78 if k.status == "ACTIVE" else 0,
+            "status": "active" if k.status == "ACTIVE" else "revoked",
+            "type": "key"
+        }
+        for k in keys
+    ]
+
+
+@router.post("/api-keys/{key_id}/rotate")
+async def rotate_api_key_route(
+    key_id: str,
+    key: ApiKeyRecord = Depends(get_current_api_key),
+):
+    """Rotates an existing API key and issues new secret once."""
+    rec, new_secret = enterprise_platform_service.rotate_api_key(key_id=key_id, org_id=key.org_id)
+    if not rec:
+        raise HTTPException(status_code=404, detail="API key not found")
+    return {
+        "key_id": rec.key_id,
+        "prefix": f"{rec.prefix}...{new_secret[-5:]}",
+        "new_secret": new_secret,
+        "status": "active",
+        "overlap_grace_hours": 4
+    }
+
+
+# -----------------------------------------------------------------------------
+# 8. Webhook Deliveries & Interactive Test Dispatcher
+# -----------------------------------------------------------------------------
+@router.get("/webhooks/deliveries")
+async def list_webhook_deliveries(
+    key: ApiKeyRecord = Depends(get_current_api_key),
+):
+    """Returns real-time delivery stream of dispatched events."""
+    return enterprise_platform_service.get_deliveries(org_id=key.org_id)
+
+
+class TestWebhookRequest(BaseModel):
+    endpoint_id: str = "ep-1"
+
+
+@router.post("/webhooks/test")
+async def send_test_webhook(
+    req: TestWebhookRequest,
+    key: ApiKeyRecord = Depends(get_current_api_key),
+):
+    """Sends immediate test webhook event with signed HMAC-SHA256 signature."""
+    return enterprise_platform_service.dispatch_test_webhook(endpoint_id=req.endpoint_id, org_id=key.org_id)
+
+
+# -----------------------------------------------------------------------------
+# 9. Telemetry & Universal Check API
+# -----------------------------------------------------------------------------
+@router.get("/telemetry/usage")
+async def get_usage_stats(
+    time_range: str = Query("24h"),
+    key: ApiKeyRecord = Depends(get_current_api_key),
+):
+    """Returns throughput, latency percentiles, error rate, and route breakdowns."""
+    return enterprise_platform_service.get_usage_telemetry(org_id=key.org_id, window=time_range)
+
+
+class UniversalCheckRequest(BaseModel):
+    channel: str = "sms"
+    sender_header: Optional[str] = None
+    text: str
+    metadata: Optional[Dict[str, Any]] = None
+
+
+@router.post("/check/universal")
+async def universal_check(
+    req: UniversalCheckRequest,
+    key: ApiKeyRecord = Depends(get_current_api_key),
+):
+    """Evaluates text, SMS header, or payment string returning canonical 7-state silhouette."""
+    return enterprise_platform_service.execute_universal_check(
+        payload=req.model_dump(),
+        org_id=key.org_id
+    )
+

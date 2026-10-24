@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Shield, PhoneCall, LifeBuoy, ArrowRight, User } from "lucide-react";
+import { Shield, PhoneCall, LifeBuoy, ArrowRight, User, Code2 } from "lucide-react";
 
 export function CitizenNav() {
   const pathname = usePathname();
@@ -86,10 +86,19 @@ export function CitizenNav() {
               <span className="sm:hidden">Help</span>
             </Link>
 
+            {/* Developer Portal */}
+            <Link
+              href="/developers"
+              className="inline-flex min-h-[38px] items-center justify-center gap-1.5 rounded border border-border-divider bg-surface px-3 py-1 text-xs font-semibold text-on-surface-variant transition-colors hover:border-border-control hover:text-on-surface hidden sm:inline-flex"
+            >
+              <Code2 className="h-3.5 w-3.5 text-viz-primary" />
+              <span>Dev Console</span>
+            </Link>
+
             {/* Persona Switcher / Analyst Portal */}
             <Link
               href="/command"
-              className="inline-flex min-h-[38px] items-center justify-center rounded border border-border-divider bg-surface px-3 py-1 text-xs font-semibold text-on-surface-variant transition-colors hover:border-border-control hover:text-on-surface hidden lg:inline-flex"
+              className="inline-flex min-h-[38px] items-center justify-center rounded border border-border-divider bg-surface px-3 py-1 text-xs font-semibold text-on-surface-variant transition-colors hover:border-border-control hover:text-on-surface hidden sm:inline-flex"
             >
               Analyst Console
             </Link>

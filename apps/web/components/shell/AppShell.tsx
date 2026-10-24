@@ -40,6 +40,12 @@ export function AppShell({ children }: { children: ReactNode }) {
     pathname.startsWith("/access") ||
     pathname.startsWith("/audit");
 
+  const isDevRoute = pathname.startsWith("/developers");
+
+  if (isDevRoute) {
+    return <div className="min-h-screen bg-ground text-on-surface">{children}</div>;
+  }
+
   if (!isAnalystRoute) {
     return (
       <div className="flex min-h-screen flex-col bg-ground text-on-surface">
