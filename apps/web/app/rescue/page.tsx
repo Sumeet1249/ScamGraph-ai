@@ -238,198 +238,234 @@ export default function RescuePage() {
   ];
 
   return (
-    <div className="mx-auto max-w-6xl space-y-8 px-4 py-8">
+    <div className="mx-auto max-w-6xl space-y-8 px-4 py-8 animate-fade-in-up">
       {/* ── Top Header ────────────────────────────────────────────── */}
-      <div className="flex flex-col gap-4 border-b border-line pb-6 md:flex-row md:items-center md:justify-between">
-        <div>
-          <div className="inline-flex items-center gap-2 rounded-full border border-red-500/30 bg-red-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-red-400">
-            <span className="h-2 w-2 rounded-full bg-red-400 animate-pulse" />
+      <div className="flex flex-col gap-5 border-b border-border-divider pb-6 md:flex-row md:items-center md:justify-between">
+        <div className="space-y-2">
+          <div className="inline-flex items-center gap-2 rounded-full border border-red-200 bg-red-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-red-700">
+            <span className="h-2 w-2 rounded-full bg-red-600 animate-pulse" />
             ScamGraph Rescue • Post-Loss Emergency Response
           </div>
-          <h1 className="mt-2 text-2xl font-bold tracking-tight text-ink sm:text-3xl">
+          <h1 className="text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">
             You may still have actions you can take.
           </h1>
-          <p className="mt-1 text-sm text-ink-muted">
+          <p className="text-sm text-on-surface-variant">
             Tell us what happened so ScamGraph can organize the immediate next steps. Case ID:{" "}
-            <code className="text-accent">{incidentId || "Initializing..."}</code>
+            <code className="rounded bg-surface-subtle px-1.5 py-0.5 font-mono text-xs font-semibold text-viz-primary">
+              {incidentId || "Initializing..."}
+            </code>
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <Link href="/investigate">
-            <Button variant="outline" size="sm">
-              <ArrowLeft className="mr-1.5 h-3.5 w-3.5" />
-              Pre-Payment Check
-            </Button>
+        {/* Clean, Non-colliding Button Action Group */}
+        <div className="flex flex-wrap items-center gap-3">
+          <Link
+            href="/check"
+            className="inline-flex items-center gap-1.5 rounded-full border border-border-control bg-surface px-4 py-2 text-xs font-semibold text-on-surface shadow-sm transition-all hover:bg-surface-subtle hover:-translate-y-0.5 active:translate-y-0"
+          >
+            <ArrowLeft className="h-3.5 w-3.5 text-on-surface-variant" />
+            <span>Pre-Payment Check</span>
           </Link>
-          <a href="tel:1930">
-            <Button variant="danger" size="sm" className="bg-red-600 hover:bg-red-700 text-white font-semibold">
-              <PhoneCall className="mr-1.5 h-4 w-4" />
-              Call 1930 Helpline
-            </Button>
+
+          <a
+            href="tel:1930"
+            className="emergency-btn-beacon inline-flex items-center gap-2 rounded-full bg-red-600 px-5 py-2 text-xs font-bold text-white shadow-md shadow-red-700/25 transition-all hover:bg-red-700 hover:shadow-lg hover:shadow-red-700/35 active:scale-95"
+          >
+            <PhoneCall className="h-4 w-4 animate-bounce" />
+            <span>Call 1930 Helpline</span>
           </a>
         </div>
       </div>
 
       {/* ── Emergency Situation Selector ──────────────────────────── */}
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-5">
-        {entryOptions.map((opt) => {
-          const Icon = opt.icon;
-          const isSelected = selectedEntry === opt.label;
-          return (
-            <button
-              key={opt.label}
-              onClick={() => {
-                setSelectedEntry(opt.label);
-                setLossType(opt.type);
-                initRescue(opt.type);
-              }}
-              className={`flex flex-col items-center justify-center rounded-xl border p-3 text-center transition-all ${
-                isSelected
-                  ? "border-red-500/60 bg-red-500/15 text-red-200 shadow-md shadow-red-950/40"
-                  : "border-line bg-surface/70 text-ink-muted hover:border-line-hover hover:text-ink"
-              }`}
-            >
-              <Icon className={`h-5 w-5 ${isSelected ? "text-red-400" : "text-ink-dim"}`} />
-              <span className="mt-2 text-xs font-semibold leading-tight">{opt.label}</span>
-            </button>
-          );
-        })}
+      <div className="space-y-2">
+        <div className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
+          Select Your Situation
+        </div>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
+          {entryOptions.map((opt, idx) => {
+            const Icon = opt.icon;
+            const isSelected = selectedEntry === opt.label;
+            return (
+              <button
+                key={opt.label}
+                onClick={() => {
+                  setSelectedEntry(opt.label);
+                  setLossType(opt.type);
+                  initRescue(opt.type);
+                }}
+                className={`group flex flex-col items-center justify-center rounded-xl border p-3.5 text-center transition-all card-interactive ${
+                  isSelected
+                    ? "border-red-500 bg-red-50/90 text-red-800 shadow-sm ring-2 ring-red-400/20 -translate-y-0.5"
+                    : "border-border-divider bg-surface text-on-surface-variant hover:border-border-control hover:bg-surface-subtle hover:text-on-surface"
+                }`}
+              >
+                <div
+                  className={`flex h-9 w-9 items-center justify-center rounded-full transition-transform group-hover:scale-110 ${
+                    isSelected ? "bg-red-100 text-red-600" : "bg-surface-subtle text-on-surface-variant"
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                </div>
+                <span className="mt-2.5 text-xs font-semibold leading-tight">{opt.label}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* ── Total Loss & Status Banner ────────────────────────────── */}
-      <div className="grid gap-4 rounded-2xl border border-line bg-elevated/70 p-5 md:grid-cols-3">
+      <div className="grid gap-5 rounded-2xl border border-border-divider bg-surface p-5 shadow-sm md:grid-cols-3">
         <div className="space-y-1">
-          <div className="text-xs uppercase tracking-wider text-ink-dim">Reported Financial Loss</div>
-          <div className="text-2xl font-bold text-red-400">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-on-surface-variant">
+            Reported Financial Loss
+          </div>
+          <div className="text-2xl font-black tracking-tight text-red-600 sm:text-3xl">
             {currency} {totalLoss.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
           </div>
-          <div className="text-[11px] text-ink-muted">
+          <div className="text-xs text-on-surface-variant">
             {lossEvents.length} recorded transaction(s) • User-Reported
           </div>
         </div>
 
         <div className="space-y-1">
-          <div className="text-xs uppercase tracking-wider text-ink-dim">Immediate Priority</div>
-          <div className="inline-flex items-center gap-1.5 text-base font-semibold text-amber-400">
-            <AlertTriangle className="h-4 w-4 text-amber-400" />
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-on-surface-variant">
+            Immediate Priority
+          </div>
+          <div className="inline-flex items-center gap-1.5 text-base font-bold text-amber-700">
+            <AlertTriangle className="h-4 w-4 text-amber-600 animate-pulse" />
             Golden Window Active
           </div>
-          <div className="text-[11px] text-ink-muted">
-            Fastest action with 1930 & bank freeze maximizes freeze probability
+          <div className="text-xs text-on-surface-variant leading-relaxed">
+            Fastest action with 1930 & bank freeze maximizes interbank freeze probability
           </div>
         </div>
 
-        <div className="flex items-center justify-start gap-2 md:justify-end">
-          <Button
-            variant="outline"
-            size="sm"
+        <div className="flex flex-wrap items-center justify-start gap-2.5 md:justify-end">
+          <button
             onClick={() => setActiveTab("loss")}
-            className="border-dashed text-xs"
+            className="inline-flex items-center gap-1.5 rounded-full border border-dashed border-border-control bg-surface-subtle px-3.5 py-2 text-xs font-semibold text-on-surface transition-all hover:bg-surface hover:border-viz-primary hover:text-viz-primary hover:-translate-y-0.5 active:translate-y-0"
           >
-            <PlusCircle className="mr-1.5 h-3.5 w-3.5" />
-            Add Payment Record
-          </Button>
-          <Button variant="primary" size="sm" onClick={handleCopySummary} className="text-xs">
-            {copied ? <CheckCircle2 className="mr-1.5 h-3.5 w-3.5 text-emerald-400" /> : <Copy className="mr-1.5 h-3.5 w-3.5" />}
-            {copied ? "Copied to Clipboard!" : "Copy 1930 Statement"}
-          </Button>
+            <PlusCircle className="h-3.5 w-3.5" />
+            <span>Add Payment Record</span>
+          </button>
+          <button
+            onClick={handleCopySummary}
+            className="inline-flex items-center gap-1.5 rounded-full bg-viz-primary px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-primary hover:-translate-y-0.5 active:translate-y-0"
+          >
+            {copied ? (
+              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-300" />
+            ) : (
+              <Copy className="h-3.5 w-3.5" />
+            )}
+            <span>{copied ? "Copied to Clipboard!" : "Copy 1930 Statement"}</span>
+          </button>
         </div>
       </div>
 
       {/* ── Tab Navigation ────────────────────────────────────────── */}
-      <div className="flex border-b border-line text-sm font-medium">
+      <div className="flex flex-wrap gap-2 border-b border-border-divider pb-2 text-sm font-medium">
         <button
           onClick={() => setActiveTab("actions")}
-          className={`flex items-center gap-2 border-b-2 px-4 py-2.5 transition-colors ${
+          className={`flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-semibold transition-all ${
             activeTab === "actions"
-              ? "border-accent text-accent font-semibold"
-              : "border-transparent text-ink-muted hover:text-ink"
+              ? "bg-viz-primary text-white shadow-sm"
+              : "text-on-surface-variant hover:bg-surface-subtle hover:text-on-surface"
           }`}
         >
-          <CheckCircle2 className="h-4 w-4" />
-          Emergency Action Plan ({actions.filter((a) => a.status === "DONE").length}/{actions.length})
+          <CheckCircle2 className="h-3.5 w-3.5" />
+          <span>
+            Emergency Action Plan ({actions.filter((a) => a.status === "DONE").length}/{actions.length})
+          </span>
         </button>
 
         <button
           onClick={() => setActiveTab("loss")}
-          className={`flex items-center gap-2 border-b-2 px-4 py-2.5 transition-colors ${
+          className={`flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-semibold transition-all ${
             activeTab === "loss"
-              ? "border-accent text-accent font-semibold"
-              : "border-transparent text-ink-muted hover:text-ink"
+              ? "bg-viz-primary text-white shadow-sm"
+              : "text-on-surface-variant hover:bg-surface-subtle hover:text-on-surface"
           }`}
         >
-          <Clock className="h-4 w-4" />
-          Loss Timeline ({lossEvents.length})
+          <Clock className="h-3.5 w-3.5" />
+          <span>Loss Timeline ({lossEvents.length})</span>
         </button>
 
         <button
           onClick={() => setActiveTab("recovery_warning")}
-          className={`flex items-center gap-2 border-b-2 px-4 py-2.5 transition-colors ${
+          className={`flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-semibold transition-all ${
             activeTab === "recovery_warning"
-              ? "border-red-400 text-red-400 font-semibold"
-              : "border-transparent text-ink-muted hover:text-ink"
+              ? "bg-red-600 text-white shadow-sm"
+              : "text-red-700 bg-red-50 hover:bg-red-100"
           }`}
         >
-          <ShieldAlert className="h-4 w-4 text-red-400" />
-          Recovery Scam Shield
+          <ShieldAlert className="h-3.5 w-3.5" />
+          <span>Recovery Scam Shield</span>
         </button>
 
         <button
           onClick={() => setActiveTab("package")}
-          className={`flex items-center gap-2 border-b-2 px-4 py-2.5 transition-colors ${
+          className={`flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-semibold transition-all ${
             activeTab === "package"
-              ? "border-accent text-accent font-semibold"
-              : "border-transparent text-ink-muted hover:text-ink"
+              ? "bg-viz-primary text-white shadow-sm"
+              : "text-on-surface-variant hover:bg-surface-subtle hover:text-on-surface"
           }`}
         >
-          <FileText className="h-4 w-4" />
-          Case Package Export
+          <FileText className="h-3.5 w-3.5" />
+          <span>Case Package Export</span>
         </button>
       </div>
 
       {/* ── TAB 1: ACTION PLAN ────────────────────────────────────── */}
       {activeTab === "actions" && (
-        <div className="space-y-6">
+        <div className="space-y-6 animate-fade-in">
           {/* Section: DO NOW */}
           <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <span className="rounded bg-red-500/20 px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-red-400">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="rounded-full bg-red-100 border border-red-200 px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider text-red-700">
                 1. DO NOW (First 15-30 Minutes)
               </span>
-              <span className="text-xs text-ink-dim">Stop active extraction and trigger immediate inter-bank holds</span>
+              <span className="text-xs text-on-surface-variant">
+                Stop active extraction and trigger immediate inter-bank holds
+              </span>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2.5">
               {actions
                 .filter((a) => a.category === "DO_NOW")
-                .map((item) => (
+                .map((item, idx) => (
                   <div
                     key={item.action_id}
-                    className={`flex items-start justify-between rounded-xl border p-4 transition-all ${
+                    className={`flex items-start justify-between rounded-xl border p-4 transition-all card-interactive ${
                       item.status === "DONE"
-                        ? "border-emerald-500/30 bg-emerald-950/15 opacity-75"
+                        ? "border-emerald-200 bg-emerald-50/50 opacity-80"
                         : item.is_immediate_lifeline
-                        ? "border-red-500/40 bg-red-950/20"
-                        : "border-line bg-surface"
+                        ? "border-red-200 bg-red-50/60 shadow-sm"
+                        : "border-border-divider bg-surface shadow-sm"
                     }`}
                   >
                     <div className="space-y-1.5 pr-4">
                       <div className="flex items-center gap-2">
-                        <span className="font-semibold text-ink text-sm">{item.title}</span>
+                        <span
+                          className={`font-semibold text-sm ${
+                            item.status === "DONE" ? "text-on-surface-variant line-through" : "text-on-surface"
+                          }`}
+                        >
+                          {item.title}
+                        </span>
                         {item.is_immediate_lifeline && (
-                          <span className="rounded-full bg-red-500/20 px-2 py-0.5 text-[10px] font-bold text-red-400">
-                            CRITICAL
+                          <span className="rounded-full bg-red-100 border border-red-300 px-2 py-0.5 text-[10px] font-bold text-red-700">
+                            CRITICAL LIFELINE
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-ink-muted leading-relaxed">{item.description}</p>
+                      <p className="text-xs text-on-surface-variant leading-relaxed">{item.description}</p>
                       {item.link_or_dial && (
                         <div className="pt-1">
                           {item.action_type === "DIRECT_CALL" ? (
                             <a
                               href={`tel:${item.link_or_dial}`}
-                              className="inline-flex items-center gap-1.5 text-xs font-bold text-accent hover:underline"
+                              className="inline-flex items-center gap-1.5 rounded-full bg-viz-primary px-3 py-1 text-xs font-bold text-white shadow-sm transition-all hover:bg-primary hover:-translate-y-0.5 active:translate-y-0"
                             >
                               <PhoneCall className="h-3 w-3" />
                               Dial {item.link_or_dial} Directly
@@ -439,7 +475,7 @@ export default function RescuePage() {
                               href={item.link_or_dial}
                               target="_blank"
                               rel="noreferrer"
-                              className="inline-flex items-center gap-1.5 text-xs font-bold text-accent hover:underline"
+                              className="inline-flex items-center gap-1.5 rounded-full border border-border-control bg-surface px-3 py-1 text-xs font-bold text-viz-primary shadow-sm transition-all hover:bg-surface-subtle hover:-translate-y-0.5 active:translate-y-0"
                             >
                               <ExternalLink className="h-3 w-3" />
                               Open Official Portal ({item.link_or_dial})
@@ -451,10 +487,10 @@ export default function RescuePage() {
 
                     <button
                       onClick={() => toggleActionDone(item.action_id, item.status)}
-                      className={`shrink-0 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                      className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all ${
                         item.status === "DONE"
-                          ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
-                          : "bg-elevated hover:bg-line text-ink-muted border border-line"
+                          ? "bg-emerald-600 text-white shadow-sm hover:bg-emerald-700"
+                          : "border border-border-control bg-surface text-on-surface-variant hover:border-viz-primary hover:text-viz-primary hover:bg-surface-subtle"
                       }`}
                     >
                       {item.status === "DONE" ? "✓ Done" : "Mark Done"}
@@ -466,35 +502,43 @@ export default function RescuePage() {
 
           {/* Section: DO NEXT */}
           <div className="space-y-3 pt-2">
-            <div className="flex items-center gap-2">
-              <span className="rounded bg-amber-500/20 px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-amber-400">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="rounded-full bg-amber-100 border border-amber-200 px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider text-amber-800">
                 2. DO NEXT (First 1-2 Hours)
               </span>
-              <span className="text-xs text-ink-dim">Account containment, password resets & emotional support</span>
+              <span className="text-xs text-on-surface-variant">
+                Account containment, password resets & emotional support
+              </span>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2.5">
               {actions
                 .filter((a) => a.category === "DO_NEXT")
                 .map((item) => (
                   <div
                     key={item.action_id}
-                    className={`flex items-start justify-between rounded-xl border p-4 ${
+                    className={`flex items-start justify-between rounded-xl border p-4 transition-all card-interactive ${
                       item.status === "DONE"
-                        ? "border-emerald-500/30 bg-emerald-950/15 opacity-75"
-                        : "border-line bg-surface"
+                        ? "border-emerald-200 bg-emerald-50/50 opacity-80"
+                        : "border-border-divider bg-surface shadow-sm"
                     }`}
                   >
-                    <div className="space-y-1 pr-4">
-                      <div className="font-semibold text-ink text-sm">{item.title}</div>
-                      <p className="text-xs text-ink-muted leading-relaxed">{item.description}</p>
+                    <div className="space-y-1.5 pr-4">
+                      <div
+                        className={`font-semibold text-sm ${
+                          item.status === "DONE" ? "text-on-surface-variant line-through" : "text-on-surface"
+                        }`}
+                      >
+                        {item.title}
+                      </div>
+                      <p className="text-xs text-on-surface-variant leading-relaxed">{item.description}</p>
                       {item.link_or_dial && (
                         <div className="pt-1">
                           <a
                             href={item.link_or_dial}
                             target="_blank"
                             rel="noreferrer"
-                            className="inline-flex items-center gap-1.5 text-xs font-bold text-accent hover:underline"
+                            className="inline-flex items-center gap-1.5 rounded-full border border-border-control bg-surface px-3 py-1 text-xs font-bold text-viz-primary shadow-sm transition-all hover:bg-surface-subtle hover:-translate-y-0.5 active:translate-y-0"
                           >
                             <ExternalLink className="h-3 w-3" />
                             Official Link
@@ -504,10 +548,10 @@ export default function RescuePage() {
                     </div>
                     <button
                       onClick={() => toggleActionDone(item.action_id, item.status)}
-                      className={`shrink-0 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                      className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all ${
                         item.status === "DONE"
-                          ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
-                          : "bg-elevated hover:bg-line text-ink-muted border border-line"
+                          ? "bg-emerald-600 text-white shadow-sm hover:bg-emerald-700"
+                          : "border border-border-control bg-surface text-on-surface-variant hover:border-viz-primary hover:text-viz-primary hover:bg-surface-subtle"
                       }`}
                     >
                       {item.status === "DONE" ? "✓ Done" : "Mark Done"}
@@ -521,18 +565,21 @@ export default function RescuePage() {
           <div className="grid gap-6 md:grid-cols-2 pt-2">
             <div className="space-y-3">
               <div className="flex items-center gap-2">
-                <span className="rounded bg-sky-500/20 px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-sky-400">
+                <span className="rounded-full bg-sky-100 border border-sky-200 px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider text-sky-800">
                   3. PRESERVE
                 </span>
-                <span className="text-xs text-ink-dim">Evidence for legal investigation</span>
+                <span className="text-xs text-on-surface-variant">Evidence for legal investigation</span>
               </div>
               <div className="space-y-2">
                 {actions
                   .filter((a) => a.category === "PRESERVE")
                   .map((item) => (
-                    <div key={item.action_id} className="rounded-xl border border-line bg-surface p-3 space-y-1">
-                      <div className="text-xs font-semibold text-ink">{item.title}</div>
-                      <p className="text-[11px] text-ink-muted">{item.description}</p>
+                    <div
+                      key={item.action_id}
+                      className="rounded-xl border border-border-divider bg-surface p-3.5 space-y-1 shadow-sm card-interactive"
+                    >
+                      <div className="text-xs font-semibold text-on-surface">{item.title}</div>
+                      <p className="text-[11px] text-on-surface-variant leading-relaxed">{item.description}</p>
                     </div>
                   ))}
               </div>
@@ -540,18 +587,21 @@ export default function RescuePage() {
 
             <div className="space-y-3">
               <div className="flex items-center gap-2">
-                <span className="rounded bg-indigo-500/20 px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-indigo-400">
+                <span className="rounded-full bg-indigo-100 border border-indigo-200 px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider text-indigo-800">
                   4. REPORT
                 </span>
-                <span className="text-xs text-ink-dim">Formal cybercrime portal submission</span>
+                <span className="text-xs text-on-surface-variant">Formal cybercrime portal submission</span>
               </div>
               <div className="space-y-2">
                 {actions
                   .filter((a) => a.category === "REPORT")
                   .map((item) => (
-                    <div key={item.action_id} className="rounded-xl border border-line bg-surface p-3 space-y-1">
-                      <div className="text-xs font-semibold text-ink">{item.title}</div>
-                      <p className="text-[11px] text-ink-muted">{item.description}</p>
+                    <div
+                      key={item.action_id}
+                      className="rounded-xl border border-border-divider bg-surface p-3.5 space-y-1 shadow-sm card-interactive"
+                    >
+                      <div className="text-xs font-semibold text-on-surface">{item.title}</div>
+                      <p className="text-[11px] text-on-surface-variant leading-relaxed">{item.description}</p>
                     </div>
                   ))}
               </div>
@@ -562,28 +612,28 @@ export default function RescuePage() {
 
       {/* ── TAB 2: LOSS TIMELINE & MULTIPLE PAYMENTS ──────────────── */}
       {activeTab === "loss" && (
-        <div className="space-y-6">
-          <div className="rounded-2xl border border-line bg-surface p-5">
-            <h3 className="text-sm font-semibold text-ink mb-3">Add a Payment Transaction</h3>
-            <form onSubmit={handleRecordPayment} className="grid gap-3 sm:grid-cols-2 md:grid-cols-4">
+        <div className="space-y-6 animate-fade-in">
+          <div className="rounded-2xl border border-border-divider bg-surface p-6 shadow-sm">
+            <h3 className="text-sm font-semibold text-on-surface mb-3">Add a Payment Transaction</h3>
+            <form onSubmit={handleRecordPayment} className="grid gap-3.5 sm:grid-cols-2 md:grid-cols-4">
               <div>
-                <label className="text-[11px] text-ink-muted">Amount (INR)</label>
+                <label className="text-[11px] font-medium text-on-surface-variant">Amount (INR)</label>
                 <input
                   type="number"
                   value={newAmount}
                   onChange={(e) => setNewAmount(e.target.value)}
-                  className="w-full rounded-lg border border-line bg-elevated px-3 py-2 text-sm text-ink outline-none focus:border-accent"
+                  className="mt-1 w-full rounded-lg border border-border-divider bg-surface-subtle px-3 py-2 text-sm text-on-surface outline-none transition-all focus:border-viz-primary focus:bg-surface focus:ring-1 focus:ring-viz-primary"
                   placeholder="e.g. 5000"
                   required
                 />
               </div>
 
               <div>
-                <label className="text-[11px] text-ink-muted">Payment Channel</label>
+                <label className="text-[11px] font-medium text-on-surface-variant">Payment Channel</label>
                 <select
                   value={newMethod}
                   onChange={(e) => setNewMethod(e.target.value)}
-                  className="w-full rounded-lg border border-line bg-elevated px-3 py-2 text-sm text-ink outline-none focus:border-accent"
+                  className="mt-1 w-full rounded-lg border border-border-divider bg-surface-subtle px-3 py-2 text-sm text-on-surface outline-none transition-all focus:border-viz-primary focus:bg-surface focus:ring-1 focus:ring-viz-primary"
                 >
                   <option value="UPI">UPI</option>
                   <option value="IMPS">IMPS</option>
@@ -594,56 +644,66 @@ export default function RescuePage() {
               </div>
 
               <div>
-                <label className="text-[11px] text-ink-muted">Recipient VPA / Account</label>
+                <label className="text-[11px] font-medium text-on-surface-variant">Recipient VPA / Account</label>
                 <input
                   type="text"
                   value={newVpa}
                   onChange={(e) => setNewVpa(e.target.value)}
-                  className="w-full rounded-lg border border-line bg-elevated px-3 py-2 text-sm text-ink outline-none focus:border-accent"
+                  className="mt-1 w-full rounded-lg border border-border-divider bg-surface-subtle px-3 py-2 text-sm text-on-surface outline-none transition-all focus:border-viz-primary focus:bg-surface focus:ring-1 focus:ring-viz-primary"
                   placeholder="e.g. payee@oksbi"
                 />
               </div>
 
               <div>
-                <label className="text-[11px] text-ink-muted">12-Digit UTR / Txn Ref</label>
+                <label className="text-[11px] font-medium text-on-surface-variant">12-Digit UTR / Txn Ref</label>
                 <input
                   type="text"
                   value={newRef}
                   onChange={(e) => setNewRef(e.target.value)}
-                  className="w-full rounded-lg border border-line bg-elevated px-3 py-2 text-sm text-ink outline-none focus:border-accent"
+                  className="mt-1 w-full rounded-lg border border-border-divider bg-surface-subtle px-3 py-2 text-sm text-on-surface outline-none transition-all focus:border-viz-primary focus:bg-surface focus:ring-1 focus:ring-viz-primary"
                   placeholder="e.g. 423456789012"
                 />
               </div>
 
-              <div className="sm:col-span-2 md:col-span-4 flex justify-end">
-                <Button type="submit" variant="primary" size="sm">
-                  Record Loss Event
-                </Button>
+              <div className="sm:col-span-2 md:col-span-4 flex justify-end pt-2">
+                <button
+                  type="submit"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-viz-primary px-5 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-primary hover:-translate-y-0.5 active:translate-y-0"
+                >
+                  <PlusCircle className="h-3.5 w-3.5" />
+                  <span>Record Loss Event</span>
+                </button>
               </div>
             </form>
           </div>
 
           {/* Payment List */}
           <div className="space-y-3">
-            <h3 className="text-sm font-semibold text-ink">Recorded Payment Trail</h3>
+            <h3 className="text-sm font-semibold text-on-surface">Recorded Payment Trail</h3>
             {lossEvents.length === 0 ? (
-              <div className="rounded-xl border border-dashed border-line p-8 text-center text-xs text-ink-muted">
+              <div className="rounded-xl border border-dashed border-border-divider bg-surface-subtle p-8 text-center text-xs text-on-surface-variant">
                 No payment events logged yet. Use the form above to record transfers (e.g. ₹500 → ₹5,000 → ₹20,000).
               </div>
             ) : (
-              <div className="divide-y divide-line rounded-xl border border-line bg-surface">
+              <div className="divide-y divide-border-divider rounded-xl border border-border-divider bg-surface shadow-sm">
                 {lossEvents.map((pe, idx) => (
-                  <div key={pe.loss_event_id} className="flex items-center justify-between p-4 text-xs">
+                  <div key={pe.loss_event_id} className="flex items-center justify-between p-4 text-xs card-interactive">
                     <div className="space-y-1">
-                      <div className="font-semibold text-ink">
-                        Payment #{idx + 1}: {pe.currency} {pe.amount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+                      <div className="font-semibold text-on-surface">
+                        Payment #{idx + 1}: {pe.currency}{" "}
+                        {pe.amount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
                       </div>
-                      <div className="text-ink-muted">
-                        Method: {pe.payment_method} • Recipient: <code className="text-accent">{pe.recipient_identifier || "N/A"}</code>
+                      <div className="text-on-surface-variant">
+                        Method: {pe.payment_method} • Recipient:{" "}
+                        <code className="rounded bg-surface-subtle px-1 font-mono text-viz-primary">
+                          {pe.recipient_identifier || "N/A"}
+                        </code>
                       </div>
-                      <div className="text-ink-dim">Ref: {pe.transaction_reference_tokenized || "Masked"}</div>
+                      <div className="text-on-surface-variant">
+                        Ref: {pe.transaction_reference_tokenized || "Masked"}
+                      </div>
                     </div>
-                    <div className="text-right text-[11px] text-ink-dim">
+                    <div className="text-right text-[11px] text-on-surface-variant">
                       {new Date(pe.occurred_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                     </div>
                   </div>
@@ -656,21 +716,21 @@ export default function RescuePage() {
 
       {/* ── TAB 3: RECOVERY SCAM SHIELD ────────────────────────────── */}
       {activeTab === "recovery_warning" && (
-        <div className="space-y-6">
-          <div className="rounded-2xl border border-red-500/30 bg-red-950/20 p-6 space-y-4">
+        <div className="space-y-6 animate-fade-in">
+          <div className="rounded-2xl border border-red-200 bg-red-50 p-6 space-y-4 shadow-sm">
             <div className="flex items-start gap-3">
-              <ShieldAlert className="h-6 w-6 text-red-400 shrink-0 mt-0.5" />
+              <ShieldAlert className="h-6 w-6 text-red-600 shrink-0 mt-0.5" />
               <div className="space-y-2">
-                <h3 className="text-base font-bold text-red-200">
+                <h3 className="text-base font-bold text-red-900">
                   CRITICAL DEFENSE: Beware of Secondary &ldquo;Recovery Scams&rdquo;
                 </h3>
-                <p className="text-xs text-red-300/90 leading-relaxed">
+                <p className="text-xs text-red-800 leading-relaxed">
                   Scam victims are frequently targeted a second time by fraudsters posing as &ldquo;ethical hackers&rdquo;,
                   &ldquo;cyber dispute lawyers&rdquo;, or official &ldquo;fund recovery specialists&rdquo;.
                   They will promise to retrieve your lost money if you pay an advance &ldquo;investigation fee&rdquo;,
                   &ldquo;tax release voucher&rdquo;, or &ldquo;unfreeze clearance&rdquo;.
                 </p>
-                <div className="rounded-lg bg-black/40 p-3 text-xs text-red-200 font-mono">
+                <div className="rounded-lg border border-red-300 bg-white/80 p-3 text-xs text-red-950 font-mono font-semibold">
                   RULE: Legitimate police cyber cells, 1930 nodal officers, and banks NEVER charge any advance fee to
                   investigate or unfreeze funds.
                 </div>
@@ -679,11 +739,11 @@ export default function RescuePage() {
           </div>
 
           {/* Interactive Recovery Message Checker */}
-          <div className="rounded-2xl border border-line bg-surface p-5 space-y-4">
-            <h4 className="text-sm font-semibold text-ink">
+          <div className="rounded-2xl border border-border-divider bg-surface p-6 space-y-4 shadow-sm">
+            <h4 className="text-sm font-semibold text-on-surface">
               Check a Suspicious Recovery Offer or Message
             </h4>
-            <p className="text-xs text-ink-muted">
+            <p className="text-xs text-on-surface-variant">
               Did someone contact you offering to get your money back? Paste their message below to verify for fraud patterns:
             </p>
             <div className="space-y-3">
@@ -692,24 +752,30 @@ export default function RescuePage() {
                 onChange={(e) => setSuspectMessage(e.target.value)}
                 placeholder="e.g. 'Hello sir, I am cyber investigator. Pay 5000 fee and we will hack back and unfreeze your 50,000 from the mule account.'"
                 rows={3}
-                className="w-full rounded-xl border border-line bg-elevated p-3 text-xs text-ink outline-none focus:border-accent"
+                className="w-full rounded-xl border border-border-divider bg-surface-subtle p-3 text-xs text-on-surface outline-none transition-all focus:border-red-500 focus:bg-surface focus:ring-1 focus:ring-red-500"
               />
-              <Button variant="danger" size="sm" onClick={handleCheckRecoveryScam}>
-                <Send className="mr-1.5 h-3.5 w-3.5" />
-                Analyze Recovery Message
-              </Button>
+              <button
+                onClick={handleCheckRecoveryScam}
+                className="inline-flex items-center gap-1.5 rounded-full bg-red-600 px-5 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-red-700 hover:-translate-y-0.5 active:translate-y-0"
+              >
+                <Send className="h-3.5 w-3.5" />
+                <span>Analyze Recovery Message</span>
+              </button>
             </div>
 
             {recoveryAnalysis && (
-              <div className="mt-4 rounded-xl border border-red-500/40 bg-red-950/30 p-4 space-y-2">
-                <div className="flex items-center gap-2 text-xs font-bold text-red-400">
+              <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-4 space-y-2 animate-scale-in">
+                <div className="flex items-center gap-2 text-xs font-bold text-red-700">
                   <AlertOctagon className="h-4 w-4" />
-                  ANALYSIS: {recoveryAnalysis.risk_level} RISK — RECOVERY SCAM DETECTED
+                  <span>ANALYSIS: {recoveryAnalysis.risk_level} RISK — RECOVERY SCAM DETECTED</span>
                 </div>
-                <p className="text-xs text-red-200">{recoveryAnalysis.warning_text}</p>
+                <p className="text-xs text-red-900 leading-relaxed">{recoveryAnalysis.warning_text}</p>
                 <div className="flex flex-wrap gap-1.5 pt-1">
                   {recoveryAnalysis.threat_patterns_detected?.map((p: string) => (
-                    <span key={p} className="rounded bg-red-500/30 px-2 py-0.5 text-[10px] font-mono text-red-300">
+                    <span
+                      key={p}
+                      className="rounded-full bg-red-100 border border-red-200 px-2.5 py-0.5 text-[10px] font-mono font-medium text-red-800"
+                    >
                       {p}
                     </span>
                   ))}
@@ -722,25 +788,32 @@ export default function RescuePage() {
 
       {/* ── TAB 4: CASE PACKAGE EXPORT ────────────────────────────── */}
       {activeTab === "package" && (
-        <div className="space-y-6">
-          <div className="rounded-2xl border border-line bg-surface p-6 space-y-4">
+        <div className="space-y-6 animate-fade-in">
+          <div className="rounded-2xl border border-border-divider bg-surface p-6 space-y-4 shadow-sm">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h3 className="text-base font-bold text-ink">Incident Information Package</h3>
-                <p className="text-xs text-ink-muted">
+                <h3 className="text-base font-bold text-on-surface">Incident Information Package</h3>
+                <p className="text-xs text-on-surface-variant">
                   Structured technical document for 1930 / Bank Nodal Officer / NCRP complaint filing.
                 </p>
               </div>
               <div className="flex gap-2">
-                <Button variant="primary" size="sm" onClick={handleCopySummary}>
-                  {copied ? <CheckCircle2 className="mr-1.5 h-3.5 w-3.5 text-emerald-400" /> : <Copy className="mr-1.5 h-3.5 w-3.5" />}
-                  {copied ? "Copied!" : "Copy Summary"}
-                </Button>
+                <button
+                  onClick={handleCopySummary}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-viz-primary px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-primary hover:-translate-y-0.5 active:translate-y-0"
+                >
+                  {copied ? (
+                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-300" />
+                  ) : (
+                    <Copy className="h-3.5 w-3.5" />
+                  )}
+                  <span>{copied ? "Copied!" : "Copy Summary"}</span>
+                </button>
               </div>
             </div>
 
-            <div className="rounded-xl border border-line bg-elevated/80 p-4 text-xs font-mono text-ink-muted space-y-2">
-              <div className="text-amber-400 font-semibold">[OFFICIAL NOTICE & DISCLAIMER]</div>
+            <div className="rounded-xl border border-border-divider bg-surface-subtle p-4 text-xs font-mono text-on-surface-variant space-y-2">
+              <div className="text-amber-800 font-semibold">[OFFICIAL NOTICE & DISCLAIMER]</div>
               <p className="leading-relaxed">
                 This document is a technical Incident Information Package prepared based on user-provided statements
                 and ScamGraph AI automated analysis. It does NOT constitute an official Police FIR, Government
@@ -750,16 +823,19 @@ export default function RescuePage() {
             </div>
 
             <div className="space-y-3 pt-2">
-              <div className="text-xs font-semibold uppercase tracking-wider text-ink-dim">
+              <div className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
                 Verified Emergency Channels Included
               </div>
               <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
                 {resources.slice(0, 6).map((res) => (
-                  <div key={res.resource_id} className="rounded-xl border border-line bg-surface p-3 space-y-1">
-                    <div className="text-xs font-bold text-ink">{res.display_name}</div>
-                    <div className="text-[11px] text-ink-muted">{res.organization}</div>
+                  <div
+                    key={res.resource_id}
+                    className="rounded-xl border border-border-divider bg-surface p-3.5 space-y-1 shadow-sm card-interactive"
+                  >
+                    <div className="text-xs font-bold text-on-surface">{res.display_name}</div>
+                    <div className="text-[11px] text-on-surface-variant">{res.organization}</div>
                     {res.official_phone && (
-                      <div className="text-xs font-semibold text-accent">Phone: {res.official_phone}</div>
+                      <div className="text-xs font-semibold text-viz-primary">Phone: {res.official_phone}</div>
                     )}
                   </div>
                 ))}

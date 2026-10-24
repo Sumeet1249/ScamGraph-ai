@@ -1354,4 +1354,31 @@ a.rounded-md {
         box-shadow: 0 2px 6px -1px rgba(0, 0, 0, 0.3) !important;
     }
 }
+
+/* Sovereign Trust Motion Utilities */
+.card-interactive {
+    transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 220ms cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 220ms cubic-bezier(0.16, 1, 0.3, 1);
 }
+.card-interactive:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px -4px rgba(11, 98, 86, 0.08), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
+    border-color: rgba(11, 98, 86, 0.35);
+}
+
+.stagger-1 { animation-delay: 60ms; }
+.stagger-2 { animation-delay: 120ms; }
+.stagger-3 { animation-delay: 180ms; }
+.stagger-4 { animation-delay: 240ms; }
+.stagger-5 { animation-delay: 300ms; }
+
+.emergency-btn-beacon {
+    animation: emergency-beacon 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.badge-glow-teal {
+    box-shadow: 0 0 12px rgba(11, 98, 86, 0.25);
+}
+}
+

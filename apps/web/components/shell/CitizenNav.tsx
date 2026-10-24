@@ -79,7 +79,7 @@ export function CitizenNav() {
             {/* Direct Rescue Emergency CTA */}
             <Link
               href="/rescue"
-              className="inline-flex min-h-[38px] items-center gap-1.5 rounded-full border border-border-control bg-surface px-3.5 py-1 text-xs font-semibold text-viz-text shadow-sm transition-colors hover:bg-surface-subtle"
+              className="inline-flex min-h-[38px] items-center gap-1.5 rounded-full border border-border-control bg-surface px-3.5 py-1 text-xs font-semibold text-viz-text shadow-sm transition-all hover:bg-surface-subtle hover:-translate-y-0.5 hover:shadow active:translate-y-0"
             >
               <LifeBuoy className="h-3.5 w-3.5 text-viz-primary" />
               <span className="hidden sm:inline">Already paid or shared?</span>
@@ -89,7 +89,7 @@ export function CitizenNav() {
             {/* Developer Portal */}
             <Link
               href="/developers"
-              className="inline-flex min-h-[38px] items-center justify-center gap-1.5 rounded border border-border-divider bg-surface px-3 py-1 text-xs font-semibold text-on-surface-variant transition-colors hover:border-border-control hover:text-on-surface hidden sm:inline-flex"
+              className="inline-flex min-h-[38px] items-center justify-center gap-1.5 rounded border border-border-divider bg-surface px-3 py-1 text-xs font-semibold text-on-surface-variant transition-all hover:border-viz-primary hover:text-viz-primary hover:-translate-y-0.5 active:translate-y-0 hidden sm:inline-flex"
             >
               <Code2 className="h-3.5 w-3.5 text-viz-primary" />
               <span>Dev Console</span>
@@ -98,7 +98,7 @@ export function CitizenNav() {
             {/* Persona Switcher / Analyst Portal */}
             <Link
               href="/command"
-              className="inline-flex min-h-[38px] items-center justify-center rounded border border-border-divider bg-surface px-3 py-1 text-xs font-semibold text-on-surface-variant transition-colors hover:border-border-control hover:text-on-surface hidden sm:inline-flex"
+              className="inline-flex min-h-[38px] items-center justify-center rounded border border-border-divider bg-surface px-3 py-1 text-xs font-semibold text-on-surface-variant transition-all hover:border-border-control hover:text-on-surface hover:-translate-y-0.5 active:translate-y-0 hidden sm:inline-flex"
             >
               Analyst Console
             </Link>
@@ -106,17 +106,17 @@ export function CitizenNav() {
             {/* Quick Check CTA */}
             <Link
               href="/check"
-              className="inline-flex min-h-[38px] items-center justify-center gap-1 rounded-full bg-viz-primary px-4 py-1 text-xs font-bold text-on-primary shadow-sm transition-colors hover:bg-primary"
+              className="group inline-flex min-h-[38px] items-center justify-center gap-1 rounded-full bg-viz-primary px-4 py-1 text-xs font-bold text-on-primary shadow-sm transition-all hover:bg-primary hover:-translate-y-0.5 hover:shadow-md active:translate-y-0"
             >
               <span>Check Free</span>
-              <ArrowRight className="h-3.5 w-3.5" />
+              <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
             </Link>
 
             {/* Profile & Privacy Settings */}
             <Link
               href="/settings/privacy"
               aria-label="Profile and Privacy Settings"
-              className="flex h-8 w-8 items-center justify-center rounded-full border border-border-divider bg-surface-subtle text-on-surface-variant hover:border-border-control hover:text-on-surface transition-colors"
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-border-divider bg-surface-subtle text-on-surface-variant hover:border-border-control hover:text-on-surface hover:scale-105 transition-all shadow-sm"
               title="Profile and Privacy Settings"
             >
               <User className="h-4 w-4" />

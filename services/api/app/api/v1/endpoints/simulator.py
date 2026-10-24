@@ -378,6 +378,9 @@ async def compare_decision_paths(request: Dict[str, Any]):
             (path1.get("final_risk_score") or 0) - (path2.get("final_risk_score") or 0)
         ),
     }
+
+
+@router.get("/debrief/{session_id}", tags=["Simulator"])
 async def get_debrief(session_id: str):
     """Generate post-scenario debrief and learning feedback."""
     session = SIMULATION_SESSIONS.get(session_id)

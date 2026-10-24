@@ -177,7 +177,23 @@ module.exports = {
           "0%": { opacity: "0", transform: "translateY(6px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
+        "fade-in-up": {
+          "0%": { opacity: "0", transform: "translateY(12px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        "scale-in": {
+          "0%": { opacity: "0", transform: "scale(0.96)" },
+          "100%": { opacity: "1", transform: "scale(1)" },
+        },
         "pulse-soft": { "0%, 100%": { opacity: "1" }, "50%": { opacity: "0.5" } },
+        "emergency-beacon": {
+          "0%, 100%": { transform: "scale(1)", boxShadow: "0 0 0 0 rgba(220, 38, 38, 0.4)" },
+          "50%": { transform: "scale(1.02)", boxShadow: "0 0 0 8px rgba(220, 38, 38, 0)" },
+        },
+        "float-subtle": {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-4px)" },
+        },
         shimmer: {
           "0%": { backgroundPosition: "-200% 0" },
           "100%": { backgroundPosition: "200% 0" },
@@ -186,7 +202,11 @@ module.exports = {
       animation: {
         "fade-in": "fade-in 0.35s ease-out both",
         "rise-in": "rise-in 0.4s cubic-bezier(0.16,1,0.3,1) both",
+        "fade-in-up": "fade-in-up 0.4s cubic-bezier(0.16,1,0.3,1) both",
+        "scale-in": "scale-in 0.25s cubic-bezier(0.16,1,0.3,1) both",
         "pulse-soft": "pulse-soft 2.4s ease-in-out infinite",
+        "emergency-beacon": "emergency-beacon 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        "float-subtle": "float-subtle 4s ease-in-out infinite",
       },
     },
   },
