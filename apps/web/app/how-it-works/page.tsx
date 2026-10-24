@@ -64,7 +64,7 @@ export default function HowItWorksPage() {
 
   return (
     <div className="w-full bg-ground py-10 md:py-16">
-      <div className="max-w-[1200px] mx-auto px-4 md:px-8">
+      <div className="w-full px-6 sm:px-10 lg:px-16 xl:px-20">
         {/* Breadcrumb Navigation */}
         <nav aria-label="Breadcrumb" className="mb-6">
           <ol className="flex items-center gap-2 text-xs text-on-surface-variant font-medium">

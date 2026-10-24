@@ -52,7 +52,7 @@ export default function HomePage() {
     <div className="flex flex-col w-full">
       {/* ── 1. Hero Section & Universal Omnibox ── */}
       <section className="w-full bg-ground py-10 md:py-16 border-b border-border-divider">
-        <div className="max-w-[1200px] mx-auto px-4 md:px-8">
+        <div className="w-full px-6 sm:px-10 lg:px-16 xl:px-20">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
             {/* Left Hero Pitch */}
             <div className="lg:col-span-6 flex flex-col justify-center">
@@ -157,7 +157,7 @@ export default function HomePage() {
 
       {/* ── 2. Live Telemetry Strip ── */}
       <section className="w-full bg-surface-subtle py-8 border-b border-border-divider">
-        <div className="max-w-[1200px] mx-auto px-4 md:px-8">
+        <div className="w-full px-6 sm:px-10 lg:px-16 xl:px-20">
           <div className="mb-4">
             <span className="text-[11px] text-viz-neutral font-semibold uppercase tracking-wider block">
               National Defense Telemetry
@@ -194,8 +194,8 @@ export default function HomePage() {
 
       {/* ── 3. 3-Step Methodology ── */}
       <section className="w-full bg-ground py-12 border-b border-border-divider">
-        <div className="max-w-[1200px] mx-auto px-4 md:px-8">
-          <div className="max-w-[680px] mb-8">
+        <div className="w-full px-6 sm:px-10 lg:px-16 xl:px-20">
+          <div className="max-w-[800px] mb-8">
             <span className="text-xs text-viz-neutral font-semibold uppercase tracking-wider block mb-1">
               Transparent Methodology
             </span>
@@ -246,7 +246,7 @@ export default function HomePage() {
 
       {/* ── 4. Topological Journey Pipeline ── */}
       <section className="w-full bg-surface py-12 border-b border-border-divider">
-        <div className="max-w-[1200px] mx-auto px-4 md:px-8">
+        <div className="w-full px-6 sm:px-10 lg:px-16 xl:px-20">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
             <div>
               <div className="flex items-center gap-2">
@@ -335,7 +335,7 @@ export default function HomePage() {
 
       {/* ── 5. FAQs Section ── */}
       <section className="w-full bg-ground py-12 border-b border-border-divider">
-        <div className="max-w-[760px] mx-auto px-4 md:px-8">
+        <div className="w-full max-w-5xl mx-auto px-6 sm:px-10">
           <div className="text-center mb-8">
             <h2 className="text-2xl font-bold text-on-surface">Frequently Asked Questions</h2>
             <p className="text-xs text-on-surface-variant mt-1">
@@ -370,7 +370,7 @@ export default function HomePage() {
 
       {/* ── 6. Emergency Bottom Callout ── */}
       <section className="w-full bg-surface-subtle py-12 text-center">
-        <div className="max-w-[680px] mx-auto px-4">
+        <div className="w-full max-w-4xl mx-auto px-6 sm:px-10">
           <h2 className="text-xl md:text-2xl font-bold text-on-surface mb-2">
             Victim of an active financial fraud within the last 4 hours?
           </h2>

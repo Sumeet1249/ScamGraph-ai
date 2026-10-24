@@ -208,7 +208,7 @@ function UniversalCheckContent() {
 
   return (
     <div className="w-full bg-ground py-8 md:py-12">
-      <div className="max-w-[1200px] mx-auto px-4 md:px-8">
+      <div className="w-full px-6 sm:px-10 lg:px-16 xl:px-20">
         {/* Hidden Real File Inputs */}
         <input
           type="file"
