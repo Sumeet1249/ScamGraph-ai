@@ -22,14 +22,11 @@ export function CitizenFooter() {
           </div>
 
           <nav aria-label="Footer Navigation" className="flex flex-wrap gap-x-6 gap-y-2 text-xs font-semibold text-on-surface-variant">
-            <Link href="/help-center" className="hover:text-viz-primary transition-colors">
-              Help Center
+            <Link href="/how-it-works" className="hover:text-viz-primary transition-colors">
+              Help &amp; How It Works
             </Link>
             <Link href="/privacy" className="hover:text-viz-primary transition-colors">
               Privacy &amp; Data Rights
-            </Link>
-            <Link href="/how-it-works" className="hover:text-viz-primary transition-colors">
-              Verification Methodology
             </Link>
             <Link href="/developers" className="hover:text-viz-primary transition-colors">
               Bank &amp; Fintech API

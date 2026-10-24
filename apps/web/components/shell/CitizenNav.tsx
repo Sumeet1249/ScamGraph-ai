@@ -11,8 +11,7 @@ export function CitizenNav() {
     { label: "Universal Check", href: "/check" },
     { label: "Activity", href: "/activity" },
     { label: "Emergency Recovery", href: "/rescue" },
-    { label: "How It Works", href: "/how-it-works" },
-    { label: "Help Center", href: "/help-center" },
+    { label: "Help & How It Works", href: "/how-it-works" },
   ];
 
   return (
