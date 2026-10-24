@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils/cn";
 
 /** Base card — surface-1 with subtle border and shadow. */
 export interface CardProps extends HTMLAttributes<HTMLDivElement> {
-  children: ReactNode;
+  children?: ReactNode;
   /** Padding size: sm, md, lg, or none. Defaults to md. */
   pad?: "sm" | "md" | "lg" | "none";
 }

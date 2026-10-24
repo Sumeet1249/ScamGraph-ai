@@ -662,7 +662,7 @@ export default function RescuePage() {
               <ShieldAlert className="h-6 w-6 text-red-400 shrink-0 mt-0.5" />
               <div className="space-y-2">
                 <h3 className="text-base font-bold text-red-200">
-                  CRITICAL DEFENSE: Beware of Secondary "Recovery Scams"
+                  CRITICAL DEFENSE: Beware of Secondary &ldquo;Recovery Scams&rdquo;
                 </h3>
                 <p className="text-xs text-red-300/90 leading-relaxed">
                   Scam victims are frequently targeted a second time by fraudsters posing as &ldquo;ethical hackers&rdquo;,
@@ -771,3 +771,4 @@ export default function RescuePage() {
     </div>
   );
 }
+
