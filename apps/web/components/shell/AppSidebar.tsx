@@ -80,7 +80,7 @@ export function AppSidebar() {
               >
                 {group.label}
               </div>
-              <ul className="space-y-1">
+              <ul className="space-y-1 w-full">
                 {group.items.map((item) => {
                   const isSubActive = item.subItems?.some(
                     (s) => pathname === s.href || pathname.startsWith(s.href),
@@ -93,7 +93,10 @@ export function AppSidebar() {
                   return (
                     <li
                       key={item.href}
-                      className="relative"
+                      className={cn(
+                        "relative w-full",
+                        isHovered ? "block" : "flex flex-col items-center justify-center",
+                      )}
                       onMouseEnter={() => setHoveredItemHref(item.href)}
                       onMouseLeave={() => setHoveredItemHref(null)}
                     >
@@ -102,10 +105,10 @@ export function AppSidebar() {
                         aria-current={isActive ? "page" : undefined}
                         title={!isHovered ? item.label : item.hint}
                         className={cn(
-                          "flex items-center rounded-xl h-10 transition-all duration-150 overflow-hidden group",
+                          "flex items-center rounded-xl transition-all duration-150 overflow-hidden group",
                           isHovered
-                            ? "w-full px-3 justify-start gap-3"
-                            : "w-10 mx-auto justify-center px-0 gap-0",
+                            ? "w-full h-10 px-3 justify-start gap-3"
+                            : "w-10 h-10 justify-center shrink-0 mx-auto",
                           isActive
                             ? "bg-accent-soft text-accent border border-accent-line font-medium shadow-sm"
                             : "text-text-muted hover:text-text-primary hover:bg-surface-hover border border-transparent",
@@ -119,30 +122,25 @@ export function AppSidebar() {
                           )}
                           strokeWidth={isActive ? 2.2 : 1.75}
                         />
-                        <span
-                          className={cn(
-                            "text-body-sm font-medium whitespace-nowrap transition-all duration-200 flex-1 flex items-center justify-between",
-                            isHovered
-                              ? "opacity-100 translate-x-0 ml-0"
-                              : "opacity-0 -translate-x-2 pointer-events-none w-0 overflow-hidden",
-                          )}
-                        >
-                          <span>{item.label}</span>
-                          {item.subItems && (
-                            <span
-                              className={cn(
-                                "w-1.5 h-1.5 rounded-full transition-colors",
-                                isSubActive ? "bg-brand-primary" : "bg-text-muted/40 group-hover:bg-brand-primary",
-                              )}
-                              title={`${item.subItems[0].label}`}
-                            />
-                          )}
-                        </span>
+                        {isHovered && (
+                          <span className="text-body-sm font-medium whitespace-nowrap transition-all duration-200 flex-1 flex items-center justify-between min-w-0">
+                            <span className="truncate">{item.label}</span>
+                            {item.subItems && (
+                              <span
+                                className={cn(
+                                  "w-1.5 h-1.5 rounded-full shrink-0 ml-2 transition-colors",
+                                  isSubActive ? "bg-brand-primary" : "bg-text-muted/40 group-hover:bg-brand-primary",
+                                )}
+                                title={`${item.subItems[0].label}`}
+                              />
+                            )}
+                          </span>
+                        )}
                       </Link>
 
                       {/* Sub dot indicator in collapsed mode when sub-items exist */}
                       {!isHovered && item.subItems && isSubActive && (
-                        <div className="w-1.5 h-1.5 rounded-full bg-brand-primary mx-auto -mt-1 mb-0.5 shadow-[0_0_6px_rgba(11,98,86,0.8)]" />
+                        <div className="w-1.5 h-1.5 rounded-full bg-brand-primary mx-auto mt-1 shadow-[0_0_6px_rgba(11,98,86,0.8)]" />
                       )}
 
                       {/* Expanded sub-item with small sub dot below parent */}
@@ -181,7 +179,7 @@ export function AppSidebar() {
 
                       {/* Collapsed flyout when hovered on 72px rail */}
                       {!isHovered && isItemHovered && item.subItems && (
-                        <div className="absolute left-[70px] top-0 z-50 min-w-[175px] p-2 bg-surface-raised border border-border-strong rounded-xl shadow-2xl backdrop-blur-xl animate-in fade-in duration-150">
+                        <div className="absolute left-[72px] top-0 z-50 min-w-[175px] p-2 bg-surface-raised border border-border-strong rounded-xl shadow-2xl backdrop-blur-xl animate-in fade-in duration-150">
                           <div className="px-2 py-1 text-[10px] uppercase font-bold text-text-muted border-b border-border/50 mb-1">
                             {item.label}
                           </div>
