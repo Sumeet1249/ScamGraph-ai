@@ -11,13 +11,17 @@ export function AppSidebar() {
   const pathname = usePathname() || "/";
   const active = activeItem(pathname);
   const [isHovered, setIsHovered] = useState(false);
+  const [hoveredItemHref, setHoveredItemHref] = useState<string | null>(null);
 
   return (
     <div
       className="hidden md:block relative shrink-0 z-40 transition-[width] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
       style={{ width: isHovered ? 240 : 72 }}
       onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseLeave={() => {
+        setIsHovered(false);
+        setHoveredItemHref(null);
+      }}
     >
       <aside
         aria-label="Primary navigation"
@@ -78,10 +82,21 @@ export function AppSidebar() {
               </div>
               <ul className="space-y-1">
                 {group.items.map((item) => {
-                  const isActive = active?.href === item.href;
+                  const isSubActive = item.subItems?.some(
+                    (s) => pathname === s.href || pathname.startsWith(s.href),
+                  );
+                  const isActive = active?.href === item.href || isSubActive;
+                  const isItemHovered = hoveredItemHref === item.href;
+                  const showSub = (isItemHovered || isSubActive) && !!item.subItems;
                   const Icon = item.icon;
+
                   return (
-                    <li key={item.href}>
+                    <li
+                      key={item.href}
+                      className="relative"
+                      onMouseEnter={() => setHoveredItemHref(item.href)}
+                      onMouseLeave={() => setHoveredItemHref(null)}
+                    >
                       <Link
                         href={item.href}
                         aria-current={isActive ? "page" : undefined}
@@ -106,15 +121,91 @@ export function AppSidebar() {
                         />
                         <span
                           className={cn(
-                            "text-body-sm font-medium whitespace-nowrap transition-all duration-200",
+                            "text-body-sm font-medium whitespace-nowrap transition-all duration-200 flex-1 flex items-center justify-between",
                             isHovered
                               ? "opacity-100 translate-x-0 ml-0"
                               : "opacity-0 -translate-x-2 pointer-events-none w-0 overflow-hidden",
                           )}
                         >
-                          {item.label}
+                          <span>{item.label}</span>
+                          {item.subItems && (
+                            <span
+                              className={cn(
+                                "w-1.5 h-1.5 rounded-full transition-colors",
+                                isSubActive ? "bg-brand-primary" : "bg-text-muted/40 group-hover:bg-brand-primary",
+                              )}
+                              title={`${item.subItems[0].label}`}
+                            />
+                          )}
                         </span>
                       </Link>
+
+                      {/* Sub dot indicator in collapsed mode when sub-items exist */}
+                      {!isHovered && item.subItems && isSubActive && (
+                        <div className="w-1.5 h-1.5 rounded-full bg-brand-primary mx-auto -mt-1 mb-0.5 shadow-[0_0_6px_rgba(11,98,86,0.8)]" />
+                      )}
+
+                      {/* Expanded sub-item with small sub dot below parent */}
+                      {isHovered && showSub && item.subItems && (
+                        <div className="pl-6 pr-2 pt-1 pb-1 space-y-1 animate-in fade-in slide-in-from-top-1 duration-150">
+                          {item.subItems.map((sub) => {
+                            const isThisSubActive =
+                              pathname === sub.href || pathname.startsWith(sub.href);
+                            return (
+                              <Link
+                                key={sub.href}
+                                href={sub.href}
+                                className={cn(
+                                  "flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs transition-all group/sub",
+                                  isThisSubActive
+                                    ? "bg-brand-primary/15 text-brand-primary font-semibold"
+                                    : "text-text-muted hover:text-text-primary hover:bg-surface-hover",
+                                )}
+                                title={sub.hint}
+                              >
+                                {/* Small sub dot */}
+                                <span
+                                  className={cn(
+                                    "w-1.5 h-1.5 rounded-full shrink-0 transition-transform group-hover/sub:scale-125",
+                                    isThisSubActive
+                                      ? "bg-brand-primary shadow-[0_0_6px_rgba(11,98,86,0.8)]"
+                                      : "bg-text-muted/60 group-hover/sub:bg-brand-primary",
+                                  )}
+                                />
+                                <span className="truncate">{sub.label}</span>
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      {/* Collapsed flyout when hovered on 72px rail */}
+                      {!isHovered && isItemHovered && item.subItems && (
+                        <div className="absolute left-[70px] top-0 z-50 min-w-[175px] p-2 bg-surface-raised border border-border-strong rounded-xl shadow-2xl backdrop-blur-xl animate-in fade-in duration-150">
+                          <div className="px-2 py-1 text-[10px] uppercase font-bold text-text-muted border-b border-border/50 mb-1">
+                            {item.label}
+                          </div>
+                          {item.subItems.map((sub) => {
+                            const isThisSubActive =
+                              pathname === sub.href || pathname.startsWith(sub.href);
+                            return (
+                              <Link
+                                key={sub.href}
+                                href={sub.href}
+                                className={cn(
+                                  "flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs transition-colors",
+                                  isThisSubActive
+                                    ? "bg-brand-primary/15 text-brand-primary font-semibold"
+                                    : "text-text-muted hover:text-text-primary hover:bg-surface-hover",
+                                )}
+                              >
+                                <span className="w-1.5 h-1.5 rounded-full bg-brand-primary shrink-0 shadow-[0_0_6px_rgba(11,98,86,0.8)]" />
+                                <span className="truncate">{sub.label}</span>
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      )}
                     </li>
                   );
                 })}

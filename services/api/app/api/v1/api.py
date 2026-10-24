@@ -17,6 +17,8 @@ from services.api.app.api.v1.endpoints import (
     interventions,
     rescue,
     multilingual,
+    multimodal,
+    console,
 )
 
 api_router = APIRouter()
@@ -36,6 +38,8 @@ api_router.include_router(interventions.router, prefix="/interventions", tags=["
 api_router.include_router(interventions.payment_guard_router, prefix="/payment-guard", tags=["payment-guard"])
 api_router.include_router(rescue.router, prefix="/rescue", tags=["rescue"])
 api_router.include_router(multilingual.router, prefix="/multilingual", tags=["multilingual"])
+api_router.include_router(multimodal.router)
+api_router.include_router(console.router)
 
 
 
