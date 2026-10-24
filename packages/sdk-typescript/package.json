@@ -1,0 +1,19 @@
+{
+  "name": "@scamgraph/sdk",
+  "version": "2.0.0",
+  "description": "Official TypeScript/JavaScript SDK for ScamGraph AI Fraud Intelligence Platform",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "keywords": [
+    "scamgraph",
+    "fraud-prevention",
+    "payment-guard",
+    "upi",
+    "scam-intelligence"
+  ],
+  "author": "ScamGraph AI Engineering",
+  "license": "Apache-2.0"
+}
