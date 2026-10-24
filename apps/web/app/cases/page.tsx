@@ -1,346 +1,354 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import {
   Briefcase,
-  Plus,
-  ArrowRight,
-  Filter,
-  RefreshCw,
-  FolderOpen,
-  MessageSquare,
+  FileText,
   Shield,
+  Gavel,
+  Search,
+  Filter,
+  Download,
+  PlusCircle,
+  ExternalLink,
+  ChevronRight,
+  Clock,
   Layers,
+  Lock,
+  CheckCircle2,
+  AlertTriangle,
+  Scale,
+  X,
 } from "lucide-react";
-import { PageHeader } from "@/components/shared/PageHeader";
-import { Button } from "@/components/ui";
+import { formatDateTime } from "@/lib/utils/format";
 
-interface CaseItem {
-  case_id: string;
+export interface CaseRecord {
+  id: string;
+  fir_number: string;
   title: string;
-  status: "OPEN" | "INVESTIGATING" | "WAITING" | "RESOLVED" | "ARCHIVED";
-  priority: string;
-  assigned_analyst?: string;
-  linked_incident_ids: string[];
-  linked_campaign_ids: string[];
-  linked_entities: string[];
-  notes: Array<{ author: string; timestamp: string; text: string }>;
-  tags: string[];
-  created_at: string;
-  updated_at: string;
+  jurisdiction: string;
+  police_station: string;
+  lead_officer: string;
+  legal_sections: string[];
+  total_loss: number;
+  lien_recovered: number;
+  victims_count: number;
+  syndicate_cluster: string;
+  status: "UNDER_INVESTIGATION" | "CHARGE_SHEET_PREP" | "TRIAL_FILED" | "CLOSED";
+  opened_at: string;
+  last_updated: string;
 }
 
-export default function CasesPage() {
-  const [cases, setCases] = useState<CaseItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedCase, setSelectedCase] = useState<CaseItem | null>(null);
-  const [noteText, setNoteText] = useState("");
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [newTitle, setNewTitle] = useState("");
-  const [newPriority, setNewPriority] = useState("HIGH");
-  const [newAnalyst, setNewAnalyst] = useState("Fraud Ops Lead");
-  const [initialNote, setInitialNote] = useState("");
+const CANONICAL_CASES: CaseRecord[] = [
+  {
+    id: "CASE-2026-KA-0941",
+    fir_number: "FIR No. 0142/2026 (Cyber Crime PS Bengaluru)",
+    title: "State of Karnataka vs. State Electricity Cutoff Extortion Syndicate",
+    jurisdiction: "Bengaluru City Cyber Cell",
+    police_station: "Cyber Economic & Narcotics Crime Police Station",
+    lead_officer: "Inspector Raghavendra M. (Badge #KA-CY-401)",
+    legal_sections: ["§66D IT Act 2000", "§318(4) Bharatiya Nyaya Sanhita 2023", "§111 Organised Crime BNSS"],
+    total_loss: 18450000,
+    lien_recovered: 4280000,
+    victims_count: 142,
+    syndicate_cluster: "#UTL-8490",
+    status: "UNDER_INVESTIGATION",
+    opened_at: "2026-10-21T10:00:00Z",
+    last_updated: "2026-10-24T20:46:00Z",
+  },
+  {
+    id: "CASE-2026-MH-0412",
+    fir_number: "FIR No. 0089/2026 (BKC Cyber PS Mumbai)",
+    title: "State of Maharashtra vs. Impersonated CBI Digital Arrest Ring",
+    jurisdiction: "Mumbai Police Cyber Directorate",
+    police_station: "BKC Cyber Police Station",
+    lead_officer: "ACP Sneha Patil (IPS)",
+    legal_sections: ["§66C/66D IT Act", "§204/§308 BNSS", "§319 Extortion"],
+    total_loss: 39500000,
+    lien_recovered: 12000000,
+    victims_count: 34,
+    syndicate_cluster: "#DAR-3041",
+    status: "CHARGE_SHEET_PREP",
+    opened_at: "2026-10-19T14:30:00Z",
+    last_updated: "2026-10-24T19:45:00Z",
+  },
+  {
+    id: "CASE-2026-DL-0219",
+    fir_number: "FIR No. 0311/2026 (IFSO Special Cell New Delhi)",
+    title: "NCT of Delhi vs. Telegram Video Rating Scam Ring",
+    jurisdiction: "Delhi Police IFSO",
+    police_station: "Special Cell Cyber Hub",
+    lead_officer: "Sub-Inspector Pooja Sharma",
+    legal_sections: ["§66D IT Act", "§316 BNSS Breach of Trust"],
+    total_loss: 11200000,
+    lien_recovered: 3100000,
+    victims_count: 89,
+    syndicate_cluster: "#TSK-1092",
+    status: "UNDER_INVESTIGATION",
+    opened_at: "2026-10-16T11:00:00Z",
+    last_updated: "2026-10-24T16:15:00Z",
+  },
+];
 
-  const fetchCases = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/v1/console/cases");
-      if (res.ok) {
-        const data = await res.json();
-        setCases(data);
-        if (data.length > 0 && !selectedCase) {
-          setSelectedCase(data[0]);
-        }
-      }
-    } catch (e) {
-      console.error("Failed to load cases:", e);
-    } finally {
-      setLoading(false);
-    }
-  };
+export default function CasesListPage() {
+  const [cases, setCases] = useState<CaseRecord[]>(CANONICAL_CASES);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  useEffect(() => {
-    fetchCases();
-  }, []);
+  const selectedCase = cases.find((c) => c.id === selectedId) || null;
 
-  const handleAddNote = async () => {
-    if (!selectedCase || !noteText.trim()) return;
-    try {
-      const res = await fetch(`/api/v1/console/cases/${selectedCase.case_id}/notes`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: noteText, author: "Fraud Analyst (Active)" }),
-      });
-      if (res.ok) {
-        const updated = await res.json();
-        setCases((prev) => prev.map((c) => (c.case_id === updated.case_id ? updated : c)));
-        setSelectedCase(updated);
-        setNoteText("");
-      }
-    } catch (e) {
-      console.error("Failed to add note:", e);
-    }
-  };
-
-  const handleCreateCase = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const res = await fetch("/api/v1/console/cases", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: newTitle,
-          priority: newPriority,
-          assigned_analyst: newAnalyst,
-          initial_note: initialNote,
-          tags: ["MANUAL_CASE"],
-        }),
-      });
-      if (res.ok) {
-        const created = await res.json();
-        setCases((prev) => [created, ...prev]);
-        setSelectedCase(created);
-        setShowCreateModal(false);
-        setNewTitle("");
-        setInitialNote("");
-      }
-    } catch (e) {
-      console.error("Failed to create case:", e);
-    }
-  };
+  const filteredCases = cases.filter(
+    (c) =>
+      c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      c.fir_number.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      c.lead_officer.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <PageHeader
-          title="Investigation Casefiles"
-          description="Operational case workspaces grouping correlated incidents, cross-channel campaigns, and shared mule accounts."
-        />
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={fetchCases} disabled={loading}>
-            <RefreshCw className={`h-3.5 w-3.5 mr-1.5 ${loading ? "animate-spin" : ""}`} />
-            Refresh
-          </Button>
-          <Button variant="primary" size="sm" onClick={() => setShowCreateModal(true)}>
-            <Plus className="h-3.5 w-3.5 mr-1.5" />
-            New Case
-          </Button>
+    <div className="w-full space-y-4 text-viz-text">
+      {/* 1. Top Header Block */}
+      <div className="bg-surface border border-border-divider rounded-lg p-5 shadow-xs shrink-0 space-y-3">
+        <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2.5">
+              <div className="w-6 h-6 rounded bg-viz-primary text-white flex items-center justify-center font-bold">
+                <Scale className="w-3.5 h-3.5" />
+              </div>
+              <h1 className="text-2xl font-bold tracking-tight text-viz-text">Investigation Cases</h1>
+              <span className="text-[11px] bg-surface-subtle text-viz-neutral px-2 py-0.5 rounded uppercase font-semibold border border-border-divider">
+                §7 A14
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-tone-info-bg text-tone-info-text text-xs font-bold">
+                {cases.length} formal dockets
+              </span>
+            </div>
+            <p className="text-xs text-viz-neutral mt-1 max-w-3xl">
+              Formal FIR / BNSS statutory prosecution dossiers registered across Law Enforcement Agencies and High Court Jurisdictions with Merkle-backed §65B proof packages.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            <button className="h-8 px-3 rounded bg-viz-primary text-white text-xs font-semibold flex items-center gap-1.5 hover:bg-[#00483f] transition-colors shadow-xs">
+              <PlusCircle className="w-3.5 h-3.5" />
+              <span>Register New Case</span>
+            </button>
+            <button className="h-8 px-3 rounded bg-surface border border-border-control hover:bg-surface-subtle text-xs font-medium text-viz-text flex items-center gap-1.5 transition-colors">
+              <Download className="w-3.5 h-3.5 text-viz-neutral" />
+              <span>Export Prosecutor Bundle</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Search */}
+        <div className="relative max-w-md">
+          <Search className="absolute left-2.5 top-2 w-3.5 h-3.5 text-viz-neutral" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search FIR number, lead officer, jurisdiction..."
+            className="w-full h-7 pl-8 pr-2.5 bg-surface-subtle border border-border-divider rounded text-xs text-viz-text placeholder:text-viz-neutral focus:bg-surface focus:outline-none focus:border-viz-primary"
+          />
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Cases List */}
-        <div className="lg:col-span-5 space-y-3">
-          <div className="text-xs font-semibold text-ink-muted px-1">
-            Active Investigations ({cases.length})
-          </div>
+      {/* 3. Main Case Table */}
+      <div className="w-full bg-surface border border-border-divider rounded-lg overflow-x-auto min-h-[calc(100vh-14rem)]" data-density="compact">
+        <table className="w-full text-left border-collapse select-text min-w-[900px]">
+          <thead>
+            <tr className="h-9 bg-surface-subtle border-b border-border-divider text-[11px] font-semibold text-viz-neutral uppercase tracking-wider">
+              <th className="px-3 font-semibold">FIR Number &amp; Title</th>
+              <th className="px-3 font-semibold">Jurisdiction &amp; Station</th>
+              <th className="px-3 font-semibold">Lead Officer</th>
+              <th className="px-3 font-semibold">Statutory Sections</th>
+              <th className="px-3 font-semibold">Loss / Lien</th>
+              <th className="px-3 font-semibold">Status</th>
+              <th className="px-3 text-right font-semibold">Action</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border-divider text-xs text-viz-text">
+            {filteredCases.map((c) => {
+              const isSelected = selectedId === c.id;
 
-          <div className="space-y-2">
-            {cases.map((c) => (
-              <button
-                key={c.case_id}
-                onClick={() => setSelectedCase(c)}
-                className={`w-full p-4 rounded-xl border text-left transition-all ${
-                  selectedCase?.case_id === c.case_id
-                    ? "border-accent bg-accent/5 shadow-sm"
-                    : "border-line bg-surface hover:border-line-strong"
-                }`}
-              >
-                <div className="flex items-center justify-between gap-2 mb-1.5">
-                  <span
-                    className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase ${
-                      c.priority === "CRITICAL"
-                        ? "bg-red-500/15 text-red-400"
-                        : "bg-amber-500/15 text-amber-400"
-                    }`}
-                  >
-                    {c.priority}
-                  </span>
-                  <span className="text-[11px] font-mono text-ink-dim">{c.status}</span>
-                </div>
-
-                <div className="text-xs font-semibold text-ink line-clamp-1">{c.title}</div>
-                <div className="text-[11px] text-ink-muted mt-1">
-                  Assigned: {c.assigned_analyst || "Unassigned"}
-                </div>
-
-                <div className="flex items-center gap-4 mt-2 pt-2 border-t border-line/60 text-[10px] text-ink-dim font-mono">
-                  <span>{c.linked_incident_ids.length} Incidents</span>
-                  <span>{c.linked_campaign_ids.length} Campaigns</span>
-                  <span>{c.notes.length} Notes</span>
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Case Detail Workspace */}
-        <div className="lg:col-span-7">
-          {selectedCase ? (
-            <div className="p-6 rounded-2xl border border-line bg-surface space-y-6">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-surface-elevated text-accent">
-                      {selectedCase.case_id}
+              return (
+                <tr
+                  key={c.id}
+                  onClick={() => setSelectedId(c.id)}
+                  className={`h-9 transition-colors cursor-pointer group ${
+                    isSelected
+                      ? "bg-[#0B6256]/[0.08] border-l-[3px] border-l-viz-primary font-medium"
+                      : "hover:bg-surface-container-low border-l-[3px] border-l-transparent"
+                  }`}
+                >
+                  <td className="px-3">
+                    <div className="flex flex-col truncate max-w-[280px]">
+                      <span className="font-mono text-[11px] font-bold text-viz-primary">{c.fir_number}</span>
+                      <span className="font-semibold text-viz-text truncate">{c.title}</span>
+                    </div>
+                  </td>
+                  <td className="px-3 text-viz-neutral text-[11px] truncate max-w-[180px]">
+                    {c.police_station}
+                  </td>
+                  <td className="px-3 font-medium text-[11px]">{c.lead_officer}</td>
+                  <td className="px-3">
+                    <div className="flex flex-wrap gap-1">
+                      {c.legal_sections.slice(0, 2).map((sec) => (
+                        <span key={sec} className="px-1 bg-surface-subtle border border-border-divider rounded text-[10px] font-mono">
+                          {sec}
+                        </span>
+                      ))}
+                    </div>
+                  </td>
+                  <td className="px-3">
+                    <div className="flex flex-col text-[11px] font-mono">
+                      <span className="text-error font-semibold">₹{(c.total_loss / 100000).toFixed(1)} L</span>
+                      <span className="text-viz-primary">Lien: ₹{(c.lien_recovered / 100000).toFixed(1)} L</span>
+                    </div>
+                  </td>
+                  <td className="px-3">
+                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-tone-info-bg text-tone-info-text text-[11px] font-medium">
+                      {c.status}
                     </span>
-                    <span className="text-xs text-ink-dim">
-                      Updated {new Date(selectedCase.updated_at).toLocaleDateString()}
-                    </span>
-                  </div>
-                  <h3 className="text-lg font-bold text-ink">{selectedCase.title}</h3>
-                  <div className="text-xs text-ink-muted mt-1">
-                    Lead Analyst:{" "}
-                    <span className="text-ink font-semibold">
-                      {selectedCase.assigned_analyst || "Unassigned"}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Linked Objects Grid */}
-              <div className="grid grid-cols-3 gap-3 text-xs font-mono">
-                <div className="p-3 rounded-xl border border-line bg-surface-elevated">
-                  <div className="text-ink-dim text-[10px] uppercase">Linked Incidents</div>
-                  <div className="text-base font-bold text-ink mt-0.5">
-                    {selectedCase.linked_incident_ids.length}
-                  </div>
-                </div>
-                <div className="p-3 rounded-xl border border-line bg-surface-elevated">
-                  <div className="text-ink-dim text-[10px] uppercase">Correlated Campaigns</div>
-                  <div className="text-base font-bold text-accent mt-0.5">
-                    {selectedCase.linked_campaign_ids.length}
-                  </div>
-                </div>
-                <div className="p-3 rounded-xl border border-line bg-surface-elevated">
-                  <div className="text-ink-dim text-[10px] uppercase">Target Entities</div>
-                  <div className="text-base font-bold text-purple-400 mt-0.5">
-                    {selectedCase.linked_entities.length}
-                  </div>
-                </div>
-              </div>
-
-              {/* Linked Entities Display */}
-              {selectedCase.linked_entities.length > 0 && (
-                <div className="space-y-2">
-                  <div className="text-xs font-bold text-ink-muted uppercase tracking-wider font-mono">
-                    Entities Under Investigation
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedCase.linked_entities.map((ent) => (
-                      <span
-                        key={ent}
-                        className="px-2.5 py-1 rounded-lg bg-surface-elevated border border-line text-xs font-mono text-ink"
-                      >
-                        {ent}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Notes Stream */}
-              <div className="space-y-3 pt-4 border-t border-line">
-                <div className="text-xs font-bold text-ink-muted uppercase tracking-wider font-mono">
-                  Case Activity & Analyst Notes ({selectedCase.notes.length})
-                </div>
-
-                <div className="space-y-2 max-h-56 overflow-y-auto scrollbar-thin">
-                  {selectedCase.notes.map((note, idx) => (
-                    <div
-                      key={idx}
-                      className="p-3 rounded-xl border border-line bg-surface-elevated text-xs space-y-1"
+                  </td>
+                  <td className="px-3 text-right whitespace-nowrap">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedId(c.id);
+                      }}
+                      className="h-6 px-2.5 bg-viz-primary hover:bg-[#00483f] text-white rounded text-[11px] font-semibold inline-flex items-center transition-colors"
                     >
-                      <div className="flex items-center justify-between text-[10px] text-ink-dim font-mono">
-                        <span className="font-semibold text-accent">{note.author}</span>
-                        <span>{new Date(note.timestamp).toLocaleString()}</span>
-                      </div>
-                      <p className="text-xs text-ink leading-relaxed">{note.text}</p>
+                      Inspect Docket
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Centered Modal Popup with Backdrop Blur */}
+      {selectedCase && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-md transition-opacity duration-200"
+          onClick={() => setSelectedId(null)}
+        >
+          <div
+            className="bg-surface border border-border-divider rounded-xl shadow-2xl max-w-xl w-full max-h-[90vh] overflow-y-auto flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="px-5 py-3.5 bg-surface-subtle border-b border-border-divider flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded bg-[#0B6256]/10 text-viz-primary flex items-center justify-center font-bold">
+                  <Scale className="w-4 h-4" />
+                </div>
+                <div>
+                  <span className="text-[10px] uppercase text-viz-neutral font-bold tracking-wider block">
+                    Statutory Docket
+                  </span>
+                  <h2 className="text-base font-mono font-bold text-viz-text leading-tight">{selectedCase.id}</h2>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-tone-info-bg text-tone-info-text text-xs font-semibold">
+                  {selectedCase.status}
+                </span>
+                <button
+                  onClick={() => setSelectedId(null)}
+                  className="p-1 rounded hover:bg-surface-subtle text-viz-neutral hover:text-viz-text transition-colors"
+                  aria-label="Close modal"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-5 space-y-4 text-xs">
+              <div>
+                <h3 className="text-base font-bold text-viz-text leading-tight">{selectedCase.title}</h3>
+                <p className="text-xs text-viz-primary font-mono mt-1 font-semibold">{selectedCase.fir_number}</p>
+              </div>
+
+              {/* Police Station & Lead Officer */}
+              <div className="p-3.5 rounded bg-surface-subtle border border-border-divider space-y-2 text-xs">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <span className="font-bold text-viz-text block">Jurisdiction &amp; Station:</span>
+                    <span className="text-viz-neutral">{selectedCase.police_station}</span>
+                  </div>
+                  <div className="text-right">
+                    <span className="font-bold text-viz-text block">Lead Investigating Officer:</span>
+                    <span className="text-viz-neutral">{selectedCase.lead_officer}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Financial Impact */}
+              <div className="grid grid-cols-3 gap-2">
+                <div className="p-2.5 rounded bg-surface-subtle border border-border-divider">
+                  <span className="text-[10px] uppercase font-bold text-viz-neutral block">Total Loss</span>
+                  <span className="font-mono font-bold text-error text-sm">
+                    ₹{selectedCase.total_loss.toLocaleString("en-IN")}
+                  </span>
+                </div>
+                <div className="p-2.5 rounded bg-surface-subtle border border-border-divider">
+                  <span className="text-[10px] uppercase font-bold text-viz-neutral block">Lien Recovered</span>
+                  <span className="font-mono font-bold text-viz-primary text-sm">
+                    ₹{selectedCase.lien_recovered.toLocaleString("en-IN")}
+                  </span>
+                </div>
+                <div className="p-2.5 rounded bg-surface-subtle border border-border-divider">
+                  <span className="text-[10px] uppercase font-bold text-viz-neutral block">Victims Count</span>
+                  <span className="font-mono font-bold text-viz-text text-sm">
+                    {selectedCase.victims_count} Victims
+                  </span>
+                </div>
+              </div>
+
+              {/* Legal Sections Box */}
+              <div className="space-y-2 text-xs">
+                <span className="text-[10px] uppercase font-bold text-viz-neutral tracking-wider block">
+                  Applicable Penal Provisions
+                </span>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5">
+                  {selectedCase.legal_sections.map((sec) => (
+                    <div key={sec} className="p-2 rounded bg-surface-subtle border border-border-divider font-mono text-[11px] text-viz-text font-semibold">
+                      {sec}
                     </div>
                   ))}
                 </div>
-
-                <div className="pt-2 flex gap-2">
-                  <input
-                    type="text"
-                    value={noteText}
-                    onChange={(e) => setNoteText(e.target.value)}
-                    placeholder="Add an auditable investigation note..."
-                    className="flex-1 rounded-xl border border-line bg-surface px-3 py-2 text-xs text-ink outline-none focus:border-accent"
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") handleAddNote();
-                    }}
-                  />
-                  <Button variant="primary" size="sm" onClick={handleAddNote}>
-                    Append Note
-                  </Button>
-                </div>
               </div>
             </div>
-          ) : (
-            <div className="p-12 text-center border border-line rounded-2xl bg-surface text-ink-dim text-sm">
-              Select an investigation case to view linked incidents and timeline notes.
-            </div>
-          )}
-        </div>
-      </div>
 
-      {/* Create Case Modal */}
-      {showCreateModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-2xl border border-line bg-surface p-6 space-y-4">
-            <h3 className="text-base font-bold text-ink">Open New Investigation Case</h3>
-            <form onSubmit={handleCreateCase} className="space-y-3">
-              <div>
-                <label className="text-xs font-semibold text-ink-muted block mb-1">
-                  Case Title
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={newTitle}
-                  onChange={(e) => setNewTitle(e.target.value)}
-                  placeholder="e.g. Operation FakeKYC Mumbai Ring"
-                  className="w-full rounded-xl border border-line bg-surface px-3 py-2 text-xs text-ink outline-none focus:border-accent"
-                />
+            {/* Modal Footer / Action Deck */}
+            <div className="p-4 border-t border-border-divider bg-surface-subtle space-y-2">
+              <div className="text-[10px] uppercase font-bold text-viz-neutral tracking-wider">
+                Statutory Exports &amp; Action
               </div>
-
-              <div>
-                <label className="text-xs font-semibold text-ink-muted block mb-1">Priority</label>
-                <select
-                  value={newPriority}
-                  onChange={(e) => setNewPriority(e.target.value)}
-                  className="w-full rounded-xl border border-line bg-surface px-3 py-2 text-xs text-ink outline-none focus:border-accent"
+              <button className="w-full h-8 px-3 rounded bg-viz-primary hover:bg-[#00483f] text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-xs">
+                <Download className="w-3.5 h-3.5" />
+                <span>Export Cryptographic §65B Certificate</span>
+              </button>
+              <div className="flex items-center gap-2">
+                <Link
+                  href={`/cases/${selectedCase.id}`}
+                  className="flex-1 h-8 px-3 rounded bg-surface hover:bg-surface-container-high border border-border-control text-xs font-medium text-viz-text flex items-center justify-center gap-1.5 transition-colors"
                 >
-                  <option value="CRITICAL">CRITICAL</option>
-                  <option value="HIGH">HIGH</option>
-                  <option value="MEDIUM">MEDIUM</option>
-                </select>
+                  <span>Open Full Investigation Workspace</span>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </Link>
+                <button
+                  onClick={() => setSelectedId(null)}
+                  className="h-8 px-3 rounded bg-surface border border-border-control hover:bg-surface-container-high text-xs font-medium text-viz-neutral hover:text-viz-text transition-colors"
+                >
+                  Dismiss
+                </button>
               </div>
-
-              <div>
-                <label className="text-xs font-semibold text-ink-muted block mb-1">
-                  Initial Investigation Note
-                </label>
-                <textarea
-                  value={initialNote}
-                  onChange={(e) => setInitialNote(e.target.value)}
-                  placeholder="Reason for opening case and preliminary findings..."
-                  className="w-full rounded-xl border border-line bg-surface px-3 py-2 text-xs text-ink outline-none focus:border-accent"
-                  rows={3}
-                />
-              </div>
-
-              <div className="flex justify-end gap-2 pt-2">
-                <Button variant="outline" size="sm" onClick={() => setShowCreateModal(false)}>
-                  Cancel
-                </Button>
-                <Button variant="primary" size="sm" type="submit">
-                  Create Casefile
-                </Button>
-              </div>
-            </form>
+            </div>
           </div>
         </div>
       )}

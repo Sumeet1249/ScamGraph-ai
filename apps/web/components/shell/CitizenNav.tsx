@@ -19,7 +19,7 @@ export function CitizenNav() {
     <>
       {/* 1. Development & Statutory Environment Indicator */}
       <aside aria-label="Development Environment Indicator" className="w-full border-b border-border-divider bg-surface-subtle text-viz-text">
-        <div className="mx-auto flex max-w-[1200px] items-center justify-between px-4 py-1 text-xs md:px-8">
+        <div className="w-full flex items-center justify-between px-6 sm:px-10 lg:px-16 py-1 text-xs">
           <div className="flex items-center gap-2">
             <span className="inline-flex items-center rounded border border-border-control bg-tone-warning-bg px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-tone-warning-strong-text">
               SYNTHETIC DEMO DATA
@@ -39,7 +39,7 @@ export function CitizenNav() {
 
       {/* 2. Main Consumer Header Shell */}
       <header className="sticky top-0 z-50 w-full border-b border-border-divider bg-surface/95 backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between gap-4 px-4 md:px-8">
+        <div className="w-full flex h-16 items-center justify-between gap-4 px-6 sm:px-10 lg:px-16">
           {/* Logo & Navigation */}
           <div className="flex items-center gap-6 lg:gap-8">
             <Link

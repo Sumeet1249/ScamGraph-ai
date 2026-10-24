@@ -4,7 +4,7 @@ import { Shield, Lock } from "lucide-react";
 export function CitizenFooter() {
   return (
     <footer className="mt-auto w-full border-t border-border-divider bg-surface py-10">
-      <div className="mx-auto max-w-[1200px] px-4 md:px-8">
+      <div className="w-full px-6 sm:px-10 lg:px-16">
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-8 pb-8 border-b border-border-divider">
           <div className="max-w-[620px]">
             <div className="flex items-center gap-2 mb-2">

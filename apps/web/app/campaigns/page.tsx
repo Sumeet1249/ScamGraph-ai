@@ -1,82 +1,220 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
-import { PageHeader } from "@/components/shared/PageHeader";
-import { DemoDataBadge } from "@/components/shared/DemoDataBadge";
-import { Card } from "@/components/ui";
-import { humanize, formatDateTime } from "@/lib/utils/format";
-import { RotateCw, Share2 } from "lucide-react";
+import {
+  FolderKanban,
+  AlertTriangle,
+  Flame,
+  ArrowUpRight,
+  TrendingUp,
+  Search,
+  SlidersHorizontal,
+  Bookmark,
+  Download,
+  Star,
+  ExternalLink,
+  ShieldAlert,
+  Clock,
+  Layers,
+  CheckCircle2,
+  X,
+  RotateCw,
+  MoreVertical,
+  Activity,
+  FileText,
+  Lock,
+} from "lucide-react";
+import { formatDateTime } from "@/lib/utils/format";
 
-interface CampaignItem {
+export interface CampaignRecord {
   id: string;
+  cluster_id: string;
   name: string;
   pattern_type: string;
-  severity: string;
+  severity: "CRITICAL" | "HIGH" | "MEDIUM" | "LOW";
+  lifecycle: "Surging" | "Active" | "Resurgent" | "Emerging" | "Dormant";
+  velocity_label: string;
+  velocity_trend: number; // percentage
+  confidence: number; // percentage
   incidents_count: number;
-  shared_infrastructure_count: number;
-  first_seen: string;
+  financial_loss_total: number;
+  financial_loss_lien: number;
+  target_vector: string;
+  modality: string;
+  languages: string[];
   last_seen: string;
-  tactics?: string[];
+  first_seen: string;
+  review_state: "Needs review" | "Confirmed cluster" | "Unreviewed" | "Archived";
   sample_domain?: string;
   sample_vpa?: string;
-  description?: string;
+  lac_pool?: string;
+  description: string;
+  is_outbreak_candidate?: boolean;
 }
 
-const DEFAULT_CAMPAIGNS: CampaignItem[] = [
+const CANONICAL_CAMPAIGNS: CampaignRecord[] = [
+  {
+    id: "camp-power-urgent",
+    cluster_id: "#UTL-8490",
+    name: "State Electricity Instant Cutoff Syndicate",
+    pattern_type: "UTILITY_BILL_COERCION",
+    severity: "CRITICAL",
+    lifecycle: "Surging",
+    velocity_label: "+340% / 4h",
+    velocity_trend: 340,
+    confidence: 94,
+    incidents_count: 142,
+    financial_loss_total: 18450000,
+    financial_loss_lien: 4280000,
+    target_vector: "PhonePe/GPay UPI",
+    modality: "util-power-*",
+    languages: ["hi", "Hinglish", "en"],
+    last_seen: "2026-10-24T20:58:00Z",
+    first_seen: "2026-10-18T09:15:00Z",
+    review_state: "Needs review",
+    sample_domain: "electricity-bill-pay.xyz",
+    sample_vpa: "util-power-84920@okaxis",
+    lac_pool: "+91 98******10 Pool (LAC 404-45)",
+    description: "Active pan-regional coercive payment extortion campaign targeting metropolitan power utility subscribers via automated GSM spoofing, falsified disconnection work-orders, and rapid UPI push collect requests.",
+    is_outbreak_candidate: true,
+  },
   {
     id: "camp-kyc-freenom",
+    cluster_id: "#KYC-4091",
     name: "State Bank & Aadhaar KYC Suspension Syndicate",
     pattern_type: "KYC_IMPERSONATION",
     severity: "CRITICAL",
-    incidents_count: 24,
-    shared_infrastructure_count: 7,
+    lifecycle: "Surging",
+    velocity_label: "+280% / 6h",
+    velocity_trend: 280,
+    confidence: 96,
+    incidents_count: 98,
+    financial_loss_total: 24500000,
+    financial_loss_lien: 8900000,
+    target_vector: "Spoofed Banking Portal",
+    modality: "NetBanking / OTP Harvesting",
+    languages: ["hi", "en", "mr"],
+    last_seen: "2026-10-24T20:15:00Z",
     first_seen: "2026-10-15T08:30:00Z",
-    last_seen: "2026-10-20T17:45:00Z",
+    review_state: "Needs review",
     sample_domain: "sbi-kyc-verify-portal.online",
-    description: "Coordinated cluster targeting banking customers using spoofed SMS, KYC warnings, and malicious domains.",
-  },
-  {
-    id: "camp-power-urgent",
-    name: "Electricity & Utility Disconnection Phishing Ring",
-    pattern_type: "UTILITY_BILL_COERCION",
-    severity: "HIGH",
-    incidents_count: 18,
-    shared_infrastructure_count: 4,
-    first_seen: "2026-10-12T10:00:00Z",
-    last_seen: "2026-10-20T19:00:00Z",
-    sample_domain: "electricity-bill-pay.xyz",
-    description: "Urgent electricity shutoff notices redirecting to unauthorized merchant collect requests.",
+    sample_vpa: "secure.verify@paytm",
+    lac_pool: "+91 91******44 Pool (LAC 404-12)",
+    description: "Coordinated cluster targeting banking customers using spoofed SMS, KYC warnings, and credential harvesting landing pages mimicking nationalized banks.",
+    is_outbreak_candidate: true,
   },
   {
     id: "camp-work-from-home",
-    name: "E-Commerce Rating & Telegram Task Fraud Network",
+    cluster_id: "#TSK-1092",
+    name: "Telegram Pre-paid Task & Rating Scam Wave",
     pattern_type: "PART_TIME_JOB_FRAUD",
     severity: "HIGH",
-    incidents_count: 12,
-    shared_infrastructure_count: 5,
+    lifecycle: "Active",
+    velocity_label: "+45% steady",
+    velocity_trend: 45,
+    confidence: 91,
+    incidents_count: 89,
+    financial_loss_total: 11200000,
+    financial_loss_lien: 3100000,
+    target_vector: "Telegram Web Bot",
+    modality: "Merchant VPAs",
+    languages: ["en", "hi"],
+    last_seen: "2026-10-24T20:30:00Z",
     first_seen: "2026-10-16T11:00:00Z",
-    last_seen: "2026-10-20T20:15:00Z",
+    review_state: "Confirmed cluster",
     sample_domain: "task-earning-hub.xyz",
-    description: "Deceptive part-time job lures promising daily returns for rating videos.",
+    sample_vpa: "merchant992@icici",
+    lac_pool: "Telegram Bot Gateway",
+    description: "Deceptive part-time job lures promising daily returns for rating videos, transitioning to mandatory prepaid deposit tasks on fake crypto exchanges.",
+    is_outbreak_candidate: false,
   },
   {
-    id: "camp-investment-vip",
-    name: "High-Yield VIP Crypto & Stock Advisory Syndicate",
-    pattern_type: "INVESTMENT_LURE",
+    id: "camp-digital-arrest",
+    cluster_id: "#DAR-3041",
+    name: "CBI / Mumbai Police Digital Arrest Telephony",
+    pattern_type: "DIGITAL_ARREST",
+    severity: "CRITICAL",
+    lifecycle: "Resurgent",
+    velocity_label: "+190% surging",
+    velocity_trend: 190,
+    confidence: 88,
+    incidents_count: 34,
+    financial_loss_total: 39500000,
+    financial_loss_lien: 12000000,
+    target_vector: "Skype Video Call",
+    modality: "RTGS Demands & Fake Police Setup",
+    languages: ["hi", "en"],
+    last_seen: "2026-10-24T19:45:00Z",
+    first_seen: "2026-10-19T14:20:00Z",
+    review_state: "Needs review",
+    sample_domain: "cbi-investigation-notice.gov.in.top",
+    sample_vpa: "rbi.clearance@sbi",
+    lac_pool: "VoIP Trunking +91 22******90",
+    description: "Intimidation extortion ring operating fake police station backgrounds over video calls, coercing victims into liquidating mutual funds and RTGS wire transfers.",
+    is_outbreak_candidate: true,
+  },
+  {
+    id: "camp-apk-delivery",
+    cluster_id: "#APK-5512",
+    name: "PM Kisan Yojna Malicious APK Delivery",
+    pattern_type: "MALICIOUS_APK",
+    severity: "HIGH",
+    lifecycle: "Emerging",
+    velocity_label: "+80% accelerating",
+    velocity_trend: 80,
+    confidence: 88,
+    incidents_count: 29,
+    financial_loss_total: 6800000,
+    financial_loss_lien: 1500000,
+    target_vector: "Direct APK Link",
+    modality: "SMS Spoof / RAT Infiltration",
+    languages: ["hi", "bn"],
+    last_seen: "2026-10-24T18:10:00Z",
+    first_seen: "2026-10-21T06:00:00Z",
+    review_state: "Unreviewed",
+    sample_domain: "pmkisan-subsidy-apply.apk.top",
+    sample_vpa: "kisan.yojna@pnb",
+    lac_pool: "SMS Gateway HLR 404-67",
+    description: "Trojanized APK masquerading as welfare subsidy app, extracting SMS inbox tokens and granting automated accessibility service permissions.",
+    is_outbreak_candidate: true,
+  },
+  {
+    id: "camp-microloan-harass",
+    cluster_id: "#LOA-9018",
+    name: "Instant 5-Minute Microloan Contact Ring",
+    pattern_type: "MICROLOAN_EXTORTION",
     severity: "MEDIUM",
-    incidents_count: 10,
-    shared_infrastructure_count: 3,
-    first_seen: "2026-10-14T09:00:00Z",
-    last_seen: "2026-10-22T09:37:00Z",
-    sample_domain: "vip-stock-trade.top",
-    description: "WhatsApp group pump-and-dump scheme mimicking institutional stock brokerages.",
+    lifecycle: "Dormant",
+    velocity_label: "-35% cooling",
+    velocity_trend: -35,
+    confidence: 95,
+    incidents_count: 210,
+    financial_loss_total: 14200000,
+    financial_loss_lien: 5200000,
+    target_vector: "App Permissions Harvest",
+    modality: "WhatsApp Coercion",
+    languages: ["Hinglish", "en"],
+    last_seen: "2026-10-23T11:20:00Z",
+    first_seen: "2026-10-01T10:00:00Z",
+    review_state: "Archived",
+    sample_domain: "quick-rupee-loan.in",
+    sample_vpa: "recovery.finserv@hdfc",
+    lac_pool: "WhatsApp Cloud API",
+    description: "Predatory unlicensed lending app harvesting victim contact lists and issuing automated morphing blackmail messages to victim associates.",
+    is_outbreak_candidate: false,
   },
 ];
 
 export default function CampaignsPage() {
-  const [campaigns, setCampaigns] = useState<CampaignItem[]>(DEFAULT_CAMPAIGNS);
+  const [campaigns, setCampaigns] = useState<CampaignRecord[]>(CANONICAL_CAMPAIGNS);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterPreset, setFilterPreset] = useState<"ALL" | "OUTBREAK" | "SURGING" | "REVIEW">("ALL");
+  const [starredMap, setStarredMap] = useState<Record<string, boolean>>({});
+  const [selectedRows, setSelectedRows] = useState<Record<string, boolean>>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [lastSync, setLastSync] = useState<Date>(new Date());
 
   const fetchCampaigns = useCallback(async () => {
     setIsLoading(true);
@@ -85,11 +223,24 @@ export default function CampaignsPage() {
       if (res.ok) {
         const data = await res.json();
         if (Array.isArray(data) && data.length > 0) {
-          setCampaigns(data);
+          // Merge dynamic API records with rich canonical fields
+          const updated = CANONICAL_CAMPAIGNS.map((canon) => {
+            const match = data.find((d: any) => d.id === canon.id || d.name?.includes(canon.name.split(" ")[0]));
+            if (match) {
+              return {
+                ...canon,
+                incidents_count: match.incidents_count || canon.incidents_count,
+                last_seen: match.last_seen || canon.last_seen,
+              };
+            }
+            return canon;
+          });
+          setCampaigns(updated);
         }
       }
+      setLastSync(new Date());
     } catch (err) {
-      console.warn("Failed to fetch campaigns:", err);
+      console.warn("Using offline canonical campaign intelligence:", err);
     } finally {
       setIsLoading(false);
     }
@@ -97,120 +248,503 @@ export default function CampaignsPage() {
 
   useEffect(() => {
     fetchCampaigns();
-
-    // Auto-poll every 5 seconds for real-time synchronization
-    const interval = setInterval(fetchCampaigns, 5000);
-
-    const handleStorage = (e: StorageEvent) => {
-      if (e.key === "recent_investigations") {
-        fetchCampaigns();
-      }
-    };
-    window.addEventListener("storage", handleStorage);
-
-    return () => {
-      clearInterval(interval);
-      window.removeEventListener("storage", handleStorage);
-    };
+    const interval = setInterval(fetchCampaigns, 8000);
+    return () => clearInterval(interval);
   }, [fetchCampaigns]);
 
+  const filteredCampaigns = useMemo(() => {
+    return campaigns.filter((c) => {
+      // Preset filtering
+      if (filterPreset === "OUTBREAK" && !c.is_outbreak_candidate) return false;
+      if (filterPreset === "SURGING" && c.lifecycle !== "Surging") return false;
+      if (filterPreset === "REVIEW" && c.review_state !== "Needs review") return false;
+
+      // Query filtering
+      if (!searchQuery.trim()) return true;
+      const q = searchQuery.toLowerCase();
+      return (
+        c.name.toLowerCase().includes(q) ||
+        c.cluster_id.toLowerCase().includes(q) ||
+        c.pattern_type.toLowerCase().includes(q) ||
+        c.target_vector.toLowerCase().includes(q) ||
+        (c.sample_vpa && c.sample_vpa.toLowerCase().includes(q)) ||
+        (c.sample_domain && c.sample_domain.toLowerCase().includes(q))
+      );
+    });
+  }, [campaigns, filterPreset, searchQuery]);
+
+  const selectedCampaign = useMemo(() => {
+    return selectedId ? campaigns.find((c) => c.id === selectedId) || null : null;
+  }, [campaigns, selectedId]);
+
+  const toggleStar = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setStarredMap((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const toggleSelect = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedRows((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const formatINR = (val: number) => {
+    if (val >= 10000000) return `₹${(val / 10000000).toFixed(2)} Cr`;
+    if (val >= 100000) return `₹${(val / 100000).toFixed(2)} L`;
+    return `₹${val.toLocaleString("en-IN")}`;
+  };
+
   return (
-    <div className="space-y-8">
-      <PageHeader
-        eyebrow="Command"
-        title="Emerging Threat Campaigns"
-        description="Correlated scam clusters sharing infrastructure, payment VPAs, or deceptive workflows in real time."
-        actions={
-          <div className="flex items-center gap-3">
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-safe/10 border border-safe/30 text-safe text-xs font-medium">
-              <span className="h-2 w-2 rounded-full bg-safe animate-pulse" />
-              <span>LIVE CLUSTERS</span>
+    <div className="w-full space-y-4 text-viz-text">
+      {/* 1. Top Command Deck & Filters */}
+      <div className="bg-surface border border-border-divider rounded-lg p-5 shadow-xs shrink-0">
+        {/* Title Block */}
+        <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <h1 className="text-2xl font-bold tracking-tight text-viz-text">Campaigns</h1>
+              <span className="inline-flex items-center px-2 py-0.5 rounded bg-surface-subtle border border-border-divider text-xs font-semibold text-viz-neutral">
+                {campaigns.length} active clusters
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-tone-danger-bg text-tone-danger-text text-xs font-bold">
+                <span className="w-1.5 h-1.5 rounded-full bg-error animate-pulse" />
+                4 outbreak candidates
+              </span>
             </div>
+            <p className="text-xs text-viz-neutral mt-1 max-w-2xl">
+              Aggregated cross-incident syndicate waves classified by backend correlation and ScamDNA heuristics.
+            </p>
+          </div>
+
+          {/* Quick Actions */}
+          <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={fetchCampaigns}
               disabled={isLoading}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-line bg-surface hover:bg-surface-hover text-xs font-medium text-ink transition-all disabled:opacity-50 btn-pop"
-              title="Refresh campaigns"
+              className="h-8 px-3 rounded bg-surface border border-border-control hover:bg-surface-subtle text-xs font-medium text-viz-text flex items-center gap-1.5 transition-colors"
+              title="Refresh live cluster intelligence"
             >
-              <RotateCw className={`h-3.5 w-3.5 ${isLoading ? "animate-spin" : ""}`} />
-              Refresh
+              <RotateCw className={`w-3.5 h-3.5 text-viz-primary ${isLoading ? "animate-spin" : ""}`} />
+              <span>Refresh</span>
             </button>
-            <DemoDataBadge />
+            <button className="h-8 px-3 rounded bg-surface border border-border-control hover:bg-surface-subtle text-xs font-medium text-viz-text flex items-center gap-1.5 transition-colors">
+              <Bookmark className="w-3.5 h-3.5 text-viz-neutral" />
+              <span>Saved views</span>
+            </button>
+            <button className="h-8 px-3 rounded bg-surface border border-border-control hover:bg-surface-subtle text-xs font-medium text-viz-text flex items-center gap-1.5 transition-colors">
+              <Download className="w-3.5 h-3.5 text-viz-neutral" />
+              <span>Export table</span>
+            </button>
           </div>
-        }
-      />
+        </div>
 
-      {/* Section 10.2: Responsive 2-column layout on wide desktop, 1-column on mobile */}
-      <div className="grid gap-5 md:grid-cols-2">
-        {campaigns.map((c) => {
-          const isCritical = c.severity === "CRITICAL";
-          const isHigh = c.severity === "HIGH";
+        {/* Quick Preset Filter Pills & Search */}
+        <div className="px-4 lg:px-8 pb-3 flex items-center justify-between gap-4 overflow-x-auto">
+          <div className="flex items-center gap-1.5 shrink-0">
+            <button
+              onClick={() => setFilterPreset("ALL")}
+              className={`h-7 px-3 rounded-full text-xs font-medium transition-colors ${
+                filterPreset === "ALL"
+                  ? "bg-viz-primary text-white"
+                  : "bg-surface-subtle hover:bg-surface-container-high text-viz-text"
+              }`}
+            >
+              All campaigns ({campaigns.length})
+            </button>
+            <button
+              onClick={() => setFilterPreset("OUTBREAK")}
+              className={`h-7 px-3 rounded-full text-xs font-medium flex items-center gap-1.5 transition-colors ${
+                filterPreset === "OUTBREAK"
+                  ? "bg-viz-primary text-white"
+                  : "bg-surface-subtle hover:bg-surface-container-high text-viz-text"
+              }`}
+            >
+              <span className="w-2 h-2 rounded-full bg-viz-warning" />
+              <span>Outbreak candidates (4)</span>
+            </button>
+            <button
+              onClick={() => setFilterPreset("SURGING")}
+              className={`h-7 px-3 rounded-full text-xs font-medium flex items-center gap-1.5 transition-colors ${
+                filterPreset === "SURGING"
+                  ? "bg-viz-primary text-white"
+                  : "bg-surface-subtle hover:bg-surface-container-high text-viz-text"
+              }`}
+            >
+              <TrendingUp className="w-3 h-3 text-error" />
+              <span>Surging velocity (2)</span>
+            </button>
+            <button
+              onClick={() => setFilterPreset("REVIEW")}
+              className={`h-7 px-3 rounded-full text-xs font-medium flex items-center gap-1.5 transition-colors ${
+                filterPreset === "REVIEW"
+                  ? "bg-viz-primary text-white"
+                  : "bg-surface-subtle hover:bg-surface-container-high text-viz-text"
+              }`}
+            >
+              <span className="w-2 h-2 rounded-full bg-viz-info" />
+              <span>Pending analyst review (3)</span>
+            </button>
+          </div>
 
-          return (
-            <Link key={c.id} href={`/campaigns/${c.id}`} className="block h-full group">
-              <Card className="h-full flex flex-col justify-between transition-colors border-border bg-surface-1 hover:border-border-strong hover:bg-surface-2/70 p-5 rounded-xl">
+          {/* Search Box */}
+          <div className="relative w-64 shrink-0 hidden md:block">
+            <Search className="absolute left-2.5 top-2 w-3.5 h-3.5 text-viz-neutral" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Filter cluster, VPA, domain..."
+              className="w-full h-7 pl-8 pr-2.5 bg-surface-subtle border border-border-divider rounded text-xs text-viz-text placeholder:text-viz-neutral focus:bg-surface focus:outline-none focus:border-viz-primary"
+            />
+          </div>
+        </div>
+
+        {/* Dimension Controls Bar */}
+        <div className="px-4 lg:px-8 py-2 bg-surface-subtle border-t border-border-divider flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="h-6 px-2 bg-surface border border-border-divider rounded flex items-center gap-1 text-viz-text font-medium">
+              <span className="text-viz-neutral">Modality:</span>
+              <span>UPI &amp; Bill Payment</span>
+            </div>
+            <div className="h-6 px-2 bg-surface border border-border-divider rounded flex items-center gap-1 text-viz-text font-medium">
+              <span className="text-viz-neutral">Languages:</span>
+              <span>hi, bn, Hinglish, en</span>
+            </div>
+            <div className="h-6 px-2 bg-surface border border-border-divider rounded flex items-center gap-1 text-viz-text font-medium">
+              <span className="text-viz-neutral">Window:</span>
+              <span>Last 24h</span>
+            </div>
+            {(searchQuery || filterPreset !== "ALL") && (
+              <button
+                onClick={() => {
+                  setSearchQuery("");
+                  setFilterPreset("ALL");
+                }}
+                className="text-viz-primary hover:underline ml-1 font-medium"
+              >
+                Reset filters
+              </button>
+            )}
+          </div>
+          <div className="flex items-center gap-2 text-viz-neutral text-[11px]">
+            <span>
+              Showing <strong className="text-viz-text font-semibold">{filteredCampaigns.length}</strong> of {campaigns.length} campaigns
+            </span>
+            <span>·</span>
+            <span>
+              Updated <strong className="text-viz-text font-semibold">{Math.round((Date.now() - lastSync.getTime()) / 1000)}s ago</strong>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. Main Campaigns Table: Full width */}
+      <div className="w-full bg-surface rounded-xl border border-border-divider overflow-hidden shadow-xs" data-density="compact">
+        <div className="overflow-x-auto w-full">
+          <table className="w-full text-left border-collapse select-text min-w-[900px]">
+            <thead>
+              <tr className="h-9 bg-surface-subtle border-b border-border-divider text-[11px] font-semibold text-viz-neutral uppercase tracking-wider">
+                <th className="w-9 px-3 text-center">
+                  <input
+                    type="checkbox"
+                    className="w-3.5 h-3.5 accent-viz-primary rounded cursor-pointer"
+                    onChange={(e) => {
+                      const all: Record<string, boolean> = {};
+                      if (e.target.checked) filteredCampaigns.forEach((c) => (all[c.id] = true));
+                      setSelectedRows(all);
+                    }}
+                  />
+                </th>
+                <th className="w-8 px-0 text-center" />
+                <th className="px-3 font-semibold">Campaign ID &amp; Name</th>
+                <th className="px-3 font-semibold">Lifecycle</th>
+                <th className="px-3 font-semibold">Velocity</th>
+                <th className="px-3 font-semibold">ScamDNA Conf.</th>
+                <th className="px-3 font-semibold">Incidents</th>
+                <th className="px-3 font-semibold">Financial Loss</th>
+                <th className="px-3 font-semibold">Target Vector</th>
+                <th className="px-3 font-semibold">Languages</th>
+                <th className="px-3 font-semibold">Last Seen (IST)</th>
+                <th className="px-3 font-semibold">Review State</th>
+                <th className="px-3 text-right font-semibold">Action</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border-divider text-xs text-viz-text font-normal">
+              {filteredCampaigns.map((c) => {
+                const isSelected = selectedId === c.id;
+                const isStarred = !!starredMap[c.id];
+                const isChecked = !!selectedRows[c.id];
+
+                return (
+                  <tr
+                    key={c.id}
+                    onClick={() => setSelectedId(c.id)}
+                    className={`h-9 transition-colors cursor-pointer group ${
+                      isSelected
+                        ? "bg-[#0B6256]/[0.08] border-l-[3px] border-l-viz-primary font-medium"
+                        : "hover:bg-surface-container-low border-l-[3px] border-l-transparent"
+                    }`}
+                  >
+                    <td className="w-9 px-3 text-center">
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={(e) => toggleSelect(c.id, e as any)}
+                        className="w-3.5 h-3.5 accent-viz-primary rounded cursor-pointer"
+                      />
+                    </td>
+                    <td className="w-8 px-0 text-center">
+                      <button
+                        onClick={(e) => toggleStar(c.id, e)}
+                        className="text-viz-neutral hover:text-viz-warning transition-colors"
+                      >
+                        <Star
+                          className={`w-3.5 h-3.5 ${
+                            isStarred ? "text-viz-warning fill-viz-warning" : "text-border-control"
+                          }`}
+                        />
+                      </button>
+                    </td>
+                    <td className="px-3">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[11px] px-1 rounded bg-[#E8DFCF] text-[#4A3306] font-mono font-bold">
+                          {c.cluster_id}
+                        </span>
+                        <span className="font-semibold text-viz-text truncate max-w-xs">{c.name}</span>
+                      </div>
+                    </td>
+                    <td className="px-3">
+                      {c.lifecycle === "Surging" ? (
+                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-tone-danger-bg text-tone-danger-text text-[11px] font-bold">
+                          <span className="w-2 h-2 rounded-full border-2 border-error ring-1 ring-error animate-pulse inline-block" />
+                          Surging
+                        </span>
+                      ) : c.lifecycle === "Resurgent" ? (
+                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-[#F1ECE3] text-[#614714] text-[11px] font-semibold">
+                          <RotateCw className="w-2.5 h-2.5 text-viz-warning" />
+                          Resurgent
+                        </span>
+                      ) : c.lifecycle === "Emerging" ? (
+                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-tone-info-bg text-tone-info-text text-[11px] font-semibold">
+                          <span className="w-1.5 h-1.5 rounded-full bg-viz-info" />
+                          Emerging
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-surface-subtle text-viz-neutral text-[11px]">
+                          <span className="w-1.5 h-1.5 rounded-full bg-viz-primary" />
+                          Active
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-3">
+                      <div
+                        className={`flex items-center gap-1 text-[11px] font-mono font-semibold ${
+                          c.velocity_trend > 100
+                            ? "text-error"
+                            : c.velocity_trend > 0
+                            ? "text-viz-warning"
+                            : "text-viz-neutral"
+                        }`}
+                      >
+                        <ArrowUpRight className="w-3 h-3" />
+                        <span>{c.velocity_label}</span>
+                      </div>
+                    </td>
+                    <td className="px-3">
+                      <span className="text-[11px] text-viz-text font-medium">High ({c.confidence}%)</span>
+                    </td>
+                    <td className="px-3">
+                      <span className="font-semibold text-viz-text tabular-nums">{c.incidents_count} cases</span>
+                    </td>
+                    <td className="px-3">
+                      <span className="font-mono text-[11px] text-error font-semibold tabular-nums">
+                        {formatINR(c.financial_loss_total)}
+                      </span>
+                    </td>
+                    <td className="px-3 text-viz-neutral text-[11px] truncate max-w-xs">{c.target_vector}</td>
+                    <td className="px-3 text-[11px]">
+                      <div className="flex items-center gap-1">
+                        {c.languages.slice(0, 2).map((lang) => (
+                          <span
+                            key={lang}
+                            className="px-1 bg-surface-subtle rounded border border-border-divider font-mono text-[10px]"
+                          >
+                            {lang}
+                          </span>
+                        ))}
+                      </div>
+                    </td>
+                    <td className="px-3 text-[11px] whitespace-nowrap">
+                      <span>{formatDateTime(c.last_seen)}</span>
+                    </td>
+                    <td className="px-3">
+                      {c.review_state === "Needs review" ? (
+                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-tone-danger-strong-bg text-tone-danger-strong-text text-[11px] font-bold">
+                          <AlertTriangle className="w-3 h-3" />
+                          Needs review
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-tone-info-bg text-tone-info-text text-[11px]">
+                          Confirmed
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-3 text-right whitespace-nowrap">
+                      <div className="inline-flex items-center gap-1">
+                        <Link
+                          href={`/campaigns/${c.id}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="h-6 px-2 bg-viz-primary hover:bg-[#00483f] text-white rounded text-[11px] font-semibold flex items-center transition-colors"
+                        >
+                          Open
+                        </Link>
+                        <button
+                          onClick={(e) => e.stopPropagation()}
+                          className="w-6 h-6 flex items-center justify-center text-viz-neutral hover:text-viz-text rounded hover:bg-surface-subtle"
+                        >
+                          <MoreVertical className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Centered Modal Popup with blurred backdrop */}
+      {selectedCampaign && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-200">
+          {/* Blurred Backdrop */}
+          <div
+            className="fixed inset-0 bg-black/50 backdrop-blur-md transition-opacity"
+            onClick={() => setSelectedId(null)}
+            aria-hidden="true"
+          />
+
+          {/* Centered Modal Card */}
+          <div
+            role="dialog"
+            aria-modal="true"
+            className="relative w-full max-w-2xl bg-surface rounded-2xl shadow-2xl border border-border-divider overflow-hidden z-10 max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-200"
+          >
+            {/* Modal Header */}
+            <div className="px-6 py-4 bg-surface-subtle border-b border-border-divider flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-[#0B6256]/15 text-viz-primary flex items-center justify-center font-bold">
+                  <FolderKanban className="w-5 h-5 text-viz-primary" />
+                </div>
                 <div>
-                  <div className="flex items-start justify-between gap-3">
-                    <h3 className="text-sm font-semibold text-text-primary group-hover:text-brand-primary transition-colors line-clamp-2">
-                      {c.name}
-                    </h3>
-                    <span
-                      className={`shrink-0 rounded-md border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider2 ${
-                        isCritical
-                          ? "border-danger/30 bg-danger/10 text-danger"
-                          : isHigh
-                          ? "border-warning/30 bg-warning/10 text-warning"
-                          : "border-signal/30 bg-signal/10 text-signal"
-                      }`}
-                    >
-                      {c.severity}
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono font-bold text-sm text-viz-primary">{selectedCampaign.cluster_id}</span>
+                    <span className="text-[10px] uppercase bg-surface border border-border-divider px-1.5 py-0.5 rounded text-viz-neutral font-semibold">
+                      Syndicate Cluster
                     </span>
                   </div>
-                  <p className="mt-2 text-xs text-text-muted flex items-center gap-1.5">
-                    <Share2 className="h-3 w-3 text-brand-primary" />
-                    <span>{humanize(c.pattern_type)}</span>
-                  </p>
-                  {c.description && (
-                    <p className="mt-2.5 text-xs text-text-secondary leading-relaxed line-clamp-2">
-                      {c.description}
-                    </p>
-                  )}
+                  <h2 className="text-base font-bold text-viz-text leading-tight">{selectedCampaign.name}</h2>
                 </div>
+              </div>
+              <button
+                onClick={() => setSelectedId(null)}
+                className="h-8 w-8 rounded-lg hover:bg-surface-container-high flex items-center justify-center text-viz-neutral hover:text-viz-text transition-colors"
+                aria-label="Close modal"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
 
-                <div className="mt-5 pt-3.5 border-t border-border/80">
-                  <dl className="grid grid-cols-2 gap-y-2 text-xs">
-                    <div>
-                      <dt className="text-text-muted text-[11px]">Correlated Incidents</dt>
-                      <dd className="font-mono font-bold text-text-primary tabular-nums mt-0.5">
-                        {c.incidents_count}
-                      </dd>
+            {/* Modal Body */}
+            <div className="p-6 overflow-y-auto space-y-4 text-xs">
+              {selectedCampaign.is_outbreak_candidate && (
+                <div className="p-3.5 rounded-xl bg-tone-danger-strong-bg border border-error/40 flex items-start gap-3">
+                  <ShieldAlert className="w-5 h-5 text-error shrink-0 mt-0.5" />
+                  <div>
+                    <div className="text-[11px] font-bold text-tone-danger-strong-text uppercase tracking-wide">
+                      Outbreak Candidate Active
                     </div>
-                    <div>
-                      <dt className="text-text-muted text-[11px]">Shared Infrastructure</dt>
-                      <dd className="font-mono text-text-secondary tabular-nums mt-0.5">
-                        {c.shared_infrastructure_count}
-                      </dd>
-                    </div>
-                    <div className="col-span-2">
-                      <dt className="text-text-muted text-[11px]">Latest Activity</dt>
-                      <dd className="font-mono text-text-muted text-[11px] mt-0.5">
-                        {formatDateTime(c.last_seen)}
-                      </dd>
-                    </div>
-                  </dl>
-                  {c.sample_domain && (
-                    <div className="mt-3 overflow-hidden rounded bg-surface-2 px-2.5 py-1.5 border border-border">
-                      <p className="truncate font-mono text-[11px] text-text-secondary">
-                        Domain: <span className="text-text-primary">{c.sample_domain}</span>
-                      </p>
+                    <p className="text-xs text-tone-danger-text mt-0.5 leading-snug">
+                      Surge threshold exceeded: <strong>{selectedCampaign.velocity_label}</strong> with {selectedCampaign.incidents_count} confirmed victim reports.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              <p className="text-xs text-viz-neutral leading-relaxed">{selectedCampaign.description}</p>
+
+              {/* Metrics Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="p-3 rounded-lg bg-surface border border-border-divider">
+                  <span className="text-[10px] text-viz-neutral uppercase block font-semibold">Lifecycle</span>
+                  <div className="mt-1 font-bold text-viz-text">{selectedCampaign.lifecycle}</div>
+                </div>
+                <div className="p-3 rounded-lg bg-surface border border-border-divider">
+                  <span className="text-[10px] text-viz-neutral uppercase block font-semibold">Velocity</span>
+                  <div className="mt-1 font-mono font-bold text-sm text-error">{selectedCampaign.velocity_label}</div>
+                </div>
+                <div className="p-3 rounded-lg bg-surface border border-border-divider">
+                  <span className="text-[10px] text-viz-neutral uppercase block font-semibold">Total Drained</span>
+                  <div className="mt-1 font-mono font-bold text-sm text-error">{formatINR(selectedCampaign.financial_loss_total)}</div>
+                </div>
+                <div className="p-3 rounded-lg bg-surface border border-border-divider">
+                  <span className="text-[10px] text-viz-neutral uppercase block font-semibold">Active Lien</span>
+                  <div className="mt-1 font-mono font-bold text-sm text-viz-primary">{formatINR(selectedCampaign.financial_loss_lien)}</div>
+                </div>
+              </div>
+
+              {/* Top Shared Infrastructure */}
+              <div className="space-y-2">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-viz-neutral block">
+                  Top Shared Infrastructure &amp; Indicators
+                </span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  {selectedCampaign.sample_vpa && (
+                    <div className="p-3 rounded-lg bg-surface-subtle border border-border-divider">
+                      <span className="text-[10px] text-viz-neutral uppercase block font-semibold">Primary Collect VPA</span>
+                      <code className="text-xs font-mono font-bold text-viz-text select-all">{selectedCampaign.sample_vpa}</code>
                     </div>
                   )}
+                  {selectedCampaign.sample_domain && (
+                    <div className="p-3 rounded-lg bg-surface-subtle border border-border-divider">
+                      <span className="text-[10px] text-viz-neutral uppercase block font-semibold">Spoofed Phishing Domain</span>
+                      <code className="text-xs font-mono font-bold text-viz-text select-all">{selectedCampaign.sample_domain}</code>
+                    </div>
+                  )}
+                  {selectedCampaign.lac_pool && (
+                    <div className="p-3 rounded-lg bg-surface-subtle border border-border-divider">
+                      <span className="text-[10px] text-viz-neutral uppercase block font-semibold">Telephony SIM Rotation Pool</span>
+                      <code className="text-xs font-mono font-bold text-viz-text select-all">{selectedCampaign.lac_pool}</code>
+                    </div>
+                  )}
+                  <div className="p-3 rounded-lg bg-surface-subtle border border-border-divider">
+                    <span className="text-[10px] text-viz-neutral uppercase block font-semibold">Primary Vector</span>
+                    <span className="text-xs font-medium text-viz-text">{selectedCampaign.target_vector}</span>
+                  </div>
                 </div>
-              </Card>
-            </Link>
-          );
-        })}
-      </div>
+              </div>
+            </div>
+
+            {/* Modal Footer Actions */}
+            <div className="px-6 py-4 bg-surface-subtle border-t border-border-divider flex items-center justify-between gap-3">
+              <button
+                onClick={() => setSelectedId(null)}
+                className="h-9 px-4 rounded-lg bg-surface border border-border-divider text-viz-text hover:bg-surface-container-high text-xs font-semibold transition-colors"
+              >
+                Dismiss
+              </button>
+              <div className="flex items-center gap-2">
+                <Link
+                  href={`/campaigns/${selectedCampaign.id}`}
+                  className="h-9 px-4 bg-viz-primary hover:bg-[#00483f] text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs"
+                >
+                  <span>Full Workspace</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

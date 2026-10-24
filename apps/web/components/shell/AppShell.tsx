@@ -28,7 +28,17 @@ export function AppShell({ children }: { children: ReactNode }) {
     pathname.startsWith("/mulehunter") ||
     pathname.startsWith("/registry") ||
     pathname.startsWith("/ops") ||
-    pathname.startsWith("/lab");
+    pathname.startsWith("/lab") ||
+    pathname.startsWith("/analyst") ||
+    pathname.startsWith("/entities") ||
+    pathname.startsWith("/entity") ||
+    pathname.startsWith("/alerts") ||
+    pathname.startsWith("/review") ||
+    pathname.startsWith("/cases") ||
+    pathname.startsWith("/search") ||
+    pathname.startsWith("/saved") ||
+    pathname.startsWith("/access") ||
+    pathname.startsWith("/audit");
 
   if (!isAnalystRoute) {
     return (

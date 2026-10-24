@@ -80,7 +80,7 @@ export function MobileNav({
                   const isActive = active?.href === item.href;
                   const Icon = item.icon;
                   return (
-                    <li key={item.href}>
+                    <li key={item.href} className="space-y-1">
                       <Link
                         href={item.href}
                         className={cn(
@@ -93,6 +93,28 @@ export function MobileNav({
                         <Icon className={cn("h-4 w-4", isActive ? "text-brand-primary" : "text-text-muted")} />
                         <span>{item.label}</span>
                       </Link>
+                      {item.subItems && (
+                        <div className="pl-7 pr-2 space-y-1">
+                          {item.subItems.map((sub) => {
+                            const isSubActive = pathname === sub.href || pathname.startsWith(sub.href);
+                            return (
+                              <Link
+                                key={sub.href}
+                                href={sub.href}
+                                className={cn(
+                                  "flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs transition-colors",
+                                  isSubActive
+                                    ? "bg-brand-primary/15 text-brand-primary font-semibold"
+                                    : "text-text-muted hover:text-text-primary hover:bg-surface-2/40"
+                                )}
+                              >
+                                <span className={cn("w-1.5 h-1.5 rounded-full", isSubActive ? "bg-brand-primary" : "bg-text-muted/60")} />
+                                <span>{sub.label}</span>
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      )}
                     </li>
                   );
                 })}
