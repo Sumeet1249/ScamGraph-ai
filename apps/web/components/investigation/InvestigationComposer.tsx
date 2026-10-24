@@ -88,15 +88,60 @@ export function InvestigationComposer({
 
       <div className="space-y-4">
         {showMsg && (
-          <Textarea
-            label="Suspicious Message"
-            placeholder="Paste the message text..."
-            help="Analyzed for urgency keywords, impersonation, and known scam language"
-            value={message}
-            onChange={(e) => setMessage(e.currentTarget.value)}
-            rows={5}
-            disabled={isLoading}
-          />
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-body-sm font-medium text-text-primary">Suspicious Message</span>
+              <div className="flex flex-wrap items-center gap-1.5 text-[11px] font-mono">
+                <span className="text-text-muted">Indic Presets:</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMessage("Sir verification complete karne ke liye abhi 5000 pay karo, warna account block ho jayega.");
+                    setVpa("fake.verification@oksbi");
+                  }}
+                  className="px-1.5 py-0.5 rounded bg-surface-2 border border-border hover:bg-surface-3 text-text-secondary"
+                >
+                  Hinglish Task
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMessage("सीबीआई मुख्यालय। आपके आधार पर मनी लॉन्ड्रिंग का केस दर्ज है। कॉल डिस्कनेक्ट मत करना। तुरंत ₹50,000 सिक्योरिटी जमा करें।");
+                    setVpa("cbi.hq.desk@upi");
+                  }}
+                  className="px-1.5 py-0.5 rounded bg-surface-2 border border-border hover:bg-surface-3 text-text-secondary"
+                >
+                  हिंदी Digital Arrest
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMessage("Dear Customer, please be cautious. SBI never asks for your OTP, PIN or CVV. Never share credentials with anyone.");
+                  }}
+                  className="px-1.5 py-0.5 rounded bg-surface-2 border border-border hover:bg-surface-3 text-accent"
+                >
+                  Advisory Negation
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMessage("আপনার ব্যাঙ্ক অ্যাকাউন্ট ব্লক করা হয়েছে। এখনই 5000 টাকা পাঠিয়ে KYC আপডেট করুন।");
+                  }}
+                  className="px-1.5 py-0.5 rounded bg-surface-2 border border-border hover:bg-surface-3 text-text-secondary"
+                >
+                  বাংলা KYC
+                </button>
+              </div>
+            </div>
+            <Textarea
+              placeholder="Paste the message text in English, Hindi, Hinglish, Bengali..."
+              help="Analyzed by LanguageIntelligenceService for Indic normalization, script, code-mixing, and tactics"
+              value={message}
+              onChange={(e) => setMessage(e.currentTarget.value)}
+              rows={4}
+              disabled={isLoading}
+            />
+          </div>
         )}
 
         {showUrl && (

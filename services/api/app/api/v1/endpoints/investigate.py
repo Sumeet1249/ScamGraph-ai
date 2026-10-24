@@ -46,6 +46,8 @@ class InvestigateResponse(BaseModel):
     graph_correlation: Optional[Dict[str, Any]] = None
     unified_assessment: Optional[Dict[str, Any]] = None
     tripartite_decision: Optional[Dict[str, Any]] = None
+    contextual_intervention: Optional[Dict[str, Any]] = None
+    multilingual_text: Optional[Dict[str, Any]] = None
     is_simulated: bool = False  # Set true if using DEMO_MODE or mock data
 
 
@@ -56,13 +58,40 @@ async def investigate_target(req: InvestigateRequest, response: Response):
     inc_id = f"inv_{uuid4().hex[:10]}"
     signals: List[EvidenceSignal] = []
     is_simulated = settings.DEMO_MODE
+    multilingual_dict = None
 
     # Set X-Simulate header for client-side transparency
     if is_simulated:
         response.headers["X-Simulate"] = "true"
 
-    # 1. Semantic Message Analysis
+    # 1. Semantic Message Analysis & Multilingual Intelligence (Phase 5C)
     if req.message_text:
+        try:
+            from services.language_intelligence.service import language_intelligence_service
+            multi_rep = language_intelligence_service.analyze_text(req.message_text)
+            multilingual_dict = multi_rep.model_dump()
+            feat = language_intelligence_service.extract_behavioral_features(req.message_text)
+
+            if feat.protective_negation_present:
+                signals.append(
+                    EvidenceSignal(
+                        incident_id=inc_id,
+                        dimension=SignalDimension.TEXT,
+                        signal_type="PROTECTIVE_SECURITY_ADVISORY",
+                        severity=SignalSeverity.INFO,
+                        confidence=0.98,
+                        weight=-1.5,
+                        description="Verified protective security notice: explicit advisory against disclosing credentials or passwords.",
+                        provenance=ProvenanceRecord(
+                            source_service="services/language_intelligence",
+                            detector_name="ProtectiveNegationEngine",
+                            target_artifact=req.message_text[:100],
+                        ),
+                    )
+                )
+        except Exception:
+            pass
+
         text_signals = SemanticSignalExtractor.extract_signals(inc_id, req.message_text)
         signals.extend(text_signals)
 
@@ -239,6 +268,25 @@ async def investigate_target(req: InvestigateRequest, response: Response):
     except Exception as e:
         pass
 
+    # 7.6 Contextual Intervention Engine (Phase 4B)
+    contextual_dict = None
+    try:
+        from services.intervention_engine.service import contextual_intervention_service
+        from packages.schemas.contextual_intervention import PaymentProximity
+        intv_res = contextual_intervention_service.evaluate_from_signals(
+            incident_id=inc_id,
+            message_text=req.message_text,
+            url=target_url,
+            vpa=target_vpa,
+            phone=req.sender_phone,
+            journey_stage=stg,
+            payment_proximity=PaymentProximity.REQUESTED if is_payment_proximate else PaymentProximity.NONE,
+            tactics_observed=tactics,
+        )
+        contextual_dict = intv_res.model_dump()
+    except Exception as e:
+        pass
+
     # 8. Persist investigated incident to repository so it appears in the Incidents tab
     pattern_name = pattern_dict.get("pattern_name", "Unclassified") if pattern_dict else "Ad-hoc Investigation"
     risk_lvl_str = assessment.risk_level.value if hasattr(assessment.risk_level, "value") else str(assessment.risk_level)
@@ -286,6 +334,8 @@ async def investigate_target(req: InvestigateRequest, response: Response):
         graph_correlation=graph_dict,
         unified_assessment=unified_dict,
         tripartite_decision=tripartite_dict,
+        contextual_intervention=contextual_dict,
+        multilingual_text=multilingual_dict,
         is_simulated=is_simulated,
     )
 

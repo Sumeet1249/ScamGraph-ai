@@ -14,6 +14,9 @@ from services.api.app.api.v1.endpoints import (
     simulator,
     entities,
     radar,
+    interventions,
+    rescue,
+    multilingual,
 )
 
 api_router = APIRouter()
@@ -29,6 +32,10 @@ api_router.include_router(registry.router, prefix="/registry", tags=["registry"]
 api_router.include_router(mule.router, prefix="/mule", tags=["mule"])
 api_router.include_router(graph.router, prefix="/graph", tags=["graph"])
 api_router.include_router(risk.router, prefix="/risk", tags=["risk"])
+api_router.include_router(interventions.router, prefix="/interventions", tags=["interventions"])
+api_router.include_router(interventions.payment_guard_router, prefix="/payment-guard", tags=["payment-guard"])
+api_router.include_router(rescue.router, prefix="/rescue", tags=["rescue"])
+api_router.include_router(multilingual.router, prefix="/multilingual", tags=["multilingual"])
 
 
 
