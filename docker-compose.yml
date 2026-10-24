@@ -41,6 +41,21 @@ services:
       timeout: 5s
       retries: 5
 
+  # Redis Coordination, Queue & Cache
+  redis:
+    image: redis:7.2-alpine
+    container_name: scamgraph-redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
   # FastAPI Backend Service (Placeholder for build stage)
   # api:
   #   build:
@@ -57,6 +72,8 @@ services:
   #       condition: service_healthy
   #     neo4j:
   #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
 
 volumes:
   pgdata:
@@ -64,4 +81,6 @@ volumes:
   neo4jdata:
     driver: local
   neo4jplugins:
+    driver: local
+  redisdata:
     driver: local

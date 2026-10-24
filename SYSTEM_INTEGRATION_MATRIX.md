@@ -81,3 +81,14 @@ Protect & Pre-Payment Guard / ScamGraph Rescue (Prompts 15–16)
 | **Unified Risk** | `TripartiteDecision` | **Contextual Intervention (Phase 4B)** | `ContextualInterventionService.evaluate(...)` | `test_contextual_interventions` | **CONNECTED** |
 | **Intervention Engine** | Localized Safety Catalog | **Protect & Guard UI (Phase 5A)** | Header Language Selector $\to$ Localized Interventions | Browser Visual QA (`multilingual_investigate_qa`) | **CONNECTED** |
 | **Rescue Engine** | Emergency Triage Plan | **Rescue UI (Phase 5B)** | `RescueService.get_action_plan(iid)` | `test_rescue_triage_hindi_report` | **CONNECTED** |
+| **Multimodal Service** | `ExtractedObservations` | **Downstream Journey & DNA** | `MultimodalService.process_artifact(...)` | `test_multimodal_intelligence_step18.py` | **CONNECTED** |
+| **Enterprise Platform** | `ApiKeyRecord`, `TenantContext` | **Enterprise API Gateway** | `EnterprisePlatformService.authenticate_api_key(...)` | `test_enterprise_platform_step20.py` | **CONNECTED** |
+| **Security Governance** | `PrincipalContext`, `RBAC` | **Data Access Layer** | `SecurityService.authorize_evidence_access(...)` | `test_security_governance_step21.py` | **CONNECTED** |
+| **Job Queue (Phase 7B)** | `QueueMessage`, `JobPriority` | **Background Worker Pool** | `JobQueue.dequeue(worker_class)` | `test_req_1_screenshot_async_analysis` | **CONNECTED** |
+| **Cache Manager (Phase 7B)** | `TenantIsolatedCache` | **API & Worker Coordination** | `CacheManager.get_or_compute(...)` | `test_req_17_tenant_cache_isolation` | **CONNECTED** |
+| **Campaign Worker (Phase 7B)** | `OutbreakEvent` | **Partner Webhook Delivery** | `WebhookWorker.execute_job(...)` | `test_req_11_signed_webhook_delivery` | **CONNECTED** |
+| **Telemetry (Phase 7C)** | `SanitizedJSONLog` | **Central Log Aggregation** | `TelemetrySanitizer.sanitize_dict(...)` | `test_req_23_telemetry_redaction_secrets` | **CONNECTED** |
+| **Trace Context (Phase 7C)**| `SpanRecord` | **Async Queue & Workers** | `TraceContext.start_span(...)` | `test_req_2_trace_continuity_across_queue` | **CONNECTED** |
+| **AI Quality (Phase 7C)** | `GoldenRegressionReport`| **CI/CD Release Gate** | `AIQualityEngine.run_golden_regression(...)`| `test_req_22_critical_regression_blocks_release` | **CONNECTED** |
+| **Drift Detector (Phase 7C)**| `DriftAlert` | **Command Center & Runbooks** | `DriftDetector.evaluate_campaign_drift(...)` | `test_req_19_scamdna_cluster_drift` | **CONNECTED** |
+| **Health Service (Phase 7C)**| `SLORecord`, `HealthStatus` | **Operator Inspection Endpoints**| `HealthCheckService.check_deep_health()` | `test_req_11_radar_freshness_transition` | **CONNECTED** |
