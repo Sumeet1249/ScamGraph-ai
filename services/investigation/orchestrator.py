@@ -59,6 +59,7 @@ class IncidentAssessment(BaseModel):
     intervention: InterventionDecision
     reason_codes: List[str] = Field(default_factory=list)
     tripartite_decision: Optional[Any] = None
+    contextual_intervention: Optional[Any] = None
     assessed_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
@@ -296,6 +297,24 @@ class InvestigationOrchestrator:
         except Exception as dec_err:
             logger.debug("Tripartite decision evaluation skipped: %s", dec_err)
 
+        # 13. Run Contextual Intervention Engine (Phase 4B)
+        contextual_intv = None
+        try:
+            from services.intervention_engine.service import contextual_intervention_service
+            from packages.schemas.contextual_intervention import PaymentProximity
+            contextual_intv = contextual_intervention_service.evaluate_from_signals(
+                incident_id=incident_id,
+                message_text=sample_text if sample_text.strip() else None,
+                url=first_url,
+                vpa=first_vpa,
+                phone=first_phone,
+                journey_stage=current_stage,
+                payment_proximity=PaymentProximity.REQUESTED if payment_proximity else PaymentProximity.NONE,
+                tactics_observed=[p.pattern_id for p in pattern_matches],
+            )
+        except Exception as intv_err:
+            logger.debug("Contextual intervention evaluation skipped: %s", intv_err)
+
         return IncidentAssessment(
             incident_id=incident_id,
             incident=incident,
@@ -308,6 +327,7 @@ class InvestigationOrchestrator:
             intervention=decision,
             reason_codes=consolidated_reasons,
             tripartite_decision=tripartite,
+            contextual_intervention=contextual_intv,
         )
 
     @staticmethod

@@ -218,6 +218,18 @@ from packages.schemas.unified_decision import (
     SignalContribution,
     TripartiteDecision,
 )
+from packages.schemas.contextual_intervention import (
+    InterventionType,
+    FrictionLevel,
+    PaymentReason,
+    PaymentProximity,
+    InterventionTiming,
+    UserResponseAction,
+    VerificationPlan,
+    PrePaymentContext,
+    InterventionDecision,
+    InterventionFeedback,
+)
 
 __all__ = [
     # Common & V2 Primitives
@@ -401,4 +413,15 @@ __all__ = [
     "DecisionDimension",
     "SignalContribution",
     "TripartiteDecision",
+    # Contextual Intervention & Pre-Payment Guard (Phase 4B)
+    "InterventionType",
+    "FrictionLevel",
+    "PaymentReason",
+    "PaymentProximity",
+    "InterventionTiming",
+    "UserResponseAction",
+    "VerificationPlan",
+    "PrePaymentContext",
+    "InterventionDecision",
+    "InterventionFeedback",
 ]

@@ -46,6 +46,7 @@ class InvestigateResponse(BaseModel):
     graph_correlation: Optional[Dict[str, Any]] = None
     unified_assessment: Optional[Dict[str, Any]] = None
     tripartite_decision: Optional[Dict[str, Any]] = None
+    contextual_intervention: Optional[Dict[str, Any]] = None
     is_simulated: bool = False  # Set true if using DEMO_MODE or mock data
 
 
@@ -239,6 +240,25 @@ async def investigate_target(req: InvestigateRequest, response: Response):
     except Exception as e:
         pass
 
+    # 7.6 Contextual Intervention Engine (Phase 4B)
+    contextual_dict = None
+    try:
+        from services.intervention_engine.service import contextual_intervention_service
+        from packages.schemas.contextual_intervention import PaymentProximity
+        intv_res = contextual_intervention_service.evaluate_from_signals(
+            incident_id=inc_id,
+            message_text=req.message_text,
+            url=target_url,
+            vpa=target_vpa,
+            phone=req.sender_phone,
+            journey_stage=stg,
+            payment_proximity=PaymentProximity.REQUESTED if is_payment_proximate else PaymentProximity.NONE,
+            tactics_observed=tactics,
+        )
+        contextual_dict = intv_res.model_dump()
+    except Exception as e:
+        pass
+
     # 8. Persist investigated incident to repository so it appears in the Incidents tab
     pattern_name = pattern_dict.get("pattern_name", "Unclassified") if pattern_dict else "Ad-hoc Investigation"
     risk_lvl_str = assessment.risk_level.value if hasattr(assessment.risk_level, "value") else str(assessment.risk_level)
@@ -286,6 +306,7 @@ async def investigate_target(req: InvestigateRequest, response: Response):
         graph_correlation=graph_dict,
         unified_assessment=unified_dict,
         tripartite_decision=tripartite_dict,
+        contextual_intervention=contextual_dict,
         is_simulated=is_simulated,
     )
 
