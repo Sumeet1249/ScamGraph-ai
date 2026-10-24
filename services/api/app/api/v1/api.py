@@ -20,9 +20,11 @@ from services.api.app.api.v1.endpoints import (
     multimodal,
     console,
     enterprise,
+    auth,
 )
 
 api_router = APIRouter()
+api_router.include_router(auth.router)
 api_router.include_router(incidents.router, prefix="/incidents", tags=["incidents"])
 api_router.include_router(entities.router)
 api_router.include_router(analyze.router, prefix="/analyze", tags=["analyze"])

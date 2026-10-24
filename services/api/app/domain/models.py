@@ -54,6 +54,8 @@ class Incident(BaseModel):
     status: IncidentStatus = IncidentStatus.OPEN
     title: str = Field(..., min_length=1)
     source: str = Field(default="USER_REPORT")
+    owner_id: Optional[str] = Field(default=None, description="Consumer owner user ID")
+    org_id: Optional[str] = Field(default=None, description="Enterprise tenant organization ID")
     metadata: Dict[str, Any] = Field(default_factory=dict)
 
     @field_validator("id")
