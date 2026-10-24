@@ -584,3 +584,16 @@ from packages.schemas.security import (
     EntityDisputeRecord,
 )
 
+from packages.schemas.jobs import (
+    JobStatus,
+    JobPriority,
+    WorkerClass,
+    JobType,
+    FailureCategory,
+    QueueMessage,
+    DurableJobRecord,
+    DeadLetterRecord,
+    CacheCategory,
+    CacheEntryMetadata,
+)
+
