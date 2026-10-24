@@ -1,0 +1,24 @@
+{
+  "page_title": "Example Utility Services — Customer Portal",
+  "claimed_brands": ["Bescom Public Utility"],
+  "login_fields": ["consumer_id"],
+  "credential_fields": [],
+  "otp_fields": [],
+  "payment_fields": ["amount_due"],
+  "personal_information_fields": [],
+  "phone_numbers": ["+918022873333"],
+  "email_addresses": ["support@bescom.co.in"],
+  "payment_identifiers": ["utility@officialbank"],
+  "linked_domains": ["bescom.co.in", "karnataka.gov.in"],
+  "redirects": [],
+  "urgency_claims": [],
+  "financial_claims": ["Standard regulated tariff"],
+  "brand_impersonation_observations": [],
+  "observable_actions": ["Download Bill", "View History", "Pay Bill"],
+  "evidence": [
+    {
+      "fact": "Official customer billing management dashboard with SSL validation",
+      "selector": "#billSummary"
+    }
+  ]
+}

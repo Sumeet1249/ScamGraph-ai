@@ -1,0 +1,41 @@
+{
+  "evaluation_sample_count": 200,
+  "models": {
+    "tfidf_logistic_regression": {
+      "accuracy": 0.91,
+      "precision": 0.8679,
+      "recall": 0.9583,
+      "f1_score": 0.9109,
+      "false_positive_rate": 0.1346,
+      "confusion_matrix": {
+        "true_negative": 90,
+        "false_positive": 14,
+        "false_negative": 4,
+        "true_positive": 92
+      },
+      "test_sample_count": 200,
+      "model_name": "TF-IDF + Logistic Regression",
+      "architecture": "TfidfVectorizer + LogisticRegression"
+    },
+    "distilbert_transformer": {
+      "model_name": "anmolshrivastav/distilbert-scam-detector-india",
+      "architecture": "DistilBertForSequenceClassification",
+      "accuracy": 0.555,
+      "precision": 0.5189,
+      "recall": 1.0,
+      "f1_score": 0.6833,
+      "false_positive_rate": 0.8558,
+      "confusion_matrix": {
+        "true_negative": 15,
+        "false_positive": 89,
+        "false_negative": 0,
+        "true_positive": 96
+      },
+      "test_sample_count": 200
+    }
+  },
+  "summary": {
+    "higher_f1": "tfidf",
+    "lower_fpr": "tfidf"
+  }
+}

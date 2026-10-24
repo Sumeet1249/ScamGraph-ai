@@ -1,0 +1,48 @@
+{
+  "generated_at": "2026-10-20T21:16:09.352557+00:00",
+  "random_seed": 42,
+  "test_ratio": 0.2,
+  "preprocessing_stats": {
+    "total_raw": 3867,
+    "total_deduplicated": 3857,
+    "exact_duplicates_removed": 10,
+    "train_count": 3048,
+    "test_count": 809,
+    "class_distribution": {
+      "scam": 1705,
+      "ham": 2152
+    },
+    "language_distribution": {
+      "hinglish": 639,
+      "en": 2539,
+      "mr_en": 127,
+      "ta_en": 125,
+      "hi": 167,
+      "te_en": 125,
+      "bn_en": 135
+    },
+    "synthetic_distribution": {
+      "synthetic": 1595,
+      "real_or_mixed": 2262
+    },
+    "source_distribution": {
+      "Ridham115/indian-scam-sms-synthetic-audited": 1580,
+      "anmolshrivastav/scam-ham-india": 2262,
+      "scamgraph-canonical-journeys": 15
+    }
+  },
+  "evaluation_metrics": {
+    "accuracy": 0.9567,
+    "precision": 0.9484,
+    "recall": 0.9511,
+    "f1_score": 0.9498,
+    "false_positive_rate": 0.039,
+    "confusion_matrix": {
+      "true_negative": 443,
+      "false_positive": 18,
+      "false_negative": 17,
+      "true_positive": 331
+    },
+    "test_sample_count": 809
+  }
+}

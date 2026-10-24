@@ -1,0 +1,42 @@
+id: FAKE_SUPPORT_REFUND
+name: Fake Support / E-Commerce Refund Fraud
+description: >
+  Scammer poses as customer support for an e-commerce platform, airline, or courier,
+  offering an urgent refund or delivery resolution via remote screen share or QR code scanning.
+
+required_signals:
+  - OFFICIAL_ENTITY_IMPERSONATION
+  - REFUND_OR_REVERSAL_CLAIM
+
+supporting_signals:
+  - REMOTE_ACCESS_TOOL_PROMPT
+  - QR_CODE_COLLECT_INVERSION
+  - URGENT_CALL_ACTION
+
+event_sequence:
+  - CALL_REPORTED
+  - QR_RECEIVED
+  - PAYMENT_REQUEST
+  - PAYMENT_INTENT
+
+optional_signals:
+  - REVERSE_PAYMENT_DECEPTION
+  - SCREEN_SHARING_APP_REQUESTED
+
+contradictory_signals:
+  - IN_APP_OFFICIAL_REFUND_RECEIPT
+
+stages:
+  - INITIAL_CONTACT
+  - SUPPORT_IMPERSONATION
+  - REFUND_OFFER
+  - REVERSE_CHARGE_COLLECT
+
+common_next_stage: PAYMENT_INTENT
+
+intervention_guidance:
+  preferred_before:
+    - PAYMENT_INTENT
+  friction_seconds: 10
+  warning_title: Potential Support Impersonation
+  warning_message: Scanning a QR code or entering your UPI PIN will send money, not receive a refund.

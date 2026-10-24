@@ -1,0 +1,47 @@
+id: KYC_IMPERSONATION
+name: KYC / Bank Impersonation Scam
+description: >
+  Scammer impersonates a bank or official entity claiming that netbanking or account
+  access is suspended pending mandatory KYC verification, directing victim to a deceptive portal.
+
+required_signals:
+  - OFFICIAL_ENTITY_IMPERSONATION
+  - FINANCIAL_CONTEXT
+
+supporting_signals:
+  - URGENCY_PRESSURE_DETECTED
+  - SUSPICIOUS_URL_PRESENT
+  - OTP_INPUT_FORM_OBSERVED
+  - INDIVIDUAL_VPA_PAYMENT_TARGETED
+
+event_sequence:
+  - MESSAGE_RECEIVED
+  - URL_OPENED
+  - CREDENTIAL_REQUEST
+  - OTP_REQUEST
+  - PAYMENT_REQUEST
+
+optional_signals:
+  - BRAND_TYPOSQUATTING_DETECTED
+  - SHORTENED_URL_USED
+
+contradictory_signals:
+  - ESTABLISHED_LONG_TERM_DOMAIN
+  - OFFICIAL_MERCHANT_VPA_VERIFIED
+
+stages:
+  - INITIAL_CONTACT
+  - IMPERSONATION
+  - URGENCY_PRESSURE
+  - SUSPICIOUS_LINK
+  - CREDENTIAL_OTP_HARVEST
+  - PAYMENT_REQUEST
+
+common_next_stage: PAYMENT_INTENT
+
+intervention_guidance:
+  preferred_before:
+    - PAYMENT_INTENT
+  friction_seconds: 10
+  warning_title: Potential Bank Impersonation
+  warning_message: Legitimate banks never request OTP verification or micro-payments via personal handles.

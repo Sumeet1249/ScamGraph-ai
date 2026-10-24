@@ -1,0 +1,18 @@
+{
+  "model_architecture": "TfidfVectorizer + LogisticRegression",
+  "vectorizer_config": {
+    "ngram_range": [
+      1,
+      2
+    ],
+    "max_features": 5000,
+    "sublinear_tf": true
+  },
+  "classifier_config": {
+    "class_weight": "balanced",
+    "C": 1.0,
+    "max_iter": 1000
+  },
+  "intended_scope": "Baseline Indian message scam signal detection (SMS / WhatsApp).",
+  "output_type": "EvidenceSignal classification input, not final autonomous fraud verdict."
+}

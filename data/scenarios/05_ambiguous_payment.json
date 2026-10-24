@@ -1,0 +1,30 @@
+{
+  "id": "scenario_05_ambiguous_payment",
+  "scenario": "Ambiguous Peer-to-Peer Payment Link",
+  "description": "Payment request between individual peers with no prior context, no impersonation, no urgency, and no known malicious indicators.",
+  "expected_pattern": null,
+  "expected_risk_level": "UNKNOWN",
+  "expected_intervention": "PASSIVE",
+  "events": [
+    {
+      "event_type": "MESSAGE_RECEIVED",
+      "timestamp_offset_seconds": 0,
+      "description": "Chat message: Hey, please send over the 500 INR for dinner when you get a chance.",
+      "channel": "WHATSAPP"
+    },
+    {
+      "event_type": "PAYMENT_REQUEST",
+      "timestamp_offset_seconds": 30,
+      "description": "Payment link for 500 INR to peer.split@example.test",
+      "channel": "UPI"
+    }
+  ],
+  "evidence": [
+    {
+      "source": "USER_INPUT",
+      "signal": "PAYMENT_REQUEST",
+      "observation": "Direct peer payment link for dinner bill split",
+      "confidence": 0.65
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "page_title": "State Bank of India — NetBanking Verification Portal",
+  "claimed_brands": ["State Bank of India", "SBI YONO"],
+  "login_fields": ["username", "account_number"],
+  "credential_fields": ["password", "profile_password"],
+  "otp_fields": ["sms_otp", "tx_otp"],
+  "payment_fields": ["pan_number", "debit_card_pin"],
+  "personal_information_fields": ["aadhaar_number", "dob"],
+  "phone_numbers": ["+919876543210"],
+  "email_addresses": ["helpdesk@sbi-verify.example.test"],
+  "payment_identifiers": ["fraudster.wallet@fakeupi"],
+  "linked_domains": ["sbi-verify.example.test", "free-hosting.example.test"],
+  "redirects": [],
+  "urgency_claims": ["Account will be blocked permanently within 2 hours"],
+  "financial_claims": ["Mandatory re-KYC update to restore immediate banking services"],
+  "brand_impersonation_observations": ["Page clones official SBI login palette and emblems without official domain certificate"],
+  "observable_actions": ["Submit Netbanking Credentials", "Verify OTP"],
+  "evidence": [
+    {
+      "fact": "Input element 'sms_otp' active on unverified external origin",
+      "selector": "input[name='sms_otp']"
+    },
+    {
+      "fact": "Input element 'password' active without multi-factor session token",
+      "selector": "input[name='password']"
+    }
+  ]
+}

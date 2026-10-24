@@ -1,0 +1,42 @@
+id: INVESTMENT_SCAM
+name: Investment & High-Yield Crypto Fraud
+description: >
+  Promises astronomical daily or weekly returns through deceptive trading, cloud mining,
+  or crypto deposit schemes, requiring initial deposits that are impossible to withdraw.
+
+required_signals:
+  - FINANCIAL_CONTEXT
+  - HIGH_RETURN_PROMISE
+
+supporting_signals:
+  - TELEGRAM_COMMUNICATION_CHANNEL
+  - UNREGISTERED_INVESTMENT_PORTAL
+  - CRYPTO_OR_UPI_DEPOSIT_REQUEST
+
+event_sequence:
+  - MESSAGE_RECEIVED
+  - URL_OPENED
+  - PAYMENT_REQUEST
+  - PAYMENT_INTENT
+
+optional_signals:
+  - VIP_TIER_PRESSURE
+  - SOCIAL_PROOF_FABRICATION
+
+contradictory_signals:
+  - SEBI_RBI_REGISTERED_PORTAL
+
+stages:
+  - INITIAL_CONTACT
+  - LUCRATIVE_OFFER
+  - PORTAL_REGISTRATION
+  - INITIAL_DEPOSIT_TRAP
+
+common_next_stage: PAYMENT_INTENT
+
+intervention_guidance:
+  preferred_before:
+    - PAYMENT_INTENT
+  friction_seconds: 10
+  warning_title: Unverified Investment Scheme
+  warning_message: Guaranteed high returns over social channels are hallmarks of financial investment fraud.

@@ -1,0 +1,24 @@
+{
+  "page_title": "VIP AI Trading Bot — 30% Daily Guaranteed Yield",
+  "claimed_brands": ["Binance Cloud Affiliate", "VIP Quant"],
+  "login_fields": ["telegram_id"],
+  "credential_fields": ["wallet_private_key"],
+  "otp_fields": [],
+  "payment_fields": ["deposit_amount", "upi_handle"],
+  "personal_information_fields": [],
+  "phone_numbers": ["+919876500000"],
+  "email_addresses": ["vip@crypto-vip.example.test"],
+  "payment_identifiers": ["invest.pool@fakeupi", "0x71C...9A23"],
+  "linked_domains": ["crypto-vip.example.test", "t.me"],
+  "redirects": [],
+  "urgency_claims": ["Only 3 VIP slots remaining for today's liquidity round"],
+  "financial_claims": ["30% daily return guaranteed by automated AI arbitrage"],
+  "brand_impersonation_observations": ["Uses Binance trademark logos without authorization"],
+  "observable_actions": ["Deposit Funds", "Connect Telegram"],
+  "evidence": [
+    {
+      "fact": "Asks user for wallet private key or seed phrase",
+      "selector": "textarea#keyInput"
+    }
+  ]
+}

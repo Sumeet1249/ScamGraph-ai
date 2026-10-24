@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environments
+venv/
+.venv/
+ENV/
+
+# Node
+node_modules/
+.next/
+out/
+
+# Testing & Cache
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Sensitive Data & Large External Staging
+data/gold/private/
+data/external/staging/
+*.secret
+.env
+.env.local

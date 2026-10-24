@@ -1,0 +1,24 @@
+================================================================================
+SCAMGRAPH MODEL BENCHMARK REPORT
+Generated: 2026-10-21T08:53:56.358609+00:00
+================================================================================
+
+
+Model: TF-IDF + Logistic Regression (Baseline) (baseline_tfidf_lr)
+--------------------------------------------------------------------------------
+Test Set                  F1       Prec     Rec      FPR      ROC-AUC  Samples
+--------------------------------------------------------------------------------
+in_distribution_full      0.9406   0.9384   0.9429   0.0400   0.9930   535
+language_en               0.9610   0.9487   0.9737   0.0323   0.9924   100
+
+================================================================================
+INTERPRETATION GUIDE
+================================================================================
+F1:        Harmonic mean of precision and recall
+Precision: Proportion of positive predictions that were correct
+Recall:    Proportion of actual positives that were detected
+FPR:       False positive rate (legitimate marked as scam)
+ROC-AUC:   Area under receiver operating characteristic curve
+
+Higher is better for: F1, Precision, Recall, ROC-AUC
+Lower is better for: FPR, False Negative Rate

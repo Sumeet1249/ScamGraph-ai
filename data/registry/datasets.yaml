@@ -1,0 +1,175 @@
+version: "2.0.0"
+registry_name: "ScamGraph AI Dataset Registry"
+last_updated: "2026-10-24"
+
+datasets:
+  - id: "scam-ham-india"
+    name: "Scam/Ham India Dataset"
+    provider: "anmolshrivastav"
+    source: "huggingface"
+    source_type: "huggingface"
+    repo_id: "anmolshrivastav/scam-ham-india"
+    url: "https://huggingface.co/datasets/anmolshrivastav/scam-ham-india"
+    source_url: "https://huggingface.co/datasets/anmolshrivastav/scam-ham-india"
+    revision: "main"
+    version: "main"
+    license: "apache-2.0"
+    license_url: "https://www.apache.org/licenses/LICENSE-2.0"
+    terms_notes: "Open source community dataset"
+    languages:
+      - "en"
+      - "hinglish"
+    task_types:
+      - "text_classification"
+      - "spam_detection"
+    provenance_type: "PUBLIC_MIXED"
+    real_or_synthetic: "mixed"
+    record_count: 2272
+    total_records: 2272
+    label_schema:
+      ham: 1377
+      spam: 895
+    labels:
+      ham: 1377
+      spam: 895
+    intended_use: "Baseline Indian scam SMS classification and benchmark comparison."
+    intended_uses:
+      - "Baseline Indian scam SMS classification"
+      - "Benchmark comparison"
+    prohibited_uses:
+      - "Independent production gold set (contains unvetted synthetic variants and duplicate templates)"
+      - "Sole legal basis for blocking an identifier"
+    limitations:
+      - "Mixes real and synthetic data without explicit per-row synthetic flags"
+      - "Predominantly English text with Indian terminology (KYC, OTP, Aadhaar, UPI)"
+      - "Contains template redundancy and identical notification variants across splits"
+    known_limitations:
+      - "Mixes real and synthetic data without explicit per-row synthetic flags"
+      - "Predominantly English text with Indian terminology (KYC, OTP, Aadhaar, UPI)"
+      - "Contains template redundancy and identical notification variants across splits"
+    status: "verified_downloadable"
+    quality_status: "VERIFIED_DOWNLOADABLE"
+    training_approved: true
+    evaluation_approved: true
+    gold_set_approved: false
+    last_verified_at: "2026-10-24T00:00:00Z"
+    local_paths:
+      - "data/raw/scam_hum_india.csv"
+    checksum: "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    notes: "Requires template deduplication before benchmark evaluation to prevent split leakage."
+
+  - id: "indian-scam-sms-synthetic-audited"
+    name: "Indian Scam SMS Synthetic Audited"
+    provider: "Ridham115"
+    source: "huggingface"
+    source_type: "huggingface"
+    repo_id: "Ridham115/indian-scam-sms-synthetic-audited"
+    url: "https://huggingface.co/datasets/Ridham115/indian-scam-sms-synthetic-audited"
+    source_url: "https://huggingface.co/datasets/Ridham115/indian-scam-sms-synthetic-audited"
+    revision: "main"
+    version: "main"
+    license: "mit"
+    license_url: "https://opensource.org/licenses/MIT"
+    terms_notes: "MIT licensed synthetic research dataset"
+    languages:
+      - "en"
+      - "hi"
+      - "hinglish"
+    task_types:
+      - "text_classification"
+      - "multilingual_robustness"
+    provenance_type: "SYNTHETIC_LLM"
+    real_or_synthetic: "synthetic_audited"
+    record_count: 1580
+    total_records: 1580
+    label_schema:
+      binary:
+        ham: 0
+        scam: 1
+      scam_types:
+        - "fake_kyc"
+        - "job_task"
+        - "lottery"
+        - "loan_offer"
+    intended_use: "Multilingual, code-mixed (Hinglish/Hindi/English) Indian SMS scam robustness testing."
+    intended_uses:
+      - "Data augmentation"
+      - "Multilingual and code-mixed (Hinglish/Hindi/English) robustness evaluation"
+      - "Adversarial testing"
+    prohibited_uses:
+      - "Independent production gold set (must not evaluate real-world consumer accuracy solely on synthetic data)"
+    limitations:
+      - "Synthetically generated text with human audit decisions"
+      - "Audit actions include keep, edit, reject, and unreviewed; rejected entries must be filtered"
+      - "Contains LLM stylistic artifacts"
+    known_limitations:
+      - "Synthetically generated text with human audit decisions"
+      - "Audit actions include keep, edit, reject, and unreviewed; rejected entries must be filtered"
+      - "Contains LLM stylistic artifacts"
+    status: "verified_downloadable"
+    quality_status: "VERIFIED_DOWNLOADABLE"
+    training_approved: true
+    evaluation_approved: true
+    gold_set_approved: false
+    last_verified_at: "2026-10-24T00:00:00Z"
+    local_paths:
+      - "data/synthetic/synthetic_audited.csv"
+    checksum: null
+    notes: "Filter out unreviewed or rejected rows prior to training or evaluation."
+
+  - id: "scamgraph-canonical-journeys"
+    name: "ScamGraph Canonical Fraud Journey Scenarios"
+    provider: "ScamGraph Research Team"
+    source: "internal"
+    source_type: "internal"
+    repo_id: "local/scamgraph-scenarios"
+    url: "file://data/scenarios"
+    source_url: "file://data/scenarios"
+    revision: "1.0.0"
+    version: "1.0.0"
+    license: "proprietary-internal"
+    license_url: null
+    terms_notes: "Internal research scenarios"
+    languages:
+      - "en"
+      - "hinglish"
+    task_types:
+      - "journey_reconstruction"
+      - "scenario_simulation"
+      - "multi_stage_correlation"
+    provenance_type: "HUMAN_CURATED"
+    real_or_synthetic: "synthetic"
+    record_count: 35
+    total_records: 35
+    label_schema:
+      stages:
+        - "CONTACT"
+        - "IMPERSONATION"
+        - "URGENCY"
+        - "CREDENTIAL"
+        - "PAYMENT"
+    intended_use: "Multi-stage multi-channel fraud journey end-to-end evaluation (KYC, electricity, job, investment, courier)."
+    intended_uses:
+      - "Multi-stage multi-channel fraud journey end-to-end evaluation (KYC, electricity, job, investment, courier)"
+      - "Interactive scenario runner in ScamGraph Lab"
+      - "Regression testing for journey state transitions"
+    prohibited_uses:
+      - "Statistical claims of nationwide accuracy"
+      - "Training data for message classification"
+    limitations:
+      - "Expert-crafted synthetic scenarios representing targeted progression stages"
+      - "Small sample size designed for qualitative journey progression validation rather than statistical generalization"
+    known_limitations:
+      - "Expert-crafted synthetic scenarios representing targeted progression stages"
+      - "Small sample size designed for qualitative journey progression validation rather than statistical generalization"
+    status: "local_available"
+    quality_status: "VERIFIED_LOCAL"
+    training_approved: false
+    evaluation_approved: true
+    gold_set_approved: false
+    last_verified_at: "2026-10-24T00:00:00Z"
+    local_paths:
+      - "data/scenarios/*.json"
+      - "data/scenarios/simulator_electricity_bill.yaml"
+    checksum: null
+    notes: "Human-curated scenario graphs for regression testing and consumer education."

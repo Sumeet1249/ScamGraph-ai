@@ -1,0 +1,72 @@
+{
+  "id": "scenario_06_emerging_variant_seed",
+  "scenario": "Digital Arrest / Authority Coercion",
+  "description": "Scammer poses as federal law enforcement claiming victim SIM card was used in cybercrime, demanding isolation and security deposit escrow.",
+  "expected_pattern": "DIGITAL_ARREST",
+  "expected_risk_level": "HIGH",
+  "expected_intervention": "PRE_PAYMENT_INTERVENTION",
+  "events": [
+    {
+      "event_type": "CALL_REPORTED",
+      "timestamp_offset_seconds": 0,
+      "description": "Automated call from +919876500000: Telecom Regulatory Authority - Your phone line will be disconnected in 2 hours for cyber offenses.",
+      "channel": "CALL"
+    },
+    {
+      "event_type": "MESSAGE_RECEIVED",
+      "timestamp_offset_seconds": 25,
+      "description": "WhatsApp from fake police badge: CBI Arrest Warrant #CW-89241 issued for financial money laundering.",
+      "channel": "WHATSAPP"
+    },
+    {
+      "event_type": "CREDENTIAL_REQUEST",
+      "timestamp_offset_seconds": 55,
+      "description": "Impersonator demands victim state national Aadhaar/PAN number for official police clearance verification",
+      "channel": "WHATSAPP"
+    },
+    {
+      "event_type": "PAYMENT_REQUEST",
+      "timestamp_offset_seconds": 90,
+      "description": "Transfer 100,000 INR to Supreme Court RBI Clearance Escrow account escrow.verify@fakeupi for asset clearance",
+      "channel": "UPI"
+    },
+    {
+      "event_type": "PAYMENT_INTENT",
+      "timestamp_offset_seconds": 110,
+      "description": "Victim prepares wire transfer under coercive intimidation",
+      "channel": "UPI"
+    }
+  ],
+  "evidence": [
+    {
+      "source": "MESSAGE_ANALYZER",
+      "signal": "LAW_ENFORCEMENT_IMPERSONATION",
+      "observation": "Scammer claims to represent Central Bureau of Investigation and Mumbai Cyber Crime Cell",
+      "confidence": 0.98
+    },
+    {
+      "source": "MESSAGE_ANALYZER",
+      "signal": "LEGAL_PENALTY_FEAR_THREAT",
+      "observation": "Threat of immediate physical arrest and asset forfeiture unless victim complies",
+      "confidence": 0.96
+    },
+    {
+      "source": "MESSAGE_ANALYZER",
+      "signal": "VIDEO_CALL_ISOLATION_REQUEST",
+      "observation": "Victim ordered to remain on secret Skype surveillance line without notifying anyone",
+      "confidence": 0.93
+    },
+    {
+      "source": "MESSAGE_ANALYZER",
+      "signal": "FAKE_ARREST_WARRANT_PRESENTED",
+      "observation": "Victim sent forged document bearing fake Supreme Court seal",
+      "confidence": 0.95
+    },
+    {
+      "source": "PAYMENT_MODEL",
+      "signal": "SECURITY_DEPOSIT_DEMAND",
+      "observation": "Demand for victim money transfer to personal escrow VPA escrow.verify@fakeupi",
+      "confidence": 0.95
+    }
+  ]
+}

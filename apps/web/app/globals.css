@@ -1,0 +1,1347 @@
+@layer theme, base, components, sg-motion, utilities;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* ============================================================
+   ScamGraph AI — Colour Scheme: "Mocha, Platinum, Lavender"
+   Mocha Brown ground, Platinum Silver ink, Pale Lavender action.
+   ============================================================ */
+
+:root {
+  color-scheme: dark;
+
+  /* MOCHA: surfaces and structure (Section 3.1) */
+  --mocha-950: #120e0c;  /* canvas */
+  --mocha-900: #17120f;  /* sidebar, recessed regions */
+  --mocha-800: #1d1714;  /* default panels, cards */
+  --mocha-700: #261e1a;  /* raised: graph canvases, selected/inset areas */
+  --mocha-650: #2c231f;  /* hover surface */
+  --mocha-600: #3a2f28;  /* pressed surface, strong tonal step */
+  --mocha-500: #6b4f3f;  /* THE mocha brown: secondary fills, accents on structure */
+  --mocha-400: #8a6a57;
+  --mocha-300: #a98873;  /* mocha text/icon on dark (5.45:1 on panel) */
+  --mocha-200: #cdb3a0;
+
+  /* PLATINUM / SILVER: ink and lines */
+  --platinum-100: #edebe9; /* primary text */
+  --platinum-200: #e5e4e2; /* platinum silver, canonical */
+  --silver-300:  #b9b4b1;  /* secondary text */
+  --silver-400:  #a9a5a9;  /* neutral state, secondary icons */
+  --silver-500:  #948e8a;  /* tertiary metadata only */
+
+  /* PALE LAVENDER: action and selection only */
+  --lavender-300: #d3c7f0; /* hover */
+  --lavender-400: #c4b5e8; /* base */
+  --lavender-500: #b5a4dd; /* pressed */
+  --lavender-ink: #1a1420; /* text/icon placed ON lavender fills */
+
+  /* Semantic layer (Section 3.2) */
+  --sg-bg:              var(--mocha-950);
+  --sg-bg-subtle:       var(--mocha-900);
+  --sg-surface:         var(--mocha-800);
+  --sg-surface-raised:  var(--mocha-700);
+  --sg-surface-hover:   var(--mocha-650);
+  --sg-surface-pressed: var(--mocha-600);
+  --sg-surface-inset:   #140f0d;
+
+  --sg-border:          rgba(229, 228, 226, 0.09);
+  --sg-border-strong:   rgba(229, 228, 226, 0.17);
+  --sg-input-border:    #756b65;
+
+  --sg-text:            var(--platinum-100);
+  --sg-text-muted:      var(--silver-300);
+  --sg-text-subtle:     var(--silver-500);
+
+  --sg-accent:          var(--lavender-400);
+  --sg-accent-hover:    var(--lavender-300);
+  --sg-accent-pressed:  var(--lavender-500);
+  --sg-accent-soft:     rgba(196, 181, 232, 0.12);
+  --sg-accent-line:     rgba(196, 181, 232, 0.35);
+  --sg-on-accent:       var(--lavender-ink);
+  --sg-ring:            var(--lavender-400);
+
+  --sg-structure:       var(--mocha-500);
+  --sg-structure-soft:  rgba(107, 79, 63, 0.35);
+
+  --sg-critical:        #ec6b65;
+  --sg-high:            #e8924f;
+  --sg-medium:          #e2be5c;
+  --sg-low:             #8fb3c9;
+  --sg-success:         #6dc79a;
+  --sg-warning:         #e2be5c;
+  --sg-danger:          #ec6b65;
+  --sg-info:            #8fb3c9;
+  --sg-neutral:         #a9a5a9;
+
+  --sg-critical-soft:   rgba(236, 107, 101, 0.14);
+  --sg-high-soft:       rgba(232, 146, 79, 0.14);
+  --sg-medium-soft:     rgba(226, 190, 92, 0.14);
+  --sg-low-soft:        rgba(143, 179, 201, 0.14);
+  --sg-success-soft:    rgba(109, 199, 154, 0.13);
+  --sg-warning-soft:    rgba(226, 190, 92, 0.14);
+  --sg-info-soft:       rgba(143, 179, 201, 0.14);
+  --sg-neutral-soft:    rgba(169, 165, 169, 0.14);
+  /* Floating elements only (Section 3.2) */
+  --sg-shadow-floating:
+    0 0 0 1px rgba(229, 228, 226, 0.10),
+    inset 0 1px 0 rgba(229, 228, 226, 0.06),
+    0 20px 40px -12px rgba(0, 0, 0, 0.65);
+  --sg-scrim:           rgba(8, 6, 5, 0.6);
+  --sg-on-danger:       var(--sg-on-accent);
+
+  --sg-node-incident:   #c4b5e8;
+  --sg-node-journey:    #a8836b;
+  --sg-node-message:    #e5e4e2;
+  --sg-node-url:        #7fafd0;
+  --sg-node-domain:     #7dbfaa;
+  --sg-node-phone:      #d99db8;
+  --sg-node-upi:        #d8c36f;
+  --sg-node-campaign:   #e38e7c;
+
+  --sg-edge:            rgba(229, 228, 226, 0.22);
+  --sg-edge-active:     rgba(196, 181, 232, 0.70);
+  --sg-edge-label:      var(--silver-300);
+
+  /* shadcn mapping (Section 3.4) */
+  --background:         var(--mocha-950);
+  --foreground:         var(--platinum-100);
+  --card:               var(--mocha-800);
+  --card-foreground:    var(--platinum-100);
+  --popover:            var(--mocha-700);
+  --popover-foreground: var(--platinum-100);
+  --primary:            var(--lavender-400);
+  --primary-foreground: var(--lavender-ink);
+  --secondary:          var(--mocha-650);
+  --secondary-foreground: var(--platinum-100);
+  --muted:              var(--mocha-700);
+  --muted-foreground:   var(--silver-300);
+  --accent:             var(--mocha-650);
+  --accent-foreground:  var(--platinum-100);
+  --destructive:        var(--sg-critical);
+  --destructive-foreground: #1a0e0d;
+  --border:             var(--sg-border);
+  --input:              var(--sg-input-border);
+  --ring:               var(--lavender-400);
+
+  --surface-1:          var(--sg-surface);
+  --surface-2:          var(--sg-surface-raised);
+  --surface-3:          var(--sg-surface-hover);
+
+  --text-primary:       var(--sg-text);
+  --text-secondary:     var(--sg-text-muted);
+  --text-muted:         var(--sg-text-subtle);
+
+  --brand-primary:      var(--sg-accent);
+  --brand-secondary:    var(--sg-accent-hover);
+  --brand-hover:        var(--sg-accent-hover);
+  --brand-soft:         var(--sg-accent-soft);
+
+  --success:            var(--sg-success);
+  --warning:            var(--sg-warning);
+  --danger:             var(--sg-danger);
+  --info:               var(--sg-info);
+
+  /* Motion timing */
+  --dur-fast:           120ms;
+  --dur-base:           180ms;
+  --dur-slow:           300ms;
+  --ease-out:           cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-drawer:        cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    background-color: var(--sg-bg);
+    color: var(--sg-text);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "cv11", "ss01", "tnum";
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+    color: var(--sg-text);
+  }
+
+  h1 { letter-spacing: -0.022em; line-height: 1.15; }
+  h2 { letter-spacing: -0.018em; line-height: 1.2; }
+  h3 { letter-spacing: -0.012em; line-height: 1.25; }
+  p { line-height: 1.55;
+  }
+
+  /* Accessible, consistent keyboard focus (Section 4 Recipe) */
+  :focus-visible {
+    outline: 2px solid var(--sg-ring);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  ::selection {
+    background: rgba(196, 181, 232, 0.30);
+    color: var(--sg-text);
+  }
+}
+
+@layer components {
+  /* Surfaces */
+  .surface {
+    background-color: var(--sg-surface);
+    border: 1px solid var(--sg-border);
+    border-radius: 0.875rem;
+  }
+
+  .panel {
+    background-color: var(--sg-surface);
+    border: 1px solid var(--sg-border);
+    border-radius: 0.875rem;
+  }
+
+  .panel-elevated {
+    background-color: var(--sg-surface-raised);
+    border: 1px solid var(--sg-border-strong);
+    border-radius: 0.875rem;
+  }
+
+  /* Monospaced technical data: IDs, IPs, VPAs, timestamps, hashes */
+  .mono-data {
+    font-family: var(--font-mono), ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.8125rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--sg-text-muted);
+  }
+
+  /* Eyebrow / quiet section label */
+  .eyebrow {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    line-height: 1.2;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    text-transform: uppercase;
+    color: var(--sg-text-subtle);
+  }
+}
+
+@layer utilities {
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(229, 228, 226, 0.18) transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+  .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(229, 228, 226, 0.18); border-radius: 9999px; }
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: rgba(229, 228, 226, 0.28); }
+
+  /* Shimmer skeleton fill */
+  .skeleton-shimmer {
+    background-image: linear-gradient(90deg, transparent, rgba(229, 228, 226, 0.06), transparent);
+    background-size: 200% 100%;
+    animation: shimmer 1.8s ease-in-out infinite;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  .animate-shimmer {
+    animation: shimmer 1.8s ease-in-out infinite;
+  }
+}
+
+/* ── Reduced motion & transparency (global Section 5.3) ────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  header, .backdrop-blur-md, .backdrop-blur-sm {
+    background-color: var(--sg-bg) !important;
+    backdrop-filter: none !important;
+  }
+}
+
+@layer sg-motion {
+
+/* ==========================================================================
+   1. NON-COLOUR TOKENS
+   ========================================================================== */
+:root {
+    /* Durations (all UI motion stays at or under 300ms) */
+    --sg-dur-press: 100ms;      /* button press compression */
+    --sg-dur-fast: 120ms;       /* hover, color, border, focus */
+    --sg-dur-base: 180ms;       /* standard control transitions */
+    --sg-dur-overlay: 200ms;    /* popover, dialog, toast entrance */
+    --sg-dur-exit: 140ms;       /* exits are shorter than entrances */
+    --sg-dur-rail: 220ms;       /* rail collapse */
+    --sg-dur-drawer: 260ms;     /* drawer slide */
+
+    /* Easing */
+    --sg-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    --sg-ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+    --sg-ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+
+    /* Radius hierarchy */
+    --sg-r-xs: 4px;     /* kbd, tiny tags */
+    --sg-r-sm: 6px;     /* compact controls */
+    --sg-r-md: 8px;     /* buttons, inputs, menus */
+    --sg-r-lg: 14px;    /* cards, popovers */
+    --sg-r-xl: 20px;    /* dialogs */
+    --sg-r-pill: 9999px;/* chips, avatars */
+
+    /* Control heights */
+    --sg-h-sm: 32px;
+    --sg-h-md: 40px;
+    --sg-h-lg: 48px;
+    --sg-touch: 44px;   /* minimum target on coarse pointers */
+
+    /* Type (rem so it follows user text-size preferences) */
+    --sg-fs-control: 0.875rem;  /* 14px: buttons, inputs, tabs, nav, body UI */
+    --sg-fs-meta: 0.75rem;      /* 12px: badges, helper text. Nothing smaller. */
+
+    /* Icons (Lucide) */
+    --sg-icon-stroke: 1.75;
+
+    /* Layout */
+    --sg-rail-w: 240px;
+    --sg-rail-w-collapsed: 72px;
+    --sg-header-h: 56px;
+    --sg-drawer-w: 320px;
+
+    /* Layering */
+    --sg-z-sticky: 20;
+    --sg-z-overlay: 30;
+    --sg-z-modal: 40;
+    --sg-z-toast: 50;
+}
+
+/* ==========================================================================
+   2. SHARED INTERACTION BASE
+   ========================================================================== */
+
+/* One focus ring everywhere. Uses the colour layer's ring token. */
+:where(
+    .sg-btn, .sg-chip, .sg-segmented > button, .sg-input, .sg-link
+):focus-visible {
+    outline: 2px solid var(--sg-ring);
+    outline-offset: 2px;
+}
+
+/* Inside clipped containers (rail, scrolling tab strip) the ring sits inside */
+:where(
+    .sg-rail__link, .sg-rail__toggle, .sg-tabs [role="tab"], .sg-tab
+):focus-visible {
+    outline: 2px solid var(--sg-ring);
+    outline-offset: -2px;
+}
+
+.sg-vh {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* ==========================================================================
+   3. BUTTONS
+   Variants:  --primary  --secondary (default)  --ghost  --danger  --link
+   Sizes:     --sm  (default md)  --lg      Shape: --icon
+   States:    :hover  :active  :disabled / [aria-disabled]  [aria-busy] / .is-loading
+   Markup:    <button class="sg-btn sg-btn--primary"><span>Start Investigation</span></button>
+   ========================================================================== */
+.sg-btn {
+    /* Private per-variant tokens, all resolved from the colour layer */
+    --_bg: var(--sg-surface);
+    --_fg: var(--sg-text);
+    --_bd: var(--sg-input-border);
+    --_bg-hover: var(--sg-surface-hover);
+    --_bg-active: var(--sg-surface-pressed);
+    --_h: var(--sg-h-md);
+    --_px: 16px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    position: relative;
+    box-sizing: border-box;
+    height: var(--_h);
+    min-height: var(--_h);
+    padding-inline: var(--_px);
+    border: 1px solid var(--_bd);
+    border-radius: var(--sg-r-pill, 9999px);
+    background-color: var(--_bg);
+    color: var(--_fg);
+    font-family: inherit;
+    font-size: var(--sg-fs-control);
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+    text-decoration: none;
+    cursor: pointer;
+    user-select: none;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    transition:
+        transform 180ms cubic-bezier(0.18, 0.89, 0.32, 1.28),
+        box-shadow 180ms cubic-bezier(0.18, 0.89, 0.32, 1.28),
+        background-color var(--sg-dur-fast) var(--sg-ease-out),
+        border-color var(--sg-dur-fast) var(--sg-ease-out),
+        color var(--sg-dur-fast) var(--sg-ease-out),
+        opacity var(--sg-dur-fast) var(--sg-ease-out);
+}
+
+.sg-btn svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    stroke-width: var(--sg-icon-stroke);
+}
+
+/* Variants */
+.sg-btn--primary {
+    --_bg: var(--sg-accent);
+    --_fg: var(--sg-on-accent);
+    --_bd: transparent;
+    --_bg-hover: var(--sg-accent-hover);
+    --_bg-active: var(--sg-accent-pressed);
+}
+
+.sg-btn--secondary {
+    --_bg: var(--sg-surface);
+    --_bd: var(--sg-input-border);
+}
+
+.sg-btn--ghost {
+    --_bg: transparent;
+    --_fg: var(--sg-text-muted);
+    --_bd: transparent;
+    --_bg-hover: var(--sg-surface-hover);
+    --_bg-active: var(--sg-surface-pressed);
+}
+
+/* Destructive actions only. Never for routine Refresh. */
+.sg-btn--danger {
+    --_bg: var(--sg-danger);
+    --_fg: var(--sg-on-danger, var(--sg-on-accent));
+    --_bd: transparent;
+    --_bg-hover: var(--sg-danger);
+    --_bg-active: var(--sg-danger);
+}
+
+.sg-btn--link {
+    --_bg: transparent;
+    --_fg: var(--sg-accent);
+    --_bd: transparent;
+    --_bg-hover: transparent;
+    --_bg-active: transparent;
+    height: auto;
+    min-height: 0;
+    padding: 0;
+    border-radius: var(--sg-r-xs);
+    font-weight: 500;
+}
+
+/* Sizes */
+.sg-btn--sm { --_h: var(--sg-h-sm); --_px: 12px; gap: 6px; }
+.sg-btn--lg { --_h: var(--sg-h-lg); --_px: 20px; }
+
+/* Icon-only. Always give it an aria-label (and a tooltip). */
+.sg-btn--icon {
+    width: var(--_h);
+    padding: 0;
+    flex-shrink: 0;
+}
+
+/* Hover: only on devices that truly hover. Tactile pop and subtle elevated shadow. */
+@media (hover: hover) and (pointer: fine) {
+    .sg-btn:hover:not(:disabled):not([aria-disabled="true"]):not([aria-busy="true"]) {
+        background-color: var(--_bg-hover);
+        transform: translateY(-2px) scale(1.03);
+        box-shadow: 0 6px 18px -2px rgba(0, 0, 0, 0.45), 0 0 10px 1px rgba(196, 181, 232, 0.22);
+    }
+    .sg-btn--primary:hover:not(:disabled):not([aria-disabled="true"]):not([aria-busy="true"]) {
+        box-shadow: 0 8px 24px -2px rgba(196, 181, 232, 0.35), 0 0 12px 1px rgba(255, 255, 255, 0.2);
+    }
+    .sg-btn--secondary:hover:not(:disabled):not([aria-disabled="true"]) {
+        border-color: var(--sg-accent-line, var(--sg-text-subtle));
+    }
+    .sg-btn--ghost:hover:not(:disabled):not([aria-disabled="true"]) {
+        color: var(--sg-text);
+        box-shadow: none;
+    }
+    .sg-btn--danger:hover:not(:disabled):not([aria-disabled="true"]) {
+        opacity: 0.95;
+        box-shadow: 0 6px 18px -2px rgba(236, 107, 101, 0.4);
+    }
+    .sg-btn--link:hover:not(:disabled):not([aria-disabled="true"]) {
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        transform: none;
+        box-shadow: none;
+    }
+}
+
+/* Press: 100ms compression confirms the interface heard the click */
+.sg-btn:active:not(:disabled):not([aria-disabled="true"]):not([aria-busy="true"]) {
+    background-color: var(--_bg-active);
+    transform: translateY(0px) scale(0.97);
+    box-shadow: 0 2px 6px -1px rgba(0, 0, 0, 0.3);
+}
+.sg-btn--link:active { transform: none; box-shadow: none; }
+
+/* Disabled: dimmed but legible. Explain the requirement inline as well. */
+.sg-btn:disabled,
+.sg-btn[aria-disabled="true"] {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Loading: width stays fixed because the spinner overlays the hidden label.
+   Set aria-busy="true" (or .is-loading) and block duplicate submits in code. */
+.sg-btn[aria-busy="true"],
+.sg-btn.is-loading {
+    cursor: progress;
+    pointer-events: none;
+    color: transparent;
+}
+.sg-btn[aria-busy="true"] > *,
+.sg-btn.is-loading > * {
+    visibility: hidden;
+}
+.sg-btn[aria-busy="true"]::after,
+.sg-btn.is-loading::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    box-sizing: border-box;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--_fg);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: sg-spin 700ms linear infinite;
+}
+
+/* Coarse pointers: meet the 44px target */
+@media (pointer: coarse) {
+    .sg-btn:not(.sg-btn--link) { min-height: var(--sg-touch); }
+    .sg-btn--icon { min-width: var(--sg-touch); }
+}
+
+/* Inline text link (not a button shape) */
+.sg-link {
+    color: var(--sg-accent);
+    text-decoration: none;
+    border-radius: var(--sg-r-xs);
+    transition: color var(--sg-dur-fast) var(--sg-ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+    .sg-link:hover {
+        color: var(--sg-accent-hover);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+    }
+}
+
+/* ==========================================================================
+   4. CHIPS, SEGMENTED CONTROL, TABS, BADGES
+   No press-scale and no sliding here: selection changes are effectively instant.
+   ========================================================================== */
+
+/* Filter chip (evidence filters, analysis-mode options when chip-shaped).
+   Selected = aria-pressed="true" | aria-selected="true" | .is-selected.
+   Keyboard focus is a separate ring and never looks "selected". */
+.sg-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-sizing: border-box;
+    height: var(--sg-h-sm);
+    padding-inline: 12px;
+    border: 1px solid var(--sg-border-strong);
+    border-radius: var(--sg-r-pill);
+    background-color: transparent;
+    color: var(--sg-text-muted);
+    font-family: inherit;
+    font-size: var(--sg-fs-control);
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    transition:
+        background-color var(--sg-dur-fast) var(--sg-ease-out),
+        border-color var(--sg-dur-fast) var(--sg-ease-out),
+        color var(--sg-dur-fast) var(--sg-ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+    .sg-chip:hover {
+        color: var(--sg-text);
+        border-color: var(--sg-input-border);
+    }
+}
+.sg-chip[aria-pressed="true"],
+.sg-chip[aria-selected="true"],
+.sg-chip.is-selected {
+    background-color: var(--sg-accent-soft);
+    border-color: var(--sg-accent-line);
+    color: var(--sg-accent);
+}
+.sg-chip:disabled,
+.sg-chip[aria-disabled="true"] { opacity: 0.4; cursor: not-allowed; }
+@media (pointer: coarse) { .sg-chip { min-height: var(--sg-touch); } }
+
+/* Horizontal chip row. Wraps; scrolls inside itself only if you add --scroll. */
+.sg-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.sg-chips--scroll { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: thin; }
+
+/* Segmented control (optional: use only where the product has one) */
+.sg-segmented {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 3px;
+    box-sizing: border-box;
+    border: 1px solid var(--sg-border);
+    border-radius: var(--sg-r-md);
+    background-color: var(--sg-surface-inset);
+}
+.sg-segmented > button {
+    box-sizing: border-box;
+    height: calc(var(--sg-h-sm) - 2px);
+    padding-inline: 14px;
+    border: 0;
+    border-radius: var(--sg-r-sm);
+    background-color: transparent;
+    color: var(--sg-text-muted);
+    font-family: inherit;
+    font-size: var(--sg-fs-control);
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    transition:
+        background-color var(--sg-dur-fast) var(--sg-ease-out),
+        color var(--sg-dur-fast) var(--sg-ease-out),
+        box-shadow var(--sg-dur-fast) var(--sg-ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+    .sg-segmented > button:hover { color: var(--sg-text); }
+}
+.sg-segmented > button[aria-pressed="true"],
+.sg-segmented > button[aria-selected="true"],
+.sg-segmented > button.is-selected {
+    background-color: var(--sg-surface-raised);
+    color: var(--sg-text);
+    box-shadow: inset 0 0 0 1px var(--sg-accent-line);
+}
+@media (pointer: coarse) { .sg-segmented > button { min-height: var(--sg-touch); } }
+
+/* Underline tabs (incident detail: Overview / Journey / Evidence / Graph;
+   Security Hub: Overview / Quick Check). Use role="tablist" and role="tab".
+   Switching tabs is instant: do not slide page content. */
+.sg-tabs {
+    display: flex;
+    gap: 24px;
+    overflow-x: auto;
+    border-bottom: 1px solid var(--sg-border);
+    scrollbar-width: thin;
+}
+.sg-tabs--sticky {
+    position: sticky;
+    top: var(--sg-header-h);
+    z-index: var(--sg-z-sticky);
+    background-color: var(--sg-bg);
+}
+.sg-tabs [role="tab"],
+.sg-tab {
+    position: relative;
+    flex: none;
+    box-sizing: border-box;
+    min-height: var(--sg-h-md);
+    padding: 10px 2px;
+    margin-bottom: -1px;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: none;
+    color: var(--sg-text-muted);
+    font-family: inherit;
+    font-size: var(--sg-fs-control);
+    font-weight: 500;
+    line-height: 1.2;
+    white-space: nowrap;
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    transition:
+        color var(--sg-dur-fast) var(--sg-ease-out),
+        border-color var(--sg-dur-fast) var(--sg-ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+    .sg-tabs [role="tab"]:hover,
+    .sg-tab:hover { color: var(--sg-text); }
+}
+.sg-tabs [role="tab"][aria-selected="true"],
+.sg-tab[aria-selected="true"],
+.sg-tab.is-active {
+    color: var(--sg-text);
+    border-bottom-color: var(--sg-accent);
+}
+@media (pointer: coarse) {
+    .sg-tabs [role="tab"], .sg-tab { min-height: var(--sg-touch); }
+}
+
+/* Status badge. Always include the status WORD; colour is never the only cue.
+   data-tone: critical | high | medium | low | success | warning | info | neutral
+   Insufficient Evidence is always data-tone="neutral".
+   "Investigated" is data-tone="info". Demo Data is data-tone="warning". */
+.sg-badge {
+    --_c: var(--sg-neutral);
+    --_bg: var(--sg-neutral-soft);
+
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-sizing: border-box;
+    height: 24px;
+    padding-inline: 8px;
+    border: 1px solid var(--sg-border-strong);
+    border-radius: var(--sg-r-sm);
+    background-color: var(--_bg);
+    color: var(--_c);
+    font-size: var(--sg-fs-meta);
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+    flex-shrink: 0;
+    border-color: color-mix(in srgb, var(--_c) 30%, transparent);
+}
+.sg-badge svg { width: 12px; height: 12px; flex-shrink: 0; stroke-width: var(--sg-icon-stroke); }
+.sg-badge[data-tone="critical"] { --_c: var(--sg-critical); --_bg: var(--sg-critical-soft); }
+.sg-badge[data-tone="high"]     { --_c: var(--sg-high);     --_bg: var(--sg-high-soft); }
+.sg-badge[data-tone="medium"]   { --_c: var(--sg-medium);   --_bg: var(--sg-medium-soft); }
+.sg-badge[data-tone="low"]      { --_c: var(--sg-low);      --_bg: var(--sg-low-soft); }
+.sg-badge[data-tone="success"]  { --_c: var(--sg-success);  --_bg: var(--sg-success-soft); }
+.sg-badge[data-tone="warning"]  { --_c: var(--sg-warning);  --_bg: var(--sg-warning-soft); }
+.sg-badge[data-tone="info"]     { --_c: var(--sg-info);     --_bg: var(--sg-info-soft); }
+.sg-badge[data-tone="neutral"]  { --_c: var(--sg-neutral);  --_bg: var(--sg-neutral-soft); }
+
+/* Small status dot (rail status strip, Live Feed). Pair with a text label.
+   Static: no pulse. */
+.sg-dot {
+    --_tone: var(--sg-neutral);
+    display: inline-block;
+    flex: none;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--_tone);
+}
+.sg-dot[data-tone="success"] { --_tone: var(--sg-success); }
+.sg-dot[data-tone="warning"] { --_tone: var(--sg-warning); }
+.sg-dot[data-tone="danger"]  { --_tone: var(--sg-danger); }
+.sg-dot[data-tone="neutral"] { --_tone: var(--sg-neutral); }
+
+/* ==========================================================================
+   5. SIDEBAR RAIL
+   Flush, full-height, persistent at >= 1024px. Put data-rail="collapsed" on the
+   app shell (an ancestor of .sg-rail and the main content) to collapse to the
+   icon rail. In the icon rail every link must have an aria-label and a tooltip.
+   Below 768px, do not show the rail: mount the same links in .sg-drawer--start.
+   ========================================================================== */
+[data-rail="collapsed"] { --sg-rail-w: var(--sg-rail-w-collapsed); }
+
+.sg-rail {
+    position: sticky;
+    top: 0;
+    z-index: var(--sg-z-sticky);
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    width: var(--sg-rail-w);
+    height: 100vh;
+    height: 100dvh;
+    padding: 12px 10px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    border-inline-end: 1px solid var(--sg-border);
+    background-color: var(--sg-bg-subtle);
+    /* Width is a layout property, kept only because collapse is a rare action. */
+    transition: width var(--sg-dur-rail) var(--sg-ease-out);
+}
+
+.sg-rail__brand {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 4px 4px 12px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid var(--sg-border);
+}
+
+.sg-rail__group {
+    padding: 16px 12px 6px;
+    color: var(--sg-text-subtle);
+    font-size: var(--sg-fs-meta);
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.sg-rail__items {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.sg-rail__link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-sizing: border-box;
+    width: 100%;
+    height: var(--sg-h-md);
+    padding-inline: 12px;
+    border: 0;
+    border-radius: var(--sg-r-md);
+    background-color: transparent;
+    color: var(--sg-text-muted);
+    font-family: inherit;
+    font-size: var(--sg-fs-control);
+    font-weight: 500;
+    text-align: start;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    transition:
+        background-color var(--sg-dur-fast) var(--sg-ease-out),
+        color var(--sg-dur-fast) var(--sg-ease-out);
+}
+.sg-rail__link svg {
+    width: 18px;
+    height: 18px;
+    flex: none;
+    stroke-width: var(--sg-icon-stroke);
+}
+.sg-rail__label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+
+/* Quiet hover: colour only, no nudge */
+@media (hover: hover) and (pointer: fine) {
+    .sg-rail__link:hover:not([aria-current="page"]) {
+        background-color: var(--sg-surface-hover);
+        color: var(--sg-text);
+    }
+}
+
+/* Active: soft tint + accent label + small indicator. Not a loud fill + thick border. */
+.sg-rail__link[aria-current="page"],
+.sg-rail__link.is-active {
+    background-color: var(--sg-accent-soft);
+    color: var(--sg-accent);
+}
+.sg-rail__link[aria-current="page"]::before,
+.sg-rail__link.is-active::before {
+    content: "";
+    position: absolute;
+    inset-inline-start: 0;
+    top: 50%;
+    width: 2px;
+    height: 16px;
+    border-radius: 2px;
+    background-color: var(--sg-accent);
+    transform: translateY(-50%);
+}
+
+/* Status strip at the bottom of the rail (e.g. Engine offline + dot + text) */
+.sg-rail__footer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: auto;
+    padding: 12px;
+    border-top: 1px solid var(--sg-border);
+    color: var(--sg-text-muted);
+    font-size: var(--sg-fs-meta);
+}
+
+/* Toggle: only the icon flips. Ease-out, no spring. */
+.sg-rail__toggle svg {
+    transition: transform var(--sg-dur-base) var(--sg-ease-out);
+}
+[data-rail="collapsed"] .sg-rail__toggle svg { transform: rotate(180deg); }
+
+/* Collapsed icon rail. Labels are visually hidden, NOT display:none, so each
+   link keeps its accessible name. */
+[data-rail="collapsed"] .sg-rail { padding-inline: 8px; }
+[data-rail="collapsed"] .sg-rail__brand { justify-content: center; }
+[data-rail="collapsed"] .sg-rail__link {
+    justify-content: center;
+    width: var(--sg-touch);
+    height: var(--sg-touch);
+    margin-inline: auto;
+    padding-inline: 0;
+}
+[data-rail="collapsed"] .sg-rail__label,
+[data-rail="collapsed"] .sg-rail__group,
+[data-rail="collapsed"] .sg-rail__sub,
+[data-rail="collapsed"] .sg-rail__footer-text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+[data-rail="collapsed"] .sg-rail__footer { justify-content: center; }
+[data-rail="collapsed"] .sg-rail__link[aria-current="page"]::before,
+[data-rail="collapsed"] .sg-rail__link.is-active::before { display: none; }
+
+/* ==========================================================================
+   6. FLOATING SURFACES: POPOVER, DIALOG, DRAWER
+   These are the only elements allowed a shadow.
+   ========================================================================== */
+
+/* Popover / dropdown / menu / select content.
+   Origin-aware: grows from its trigger. Works with Radix and Base UI variables;
+   override with --sg-popover-origin if your library exposes another one. */
+.sg-popover {
+    box-sizing: border-box;
+    padding: 8px;
+    border: 1px solid var(--sg-border-strong);
+    border-radius: var(--sg-r-lg);
+    background-color: var(--sg-surface-raised);
+    color: var(--sg-text);
+    box-shadow: var(--sg-shadow-floating);
+    z-index: var(--sg-z-overlay);
+    transform-origin: var(
+        --sg-popover-origin,
+        var(--radix-popover-content-transform-origin,
+        var(--radix-dropdown-menu-content-transform-origin,
+        var(--radix-select-content-transform-origin,
+        var(--transform-origin, top center))))
+    );
+}
+.sg-popover[data-state="open"],
+.sg-popover:not([data-state]) {
+    animation: sg-pop-in var(--sg-dur-overlay) var(--sg-ease-out) both;
+}
+.sg-popover[data-state="closed"] {
+    animation: sg-pop-out var(--sg-dur-exit) var(--sg-ease-out) both;
+}
+
+/* Native <dialog>. Open with dialog.showModal() for focus trapping + Esc. */
+dialog.sg-dialog {
+    box-sizing: border-box;
+    width: min(520px, calc(100% - 32px));
+    max-height: calc(100dvh - 32px);
+    padding: 24px;
+    overflow: auto;
+    border: 1px solid var(--sg-border-strong);
+    border-radius: var(--sg-r-xl);
+    background-color: var(--sg-surface-raised);
+    color: var(--sg-text);
+    box-shadow: var(--sg-shadow-floating);
+    z-index: var(--sg-z-modal);
+
+    opacity: 0;
+    transform: scale(0.95);
+    transition:
+        opacity var(--sg-dur-overlay) var(--sg-ease-out),
+        transform var(--sg-dur-overlay) var(--sg-ease-out),
+        overlay var(--sg-dur-overlay) allow-discrete,
+        display var(--sg-dur-overlay) allow-discrete;
+}
+dialog.sg-dialog[open] {
+    opacity: 1;
+    transform: none;
+}
+@starting-style {
+    dialog.sg-dialog[open] {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+}
+
+dialog.sg-dialog::backdrop {
+    background-color: var(--sg-scrim);
+    opacity: 0;
+    transition:
+        opacity var(--sg-dur-overlay) var(--sg-ease-out),
+        overlay var(--sg-dur-overlay) allow-discrete,
+        display var(--sg-dur-overlay) allow-discrete;
+}
+dialog.sg-dialog[open]::backdrop { opacity: 1; }
+@starting-style {
+    dialog.sg-dialog[open]::backdrop { opacity: 0; }
+}
+/* Blur only when the user has not asked for reduced transparency */
+@media (prefers-reduced-transparency: no-preference) {
+    dialog.sg-dialog::backdrop {
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+    }
+}
+
+/* Drawer. --start for the mobile navigation drawer, --end for side panels.
+   Open with .is-open or data-state="open". Closed drawers are visibility:hidden
+   so they leave the tab order; also set `inert` when closed. Trap focus and
+   close on Esc in code. */
+.sg-scrim {
+    position: fixed;
+    inset: 0;
+    z-index: var(--sg-z-overlay);
+    background-color: var(--sg-scrim);
+    opacity: 0;
+    visibility: hidden;
+    transition:
+        opacity var(--sg-dur-drawer) var(--sg-ease-out),
+        visibility 0s linear var(--sg-dur-drawer);
+}
+.sg-scrim.is-open,
+.sg-scrim[data-state="open"] {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0s;
+}
+
+.sg-drawer {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    z-index: var(--sg-z-modal);
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    width: min(var(--sg-drawer-w), calc(100vw - 48px));
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    border: 0;
+    background-color: var(--sg-surface-raised);
+    color: var(--sg-text);
+    box-shadow: var(--sg-shadow-floating);
+    visibility: hidden;
+    transition:
+        transform var(--sg-dur-drawer) var(--sg-ease-drawer),
+        visibility 0s linear var(--sg-dur-drawer);
+}
+.sg-drawer--start {
+    inset-inline-start: 0;
+    border-inline-end: 1px solid var(--sg-border-strong);
+    transform: translateX(-100%);
+}
+.sg-drawer--end {
+    inset-inline-end: 0;
+    width: min(420px, calc(100vw - 32px));
+    border-inline-start: 1px solid var(--sg-border-strong);
+    transform: translateX(100%);
+}
+[dir="rtl"] .sg-drawer--start { transform: translateX(100%); }
+[dir="rtl"] .sg-drawer--end { transform: translateX(-100%); }
+.sg-drawer.is-open,
+.sg-drawer[data-state="open"] {
+    visibility: visible;
+    transform: none;
+    transition-delay: 0s;
+}
+.sg-drawer__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--sg-border);
+}
+.sg-drawer__body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 16px;
+}
+
+/* ==========================================================================
+   7. TOASTS
+   Region fixed to the edge they enter from. Add role="status" + aria-live="polite"
+   to the region; errors use role="alert". Errors must stay visible long enough
+   to read (control that in code, not here).
+   Remove: add .is-leaving, then delete the node on animationend.
+   ========================================================================== */
+.sg-toast-region {
+    --sg-toast-from: translateX(24px);
+    position: fixed;
+    z-index: var(--sg-z-toast);
+    right: max(24px, env(safe-area-inset-right, 0px));
+    bottom: max(24px, env(safe-area-inset-bottom, 0px));
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: min(420px, calc(100vw - 32px));
+    pointer-events: none;
+}
+@media (max-width: 767.98px) {
+    .sg-toast-region {
+        --sg-toast-from: translateY(16px);
+        right: 16px;
+        left: 16px;
+        width: auto;
+    }
+}
+
+.sg-toast {
+    --_tone: var(--sg-border-strong);
+    pointer-events: auto;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    box-sizing: border-box;
+    padding: 12px 16px;
+    border: 1px solid var(--sg-border-strong);
+    border-inline-start: 2px solid var(--_tone);
+    border-radius: var(--sg-r-md);
+    background-color: var(--sg-surface-raised);
+    color: var(--sg-text);
+    box-shadow: var(--sg-shadow-floating);
+    font-size: var(--sg-fs-control);
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+    animation: sg-toast-in var(--sg-dur-overlay) var(--sg-ease-out) both;
+}
+.sg-toast[data-tone="success"] { --_tone: var(--sg-success); }
+.sg-toast[data-tone="error"]   { --_tone: var(--sg-danger); }
+.sg-toast[data-tone="warning"] { --_tone: var(--sg-warning); }
+.sg-toast[data-tone="info"]    { --_tone: var(--sg-info); }
+.sg-toast__icon {
+    flex: none;
+    margin-top: 1px;
+    color: var(--_tone);
+}
+.sg-toast__icon svg { width: 16px; height: 16px; stroke-width: var(--sg-icon-stroke); }
+.sg-toast.is-leaving {
+    animation: sg-toast-out var(--sg-dur-exit) var(--sg-ease-out) forwards;
+}
+
+/* ==========================================================================
+   8. FORM FIELDS (text input / textarea only)
+   Checkbox, switch and error-shake from the original kit are intentionally
+   omitted: the current screens do not use them and fields must not move.
+   Invalid state = border + icon + message (set aria-invalid and aria-describedby).
+   ========================================================================== */
+.sg-input {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: var(--sg-h-md);
+    padding: 9px 12px;
+    border: 1px solid var(--sg-input-border);
+    border-radius: var(--sg-r-md);
+    background-color: var(--sg-surface-inset);
+    color: var(--sg-text);
+    font-family: inherit;
+    font-size: var(--sg-fs-control);
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+    transition:
+        border-color var(--sg-dur-fast) var(--sg-ease-out),
+        background-color var(--sg-dur-fast) var(--sg-ease-out);
+}
+textarea.sg-input {
+    min-height: 112px;
+    resize: vertical;
+}
+.sg-input::placeholder { color: var(--sg-text-subtle); }
+@media (hover: hover) and (pointer: fine) {
+    .sg-input:hover:not(:focus):not(:disabled) { border-color: var(--sg-text-subtle); }
+}
+.sg-input:focus-visible { border-color: var(--sg-accent); }
+.sg-input[aria-invalid="true"] { border-color: var(--sg-danger); }
+.sg-input:disabled { opacity: 0.5; cursor: not-allowed; }
+@media (pointer: coarse) { .sg-input { min-height: var(--sg-touch); } }
+
+.sg-field__help,
+.sg-field__error {
+    margin-top: 6px;
+    font-size: var(--sg-fs-meta);
+    line-height: 1.4;
+}
+.sg-field__help  { color: var(--sg-text-muted); }
+.sg-field__error { color: var(--sg-danger); }
+
+/* ==========================================================================
+   9. SKELETON (static; mirror the final layout)
+   ========================================================================== */
+.sg-skeleton {
+    display: block;
+    border-radius: var(--sg-r-sm);
+    background-color: var(--sg-surface-raised);
+}
+
+/* ==========================================================================
+   10. KEYFRAMES
+   Kept: spinner, popover/dialog in-out, fade, toast in-out.
+   Dropped from the original kit: tabSlideRight/Left, checkSpringPop, checkDraw,
+   xpPulse (looping pulse), v3-shake, and every spring/bounce curve.
+   ========================================================================== */
+@keyframes sg-spin {
+    to { transform: rotate(360deg); }
+}
+@keyframes sg-pop-in {
+    from { opacity: 0; transform: scale(0.95); }
+    to   { opacity: 1; transform: scale(1); }
+}
+@keyframes sg-pop-out {
+    from { opacity: 1; transform: scale(1); }
+    to   { opacity: 0; transform: scale(0.95); }
+}
+@keyframes sg-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+@keyframes sg-fade-out {
+    from { opacity: 1; }
+    to   { opacity: 0; }
+}
+@keyframes sg-toast-in {
+    from { opacity: 0; transform: var(--sg-toast-from, translateX(24px)); }
+    to   { opacity: 1; transform: none; }
+}
+@keyframes sg-toast-out {
+    from { opacity: 1; transform: none; }
+    to   { opacity: 0; transform: var(--sg-toast-from, translateX(24px)); }
+}
+
+/* ==========================================================================
+   11. REDUCED MOTION / FORCED COLORS
+   Remove movement. Keep short opacity and colour feedback so state changes
+   remain understandable.
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+    .sg-btn:active:not(:disabled):not([aria-disabled="true"]):not([aria-busy="true"]) {
+        transform: none;
+    }
+    /* A loading indicator is essential, so it keeps turning, just slower */
+    .sg-btn[aria-busy="true"]::after,
+    .sg-btn.is-loading::after { animation-duration: 1600ms; }
+
+    .sg-rail { transition: none; }
+    .sg-rail__toggle svg { transition: none; }
+
+    .sg-popover[data-state="open"],
+    .sg-popover:not([data-state]) { animation-name: sg-fade-in; }
+    .sg-popover[data-state="closed"] { animation-name: sg-fade-out; }
+
+    dialog.sg-dialog,
+    dialog.sg-dialog[open] { transform: none; }
+    @starting-style {
+        dialog.sg-dialog[open] { transform: none; }
+    }
+
+    .sg-drawer { transition: visibility 0s linear var(--sg-dur-base); }
+    .sg-drawer--start,
+    .sg-drawer--end,
+    [dir="rtl"] .sg-drawer--start,
+    [dir="rtl"] .sg-drawer--end { transform: none; opacity: 0; }
+    .sg-drawer.is-open,
+    .sg-drawer[data-state="open"] { opacity: 1; transition: opacity var(--sg-dur-base) var(--sg-ease-out); }
+
+    .sg-toast { animation-name: sg-fade-in; }
+    .sg-toast.is-leaving { animation-name: sg-fade-out; }
+}
+
+/* In forced-colors modes backgrounds disappear, so selection needs an outline */
+@media (forced-colors: active) {
+    .sg-chip[aria-pressed="true"],
+    .sg-chip[aria-selected="true"],
+    .sg-chip.is-selected,
+    .sg-segmented > button[aria-pressed="true"],
+    .sg-segmented > button[aria-selected="true"],
+    .sg-rail__link[aria-current="page"],
+    .sg-rail__link.is-active { outline: 2px solid Highlight; outline-offset: -2px; }
+    .sg-tabs [role="tab"][aria-selected="true"],
+    .sg-tab[aria-selected="true"] { border-bottom-color: Highlight; }
+}
+
+} /* end @layer sg-motion */
+
+@layer utilities {
+/* ==========================================================================
+   GLOBAL CLICKABLE BUTTONS: ROUND CORNERS & TACTILE POP ANIMATION
+   Applies across the whole website to all clickable buttons, pills, and links.
+   ========================================================================== */
+button:not([role="tab"]):not([class*="sg-rail"]):not([class*="sg-tab"]):not([class*="text-left"]):not([class*="w-full text-left"]):not([class*="p-4 text-left"]):not([class*="p-3 text-left"]):not([class*="p-3.5 text-left"]),
+.sg-btn,
+a.sg-btn,
+.btn-pop,
+button.rounded-md,
+a.rounded-md {
+    border-radius: 9999px !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    button:not(:disabled):not([aria-disabled="true"]):not([role="tab"]):not([class*="sg-rail"]):not([class*="sg-tab"]):not([class*="text-left"]):not([class*="w-full text-left"]):not([class*="p-4 text-left"]):not([class*="p-3 text-left"]):not([class*="p-3.5 text-left"]),
+    .sg-btn:not(:disabled):not([aria-disabled="true"]),
+    a.sg-btn:not([aria-disabled="true"]),
+    .btn-pop,
+    button.rounded-md:not(:disabled),
+    a.rounded-md {
+        transition:
+            transform 180ms cubic-bezier(0.18, 0.89, 0.32, 1.28),
+            box-shadow 180ms cubic-bezier(0.18, 0.89, 0.32, 1.28),
+            background-color 140ms ease,
+            border-color 140ms ease,
+            color 140ms ease !important;
+    }
+
+    button:not(:disabled):not([aria-disabled="true"]):not([role="tab"]):not([class*="sg-rail"]):not([class*="sg-tab"]):not([class*="text-left"]):not([class*="w-full text-left"]):not([class*="p-4 text-left"]):not([class*="p-3 text-left"]):not([class*="p-3.5 text-left"]):hover,
+    .sg-btn:not(:disabled):not([aria-disabled="true"]):hover,
+    a.sg-btn:not([aria-disabled="true"]):hover,
+    .btn-pop:hover,
+    button.rounded-md:not(:disabled):hover,
+    a.rounded-md:hover {
+        transform: translateY(-2px) scale(1.03) !important;
+        box-shadow: 0 6px 18px -2px rgba(0, 0, 0, 0.45), 0 0 10px 1px rgba(196, 181, 232, 0.22) !important;
+    }
+
+    button:not(:disabled):not([aria-disabled="true"]):not([role="tab"]):not([class*="sg-rail"]):not([class*="sg-tab"]):not([class*="text-left"]):not([class*="w-full text-left"]):not([class*="p-4 text-left"]):not([class*="p-3 text-left"]):not([class*="p-3.5 text-left"]):active,
+    .sg-btn:not(:disabled):not([aria-disabled="true"]):active,
+    a.sg-btn:not([aria-disabled="true"]):active,
+    .btn-pop:active,
+    button.rounded-md:not(:disabled):active,
+    a.rounded-md:active {
+        transform: translateY(0px) scale(0.97) !important;
+        box-shadow: 0 2px 6px -1px rgba(0, 0, 0, 0.3) !important;
+    }
+}
+}

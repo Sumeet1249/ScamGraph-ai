@@ -1,0 +1,74 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at": "2026-10-24T12:00:00Z",
+  "model_registry_version": "1.0.0",
+  "registered_models_count": 7,
+  "models": [
+    {
+      "id": "scamgraph-message-baseline",
+      "status": "BASELINE",
+      "task": "text_classification",
+      "revision": "v1.0.0",
+      "runtime": "python/scikit-learn",
+      "hardware": "CPU",
+      "artifact_paths": [
+        "ml/message/artifacts/model.joblib",
+        "ml/message/artifacts/vectorizer.joblib",
+        "ml/message/artifacts/metrics.json"
+      ],
+      "training_dataset_ids": ["scam-ham-india"],
+      "evaluation_dataset_ids": ["scam-ham-india"],
+      "benchmark_summary": {
+        "accuracy": 0.9567,
+        "precision": 0.9484,
+        "recall": 0.9511,
+        "f1_score": 0.9498,
+        "false_positive_rate": 0.039,
+        "sample_count": 809
+      }
+    },
+    {
+      "id": "distilbert-scam-detector-india",
+      "status": "REJECTED",
+      "task": "text_classification",
+      "revision": "main",
+      "runtime": "transformers/pytorch",
+      "hardware": "GPU/CPU",
+      "rejection_reason": "High false positive rate on benign Indian transactional banking alerts"
+    },
+    {
+      "id": "multilingual-e5-small",
+      "status": "BASELINE",
+      "task": "semantic_embedding",
+      "revision": "e4ce9877abf3ed1a10766a00b83f120338744312",
+      "runtime": "sentence-transformers/torch",
+      "dimensions": 384
+    },
+    {
+      "id": "bge-m3",
+      "status": "CANDIDATE",
+      "task": "semantic_embedding",
+      "revision": "5617a9f61b028005a4858fdac845db406aefb181",
+      "runtime": "sentence-transformers/torch",
+      "dimensions": 1024
+    },
+    {
+      "id": "paraphrase-multilingual-minilm-l12-v2",
+      "status": "DEPRECATED",
+      "task": "semantic_embedding",
+      "dimensions": 384
+    },
+    {
+      "id": "url-risk-heuristic",
+      "status": "BASELINE",
+      "task": "url_risk_scoring",
+      "model_type": "Heuristic Linear Logistic Scorer"
+    },
+    {
+      "id": "payment-risk-heuristic",
+      "status": "BASELINE",
+      "task": "payment_risk_scoring",
+      "model_type": "Heuristic Linear Logistic Scorer"
+    }
+  ]
+}

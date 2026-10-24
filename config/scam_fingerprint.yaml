@@ -1,0 +1,24 @@
+version: "2.0.0"
+description: "Configurable weights and thresholds for ScamFingerprintV2 multi-dimensional similarity."
+
+# Multi-dimensional similarity weights (must sum to 1.0)
+weights:
+  semantic_weight: 0.30
+  journey_weight: 0.30
+  pattern_weight: 0.15
+  infrastructure_weight: 0.15
+  payment_weight: 0.10
+
+# Sensitivity thresholds
+thresholds:
+  high_similarity_threshold: 0.70
+  moderate_similarity_threshold: 0.50
+  mutated_variant_threshold: 0.65
+  max_identifier_overlap_for_mutated: 0.20
+
+# Sequence alignment calibration for temporal journey similarity
+sequence_alignment:
+  match_score: 1.0
+  mismatch_penalty: 0.5
+  gap_penalty: 0.3
+  reorder_tolerance_window: 2

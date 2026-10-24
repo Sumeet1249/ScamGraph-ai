@@ -1,0 +1,42 @@
+id: JOB_TASK_SCAM
+name: Fake Job & Reviewer Task Scam
+description: >
+  Offers easy remote work such as rating YouTube videos, reviewing hotels, or liking products.
+  Victim earns small initial payouts before being forced to deposit money for VIP tasks.
+
+required_signals:
+  - EMPLOYMENT_OFFER_CONTEXT
+  - REGISTRATION_OR_BADGE_FEE
+
+supporting_signals:
+  - TELEGRAM_COMMUNICATION_CHANNEL
+  - UNVERIFIED_EMPLOYER_DOMAIN
+  - PERSONAL_VPA_PAYMENT_TARGETED
+
+event_sequence:
+  - MESSAGE_RECEIVED
+  - URL_OPENED
+  - CREDENTIAL_REQUEST
+  - PAYMENT_REQUEST
+
+optional_signals:
+  - PREPAID_TASK_SCHEME
+  - FAKE_COMPANY_BADGE
+
+contradictory_signals:
+  - OFFICIAL_ENTERPRISE_EMAIL_DOMAIN
+
+stages:
+  - INITIAL_CONTACT
+  - TASK_ONBOARDING
+  - SMALL_EARNING_BAIT
+  - VIP_FEE_DEMAND
+
+common_next_stage: PAYMENT_INTENT
+
+intervention_guidance:
+  preferred_before:
+    - PAYMENT_INTENT
+  friction_seconds: 10
+  warning_title: Suspicious Employment Fee
+  warning_message: Legitimate employers never ask candidates to pay money or transfer deposits to work.

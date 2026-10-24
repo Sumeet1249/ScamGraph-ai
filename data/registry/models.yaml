@@ -1,0 +1,234 @@
+version: "1.0.0"
+registry_name: "ScamGraph AI Model Registry"
+last_updated: "2026-10-24"
+
+models:
+  - id: "scamgraph-message-baseline"
+    name: "ScamGraph NLP Message Classifier Baseline"
+    provider: "ScamGraph Team"
+    source: "local"
+    source_url: "local://ml/message"
+    revision: "v1.0.0"
+    task: "text_classification"
+    model_type: "TF-IDF + Logistic Regression"
+    languages:
+      - "en"
+      - "hinglish"
+    license: "proprietary-internal"
+    runtime: "python/scikit-learn"
+    hardware: "CPU"
+    input_contract: "Raw text string (SMS/WhatsApp message)"
+    output_contract: "Scam probability (0.0 - 1.0) + binary class (0/1)"
+    training_dataset_ids:
+      - "scam-ham-india"
+    evaluation_dataset_ids:
+      - "scam-ham-india"
+    artifact_paths:
+      - "ml/message/artifacts/model.joblib"
+      - "ml/message/artifacts/vectorizer.joblib"
+      - "ml/message/artifacts/metrics.json"
+    status: "BASELINE"
+    approved_uses:
+      - "Lightweight message-risk scoring baseline"
+      - "Fast edge/API inference (<5ms latency)"
+    prohibited_uses:
+      - "Sole legal basis for declaring an entity or person criminal"
+      - "Automatic blocking without secondary corroboration"
+    known_limitations:
+      - "Trained primarily on English and basic Hinglish keywords"
+      - "Vulnerable to creative character substitution (e.g. 13ank instead of Bank) without phonetic normalization"
+      - "Evaluated on mixed dataset with template redundancy"
+    benchmark_artifact: "ml/message/artifacts/metrics.json"
+    last_evaluated_at: "2026-10-21T00:00:00Z"
+    replacement_candidate: "bge-m3-multilingual-reranker"
+    notes: "Verified loadable; 5,000 vocabulary size; accuracy 95.67%, FPR 3.9% on current test split."
+
+  - id: "distilbert-scam-detector-india"
+    name: "DistilBERT Indian Scam Detector"
+    provider: "anmolshrivastav"
+    source: "huggingface"
+    source_url: "https://huggingface.co/anmolshrivastav/distilbert-scam-detector-india"
+    revision: "main"
+    task: "text_classification"
+    model_type: "Transformer (DistilBERT)"
+    languages:
+      - "en"
+      - "hinglish"
+    license: "apache-2.0"
+    runtime: "transformers/pytorch"
+    hardware: "GPU/CPU"
+    input_contract: "Tokenized text sequence"
+    output_contract: "Logits / Softmax probabilities"
+    training_dataset_ids:
+      - "scam-ham-india"
+    evaluation_dataset_ids:
+      - "scam-ham-india"
+    artifact_paths: []
+    status: "REJECTED"
+    approved_uses: []
+    prohibited_uses:
+      - "Production deployment"
+    known_limitations:
+      - "Unacceptable false-positive rate on benign Indian transactional SMS (OTP, bank alerts)"
+      - "Heavy memory footprint compared to baseline scikit-learn model"
+    benchmark_artifact: "ml/message/artifacts/model_comparison.json"
+    last_evaluated_at: "2026-10-21T00:00:00Z"
+    replacement_candidate: null
+    notes: "Rejected in benchmark comparison due to high false-positive rate on banking alerts. Adapter code retained for future candidate evaluations."
+
+  - id: "multilingual-e5-small"
+    name: "Multilingual E5 Small Semantic Vector Encoder"
+    provider: "intfloat"
+    source: "huggingface"
+    source_url: "https://huggingface.co/intfloat/multilingual-e5-small"
+    revision: "e4ce9877abf3ed1a10766a00b83f120338744312"
+    task: "semantic_embedding"
+    model_type: "SentenceTransformer (BERT-based)"
+    languages:
+      - "multilingual (100+ languages including Hindi, Tamil, Telugu, Bengali)"
+    license: "mit"
+    runtime: "sentence-transformers/torch"
+    hardware: "CPU/GPU"
+    input_contract: "Text string with 'passage: ' or 'query: ' prefix"
+    output_contract: "384-dimensional normalized dense float vector"
+    training_dataset_ids:
+      - "cc-100"
+      - "ms-marco"
+    evaluation_dataset_ids:
+      - "scamgraph-canonical-journeys"
+    artifact_paths: []
+    status: "BASELINE"
+    approved_uses:
+      - "Semantic paraphrase similarity search"
+      - "Near-duplicate message detection"
+      - "Vector indexing in pgvector"
+    prohibited_uses:
+      - "Standalone fraud classification (embeddings generate similarity signals, not fraud verdicts)"
+    known_limitations:
+      - "Limited context window (512 tokens)"
+    benchmark_artifact: null
+    last_evaluated_at: "2026-10-24T00:00:00Z"
+    replacement_candidate: "bge-m3"
+    notes: "Default CPU-friendly semantic embedding model configured in ScamGraph."
+
+  - id: "bge-m3"
+    name: "BAAI BGE-M3 Multilingual Multi-Functionality Embedding"
+    provider: "BAAI"
+    source: "huggingface"
+    source_url: "https://huggingface.co/BAAI/bge-m3"
+    revision: "5617a9f61b028005a4858fdac845db406aefb181"
+    task: "semantic_embedding"
+    model_type: "SentenceTransformer"
+    languages:
+      - "multilingual (100+ languages)"
+    license: "mit"
+    runtime: "sentence-transformers/torch"
+    hardware: "GPU recommended (1024 dims)"
+    input_contract: "Text sequence up to 8192 tokens"
+    output_contract: "1024-dimensional normalized dense float vector"
+    training_dataset_ids: []
+    evaluation_dataset_ids: []
+    artifact_paths: []
+    status: "CANDIDATE"
+    approved_uses:
+      - "High-dimensional cross-channel campaign clustering"
+      - "Long-context scam journey transcript representation"
+    prohibited_uses:
+      - "Resource-constrained CPU environments"
+    known_limitations:
+      - "High compute and memory requirements"
+    benchmark_artifact: null
+    last_evaluated_at: null
+    replacement_candidate: null
+    notes: "High-capability candidate model supported in ml/embeddings/encoder.py."
+
+  - id: "paraphrase-multilingual-minilm-l12-v2"
+    name: "Paraphrase Multilingual MiniLM L12 V2"
+    provider: "sentence-transformers"
+    source: "huggingface"
+    source_url: "https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+    revision: "main"
+    task: "semantic_embedding"
+    model_type: "SentenceTransformer"
+    languages:
+      - "multilingual (50+ languages)"
+    license: "apache-2.0"
+    runtime: "sentence-transformers/torch"
+    hardware: "CPU/GPU"
+    input_contract: "Text string up to 128 tokens"
+    output_contract: "384-dimensional dense float vector"
+    training_dataset_ids: []
+    evaluation_dataset_ids: []
+    artifact_paths: []
+    status: "DEPRECATED"
+    approved_uses:
+      - "Fallback embedding encoder"
+    prohibited_uses: []
+    known_limitations:
+      - "Truncates sequences beyond 128 tokens"
+    benchmark_artifact: null
+    last_evaluated_at: "2026-10-20T00:00:00Z"
+    replacement_candidate: "multilingual-e5-small"
+    notes: "Preserved for backward compatibility with early prototype embeddings."
+
+  - id: "url-risk-heuristic"
+    name: "URL Feature-Weighted Heuristic Risk Scorer"
+    provider: "ScamGraph Team"
+    source: "local"
+    source_url: "local://ml/url"
+    revision: "v1.0"
+    task: "url_risk_scoring"
+    model_type: "Heuristic Linear Logistic Scorer"
+    languages:
+      - "n/a"
+    license: "proprietary-internal"
+    runtime: "python"
+    hardware: "CPU"
+    input_contract: "URL string and extracted lexical/network features"
+    output_contract: "Malicious probability (0.0 - 1.0) + Risk Tier"
+    training_dataset_ids: []
+    evaluation_dataset_ids: []
+    artifact_paths:
+      - "config/url_ml.yaml"
+    status: "BASELINE"
+    approved_uses:
+      - "Deterministic heuristic triage of phishing characteristics (entropy, IP host, suspicious TLD)"
+    prohibited_uses:
+      - "Claiming bank-grade ML detection without empirical dataset training"
+    known_limitations:
+      - "Relies on hardcoded heuristic weights; prone to false positives on complex URL paths"
+    benchmark_artifact: null
+    last_evaluated_at: "2026-10-24T00:00:00Z"
+    replacement_candidate: null
+    notes: "Reclassified from 'URL ML Classifier' to Heuristic Scorer for truthful lineage."
+
+  - id: "payment-risk-heuristic"
+    name: "Payment VPA Heuristic Risk Scorer"
+    provider: "ScamGraph Team"
+    source: "local"
+    source_url: "local://ml/payment"
+    revision: "v1.0"
+    task: "payment_risk_scoring"
+    model_type: "Heuristic Linear Logistic Scorer"
+    languages:
+      - "n/a"
+    license: "proprietary-internal"
+    runtime: "python"
+    hardware: "CPU"
+    input_contract: "UPI VPA string and purported merchant entity"
+    output_contract: "Malicious probability (0.0 - 1.0) + Risk Tier"
+    training_dataset_ids: []
+    evaluation_dataset_ids: []
+    artifact_paths:
+      - "config/payment_ml.yaml"
+    status: "BASELINE"
+    approved_uses:
+      - "Rule-based mismatch checks (e.g. claimed SBI entity paying to personal handle)"
+    prohibited_uses:
+      - "Claiming bank-grade transaction fraud detection"
+    known_limitations:
+      - "Hand-crafted prototype weights; no real transaction dataset used"
+    benchmark_artifact: null
+    last_evaluated_at: "2026-10-24T00:00:00Z"
+    replacement_candidate: null
+    notes: "Reclassified from 'Payment ML Classifier' to Heuristic Scorer for truthful lineage."

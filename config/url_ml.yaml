@@ -1,0 +1,103 @@
+version: "1.0"
+
+thresholds:
+  benign_threshold: 0.35
+  suspicious_threshold: 0.65
+  high_risk_threshold: 0.85
+
+model:
+  algorithm: "calibrated_logistic_ensemble"
+  version: "1.0.0"
+
+suspicious_tlds:
+  - ".xyz"
+  - ".top"
+  - ".tk"
+  - ".ml"
+  - ".ga"
+  - ".cf"
+  - ".gq"
+  - ".online"
+  - ".site"
+  - ".club"
+  - ".work"
+  - ".vip"
+  - ".icu"
+  - ".link"
+  - ".buzz"
+
+target_brands:
+  - "sbi"
+  - "onlinesbi"
+  - "hdfc"
+  - "hdfcbank"
+  - "icici"
+  - "icicibank"
+  - "axis"
+  - "axisbank"
+  - "pnb"
+  - "kotak"
+  - "tatapower"
+  - "bescom"
+  - "adani"
+  - "electricity"
+  - "billdesk"
+  - "paytm"
+  - "phonepe"
+  - "gpay"
+  - "incometax"
+  - "indiapost"
+  - "aadhaar"
+  - "uidai"
+
+official_brand_domains:
+  - "sbi.co.in"
+  - "onlinesbi.sbi"
+  - "hdfcbank.com"
+  - "icicibank.com"
+  - "axisbank.com"
+  - "pnbindia.in"
+  - "kotak.com"
+  - "tatapower.com"
+  - "bescom.karnataka.gov.in"
+  - "incometax.gov.in"
+  - "indiapost.gov.in"
+  - "uidai.gov.in"
+  - "google.com"
+
+suspicious_keywords:
+  - "verify"
+  - "verification"
+  - "login"
+  - "signin"
+  - "update"
+  - "kyc"
+  - "security"
+  - "secure"
+  - "support"
+  - "portal"
+  - "confirm"
+  - "block"
+  - "suspend"
+  - "suspended"
+  - "refund"
+  - "reward"
+  - "claim"
+  - "otp"
+  - "pan"
+  - "ebill"
+  - "disconnection"
+
+feature_weights:
+  has_ip_host: 3.0
+  suspicious_tld: 2.2
+  brand_in_subdomain_or_path: 2.5
+  suspicious_keyword_count: 0.8
+  entropy_excess: 1.2
+  subdomain_count: 0.5
+  hyphen_count: 0.3
+  non_https: 0.8
+  https_discount: -1.2
+  encoded_char_count: 0.7
+  punycode: 2.0
+  bias: -2.5

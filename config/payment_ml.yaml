@@ -1,0 +1,29 @@
+## Configuration for Payment Machine Learning Detector (Step 28)
+# SCAMGRAPH_PAYMENT_MODEL selects the primary model. Currently supported:
+#   - "custom" (default, uses the weights below)
+#   - "fallback" (lightweight heuristic model)
+
+model: custom
+
+# Linear model weights for each feature (used by PaymentRiskClassifier)
+weights:
+  vpa_local_len: 0.02
+  vpa_domain_len: 0.03
+  vpa_has_digits: 0.04
+  vpa_has_hyphens: 0.04
+  vpa_suspicious_keyword: 0.07
+  amount_log: 0.05
+  amount_category_low: -0.01
+  amount_category_medium: 0.02
+  amount_category_high: 0.05
+  transaction_type_collect: 0.03
+  transaction_type_direct_pay: 0.05
+  transaction_type_qr: 0.04
+  transaction_type_intent: 0.02
+  bias: -1.2
+
+# Thresholds for risk tiers (output of sigmoid probability)
+thresholds:
+  benign: 0.35
+  suspicious: 0.65
+  high_risk: 0.85

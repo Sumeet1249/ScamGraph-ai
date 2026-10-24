@@ -1,0 +1,84 @@
+{
+  "id": "scenario_02_kyc_scam",
+  "scenario": "KYC Bank Impersonation Scam",
+  "description": "Scammer impersonates SBI warning of immediate account freeze, leading to credential and OTP phishing portal.",
+  "expected_pattern": "KYC_IMPERSONATION",
+  "expected_risk_level": "HIGH",
+  "expected_intervention": "PRE_PAYMENT_INTERVENTION",
+  "events": [
+    {
+      "event_type": "MESSAGE_RECEIVED",
+      "timestamp_offset_seconds": 0,
+      "description": "SMS: SBI Alert: Your netbanking is blocked due to pending KYC. Update now at https://sbi-verify.example.test/kyc",
+      "channel": "SMS"
+    },
+    {
+      "event_type": "URL_OPENED",
+      "timestamp_offset_seconds": 25,
+      "description": "User opens https://sbi-verify.example.test/kyc",
+      "channel": "BROWSER"
+    },
+    {
+      "event_type": "CREDENTIAL_REQUEST",
+      "timestamp_offset_seconds": 50,
+      "description": "Phishing portal prompts for netbanking username and password",
+      "channel": "BROWSER"
+    },
+    {
+      "event_type": "OTP_REQUEST",
+      "timestamp_offset_seconds": 75,
+      "description": "Portal prompts user to enter 6-digit one-time password",
+      "channel": "BROWSER"
+    },
+    {
+      "event_type": "PAYMENT_REQUEST",
+      "timestamp_offset_seconds": 100,
+      "description": "Deceptive authorization for INR 25,000 to fraudster.wallet@fakeupi",
+      "channel": "UPI"
+    },
+    {
+      "event_type": "PAYMENT_INTENT",
+      "timestamp_offset_seconds": 115,
+      "description": "Victim on payment approval confirmation step",
+      "channel": "UPI"
+    }
+  ],
+  "evidence": [
+    {
+      "source": "MESSAGE_ANALYZER",
+      "signal": "OFFICIAL_ENTITY_IMPERSONATION",
+      "observation": "Sender claims to represent State Bank of India netbanking security",
+      "confidence": 0.96
+    },
+    {
+      "source": "MESSAGE_ANALYZER",
+      "signal": "FINANCIAL_CONTEXT",
+      "observation": "Account suspension threat tied to financial banking access",
+      "confidence": 0.95
+    },
+    {
+      "source": "MESSAGE_ANALYZER",
+      "signal": "URGENCY_PRESSURE_DETECTED",
+      "observation": "Immediate threat: 'blocked within 2 hours'",
+      "confidence": 0.92
+    },
+    {
+      "source": "URL_ANALYZER",
+      "signal": "SUSPICIOUS_URL_PRESENT",
+      "observation": "Domain sbi-verify.example.test mimics official brand on newly created host",
+      "confidence": 0.94
+    },
+    {
+      "source": "TINYFISH",
+      "signal": "OTP_INPUT_FORM_OBSERVED",
+      "observation": "DOM contains sensitive OTP input field under unverified origin",
+      "confidence": 0.98
+    },
+    {
+      "source": "PAYMENT_MODEL",
+      "signal": "INDIVIDUAL_VPA_PAYMENT_TARGETED",
+      "observation": "Target VPA fraudster.wallet@fakeupi belongs to an unverified private individual",
+      "confidence": 0.89
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+id: DIGITAL_ARREST
+name: Digital Arrest & Authority Coercion Scam
+description: >
+  Scammer impersonates law enforcement, customs, or police authority asserting that a package
+  containing illegal contraband was intercepted in the victim's name, demanding secret video call
+  detention and security fund transfers.
+
+required_signals:
+  - LAW_ENFORCEMENT_IMPERSONATION
+  - LEGAL_PENALTY_FEAR_THREAT
+
+supporting_signals:
+  - VIDEO_CALL_ISOLATION_REQUEST
+  - FAKE_ARREST_WARRANT_PRESENTED
+  - SECURITY_DEPOSIT_DEMAND
+
+event_sequence:
+  - CALL_REPORTED
+  - MESSAGE_RECEIVED
+  - CREDENTIAL_REQUEST
+  - PAYMENT_REQUEST
+
+optional_signals:
+  - CBI_POLICE_CUSTOMS_IDENTITY
+  - SECRECY_COERCION
+
+contradictory_signals:
+  - IN_PERSON_STATION_VERIFICATION
+
+stages:
+  - INITIAL_CONTACT
+  - AUTHORITY_INTIMIDATION
+  - DIGITAL_CONFINEMENT
+  - ASSET_VERIFICATION_PAYMENT
+
+common_next_stage: PAYMENT_INTENT
+
+intervention_guidance:
+  preferred_before:
+    - PAYMENT_INTENT
+  friction_seconds: 15
+  warning_title: Suspected Digital Arrest Coercion
+  warning_message: Indian police and legal authorities never conduct arrests or demand asset clearance over Skype/WhatsApp video calls.

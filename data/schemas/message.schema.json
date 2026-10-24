@@ -1,0 +1,157 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ScamGraph Message Record Schema",
+  "description": "Canonical representation of a single message data point with complete provenance and scam classification metadata.",
+  "type": "object",
+  "required": [
+    "sample_id",
+    "text",
+    "label",
+    "source_dataset",
+    "provenance",
+    "review_status"
+  ],
+  "properties": {
+    "sample_id": {
+      "type": "string",
+      "description": "Unique identifier in format SOURCE-TYPE-HASH (e.g., SG-MSG-000001)"
+    },
+    "text": {
+      "type": "string",
+      "description": "Raw message text (SMS, WhatsApp, email, etc.)"
+    },
+    "label": {
+      "type": "string",
+      "enum": ["scam", "ham", "spam", "benign", "unknown"],
+      "description": "Ground truth label: scam or legitimate"
+    },
+    "scam_type": {
+      "type": "string",
+      "enum": [
+        "fake_kyc",
+        "fake_otp",
+        "electricity_bill",
+        "loan_offer",
+        "job_offer",
+        "lottery",
+        "courier_customs",
+        "investment_scam",
+        "fake_support_refund",
+        "digital_arrest",
+        "generic_scam",
+        "benign"
+      ],
+      "description": "Specific scam category if applicable"
+    },
+    "language": {
+      "type": "string",
+      "enum": [
+        "en",
+        "hi",
+        "hinglish",
+        "ta_en",
+        "te_en",
+        "mr_en",
+        "bn_en",
+        "gu_en",
+        "kn_en",
+        "ml_en"
+      ],
+      "description": "Language and script: 'en' (English), 'hi' (Hindi), 'hinglish' (mixed), or regional-English code-mix"
+    },
+    "channel": {
+      "type": "string",
+      "enum": ["sms", "whatsapp", "email", "telegram", "call_transcript", "unknown"],
+      "description": "Delivery channel"
+    },
+    "source_dataset": {
+      "type": "string",
+      "description": "Dataset origin (e.g., 'anmolshrivastav/scam-ham-india', 'scamgraph-canonical-journeys')"
+    },
+    "source_license": {
+      "type": "string",
+      "description": "License of source dataset (e.g., 'apache-2.0', 'mit', 'cc-by-4.0')"
+    },
+    "provenance": {
+      "type": "string",
+      "enum": ["real", "synthetic", "mixed", "unknown"],
+      "description": "Data provenance: real-world, synthetically generated, or mixed"
+    },
+    "review_status": {
+      "type": "string",
+      "enum": ["approved", "unreviewed", "rejected", "flagged"],
+      "description": "Human audit status. Only 'approved' records should be used for training."
+    },
+    "label_source": {
+      "type": "string",
+      "enum": ["automated", "human", "consensus", "expert_audited"],
+      "description": "How the label was determined"
+    },
+    "label_confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Confidence in label (0.0 to 1.0). Lower values indicate ambiguous or low-confidence labels."
+    },
+    "campaign_template_id": {
+      "type": "string",
+      "description": "If part of a known scam campaign, the template ID (e.g., 'fake_kyc_template_04')"
+    },
+    "signals": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "urgency",
+          "identity_unverified",
+          "payment_request",
+          "otp_request",
+          "credential_request",
+          "suspicious_url",
+          "impersonation",
+          "threat_language",
+          "grammatical_errors",
+          "script_mixing",
+          "time_based_pressure",
+          "authority_claim"
+        ]
+      },
+      "description": "Behavioral or linguistic signals that contribute to the classification"
+    },
+    "journey_id": {
+      "type": "string",
+      "description": "If part of a multi-stage journey, the journey ID (e.g., 'SG-JOURNEY-001')"
+    },
+    "journey_stage": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Stage number in a multi-stage journey (1 = initial contact, 2 = verification, etc.)"
+    },
+    "collection_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Date and time of data collection or creation"
+    },
+    "dataset_version": {
+      "type": "string",
+      "description": "Version of dataset (e.g., '1.0.0', 'main')"
+    },
+    "is_synthetic": {
+      "type": "boolean",
+      "description": "True if synthetically generated; false if real-world data"
+    },
+    "privacy_status": {
+      "type": "string",
+      "enum": ["public", "redacted", "anonymous", "private"],
+      "description": "Privacy status. 'redacted' or 'anonymous' for real user data."
+    },
+    "duplicate_group_id": {
+      "type": "string",
+      "description": "If this record is a duplicate or variant of another, the group ID (e.g., 'DUP-GROUP-42')"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Free-text annotation or context"
+    }
+  }
+}

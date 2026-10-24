@@ -1,0 +1,157 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ScamGraph Multi-Stage Journey Schema",
+  "description": "Structured representation of a complete scam journey with linked events, decisions, and outcomes.",
+  "type": "object",
+  "required": [
+    "journey_id",
+    "scam_type",
+    "expected_risk_level",
+    "events"
+  ],
+  "properties": {
+    "journey_id": {
+      "type": "string",
+      "description": "Unique identifier (e.g., 'SG-JOURNEY-001')"
+    },
+    "scam_type": {
+      "type": "string",
+      "enum": [
+        "fake_kyc",
+        "electricity_bill",
+        "loan_offer",
+        "job_offer",
+        "investment_scam",
+        "courier_customs",
+        "fake_support_refund",
+        "digital_arrest",
+        "generic_scam"
+      ],
+      "description": "Category of scam represented"
+    },
+    "description": {
+      "type": "string",
+      "description": "Human-readable description of the journey narrative"
+    },
+    "expected_risk_level": {
+      "type": "string",
+      "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL", "BENIGN"],
+      "description": "Ground truth risk level for evaluation purposes"
+    },
+    "expected_pattern": {
+      "type": "string",
+      "description": "Key pattern to identify (e.g., 'FAKE_KYC', 'ELECTRICITY_IMPERSONATION')"
+    },
+    "provenance": {
+      "type": "string",
+      "enum": ["synthetic", "real", "mixed"],
+      "description": "Data provenance: synthetically constructed, real incident, or blended"
+    },
+    "language": {
+      "type": "string",
+      "enum": ["en", "hi", "hinglish", "ta_en", "te_en", "mr_en", "bn_en"],
+      "description": "Primary language of the journey"
+    },
+    "created_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Date journey was created"
+    },
+    "events": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["sequence", "channel", "event_type", "description"],
+        "properties": {
+          "sequence": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Order in journey (1 = first event)"
+          },
+          "channel": {
+            "type": "string",
+            "enum": ["SMS", "WHATSAPP", "EMAIL", "TELEGRAM", "CALL", "WEBSITE", "PAYMENT_SCREEN", "SYSTEM"],
+            "description": "Channel through which event occurs"
+          },
+          "event_type": {
+            "type": "string",
+            "enum": [
+              "MESSAGE_RECEIVED",
+              "LINK_OPENED",
+              "WEBSITE_LOADED",
+              "FORM_FILLED",
+              "CREDENTIAL_REQUEST",
+              "PAYMENT_REQUEST",
+              "OTP_REQUEST",
+              "CALL_RECEIVED",
+              "VOICE_MESSAGE",
+              "SOCIAL_ENGINEERING",
+              "PAYMENT_ATTEMPTED",
+              "PAYMENT_COMPLETED",
+              "VERIFICATION_ATTEMPT",
+              "ACCOUNT_ACTION",
+              "SYSTEM_NOTIFICATION"
+            ],
+            "description": "Type of interaction"
+          },
+          "description": {
+            "type": "string",
+            "description": "Content of the event (message text, call summary, etc.)"
+          },
+          "signals": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Observable signals in this event"
+          },
+          "risk_contribution": {
+            "type": "string",
+            "enum": ["increases_risk", "neutral", "decreases_risk", "reveals_scam"],
+            "description": "How this event affects overall risk assessment"
+          },
+          "decision_points": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["option", "action"],
+              "properties": {
+                "option": {
+                  "type": "string",
+                  "description": "User choice (e.g., 'verify immediately')"
+                },
+                "action": {
+                  "type": "string",
+                  "description": "Consequence of choice"
+                },
+                "next_sequence": {
+                  "type": "integer",
+                  "description": "Next event if this option is chosen"
+                },
+                "is_safer_decision": {
+                  "type": "boolean",
+                  "description": "True if this choice reduces risk"
+                }
+              }
+            },
+            "description": "Branching points: decisions the user can make"
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Additional context (timestamp, actor, etc.)"
+          }
+        }
+      },
+      "description": "Chronological list of events in the journey"
+    },
+    "learning_outcomes": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "What users should learn from this journey (e.g., 'Real banks never ask for OTP')"
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Classification tags for filtering/organization"
+    }
+  }
+}

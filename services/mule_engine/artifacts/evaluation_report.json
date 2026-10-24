@@ -1,0 +1,43 @@
+{
+  "model_version": "mule_rf_v1.0.0",
+  "evaluated_at": "2026-10-21T19:51:45.507340+00:00",
+  "train_samples": 70,
+  "test_samples": 30,
+  "metrics": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1_score": 1.0,
+    "pr_auc": 1.0,
+    "roc_auc": 1.0,
+    "brier_score": 0.0001,
+    "false_positive_rate": 0.0
+  },
+  "confusion_matrix": {
+    "true_negatives": 18,
+    "false_positives": 0,
+    "false_negatives": 0,
+    "true_positives": 12
+  },
+  "top_features": {
+    "f07_fan_in_count": 0.08,
+    "f17_upi_handle_count": 0.08,
+    "f09_fan_in_to_out_ratio": 0.07,
+    "f10_account_age_days": 0.07,
+    "f13_round_chunking_detected": 0.07,
+    "f04_dwell_time_seconds_avg": 0.06,
+    "f08_fan_out_count": 0.06,
+    "f18_channel_risk_concentration": 0.06,
+    "f02_velocity_24h_count": 0.05,
+    "f06_counterparty_diversity": 0.05,
+    "f12_odd_hours_ratio": 0.05,
+    "f16_identical_amount_repetition_count": 0.05,
+    "f01_velocity_1h_count": 0.04,
+    "f03_volume_turnover_ratio": 0.04,
+    "f15_micro_test_followed_by_spike": 0.04,
+    "f19_registry_match_indicator": 0.04,
+    "f05_rapid_churn_ratio": 0.03,
+    "f11_dormancy_burst_score": 0.03,
+    "f14_balance_extraction_ratio": 0.03
+  },
+  "disclaimer": "Independent benchmark evaluation on synthetic/open behavioral transaction distributions. Does not claim proprietary RBIH MuleHunter weights."
+}

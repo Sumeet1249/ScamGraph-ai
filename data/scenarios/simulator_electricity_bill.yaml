@@ -1,0 +1,824 @@
+scenario_id: "electricity_bill_upi"
+title: "Electricity Bill UPI Collection Scam"
+category: "electricity_scam"
+difficulty: "intermediate"
+estimated_duration_minutes: 8
+description: "Fake electricity disconnection warning with UPI payment request. Learn to verify independently and recognize social engineering pressure."
+
+languages_supported:
+  - en
+  - hi
+  - hinglish
+
+learning_objectives:
+  - "Verify official contact details through independent channels, not links in messages"
+  - "Recognize urgency and pressure as manipulation tactics"
+  - "Understand the difference between verifying a bill and approving a payment"
+  - "Practice questioning suspicious requests before entering credentials or OTPs"
+
+expected_risk_level: "HIGH"
+first_step_id: "step_1_message_arrival"
+
+steps:
+  step_1_message_arrival:
+    step_id: "step_1_message_arrival"
+    title: "Incoming Message"
+    description: "An SMS arrives claiming your electricity connection may be disconnected"
+    stimulus_type: "message"
+    stimulus_content:
+      channel: "SMS"
+      timestamp: "10:32 AM"
+      sender: "Unknown +919999999999"
+      text: "Your electricity connection may be disconnected today due to an unpaid bill. Verify your payment immediately using the link below: http://city-power-verify.example.test/bill"
+    decision_prompt: "What would you do?"
+    decision_options:
+      - decision: "trust_and_continue"
+        label: "Open the link and follow instructions"
+        hint: "Quick action"
+      - decision: "verify_independently"
+        label: "Verify the bill through the provider's official app or independently obtained contact"
+        hint: "Safer"
+      - decision: "reply_to_sender"
+        label: "Reply to the sender and ask for proof"
+        hint: "Intermediate"
+      - decision: "ignore_or_report"
+        label: "Ignore or report the message"
+        hint: "Safe"
+    
+    branches:
+      - decision: "verify_independently"
+        next_step_id: "step_2_independent_verification"
+        outcome_description: "You break the attacker's social engineering by using independent verification"
+        risk_multiplier: 0.3
+      
+      - decision: "open_link"
+        next_step_id: "step_2_suspicious_website"
+        outcome_description: "You click the link and reach a phishing page"
+        risk_multiplier: 2.5
+      
+      - decision: "reply_to_sender"
+        next_step_id: "step_2_sender_response"
+        outcome_description: "The attacker responds with more pressure and fake credentials"
+        risk_multiplier: 1.8
+      
+      - decision: "ignore_or_report"
+        next_step_id: null
+        outcome_description: "You safely report the message and end the scenario"
+        risk_multiplier: 0.1
+    
+    teaching_points:
+      - "Never click links in unexpected messages, even if they look professional"
+      - "Urgency and payment requests together are a red flag"
+      - "Always use independently sourced contact information (official website, bill, or phone book)"
+    
+    evidence_present_at_step:
+      - signal_type: "URGENCY_LANGUAGE"
+        severity: "medium"
+        description: "Message claims 'disconnection today' to create pressure"
+      - signal_type: "UNVERIFIED_SENDER"
+        severity: "high"
+        description: "Sender identity cannot be confirmed; comes from generic +91 number"
+      - signal_type: "PAYMENT_REQUEST"
+        severity: "medium"
+        description: "Message requests payment without independent bill verification"
+
+  step_2_suspicious_website:
+    step_id: "step_2_suspicious_website"
+    title: "Suspicious Website"
+    description: "You open the link and see a website claiming to be from City Power Services"
+    stimulus_type: "website"
+    stimulus_content:
+      domain: "city-power-verify.example.test"
+      url: "http://city-power-verify.example.test/bill"
+      page_title: "City Power Services - Bill Verification"
+      page_content:
+        header: "Electricity Bill Verification"
+        notice: "Verify your account today to avoid a possible disconnection."
+        form_fields:
+          - label: "Account Number"
+            placeholder: "e.g., 1234567890"
+            required: true
+          - label: "Consumer Name"
+            placeholder: "As on your bill"
+            required: true
+      suspicious_indicators:
+        - "Domain does not match official provider (example.test is a training domain)"
+        - "HTTP connection, not HTTPS"
+        - "No security certificate visible"
+        - "Page requests sensitive account information"
+    
+    decision_prompt: "What would you do?"
+    decision_options:
+      - decision: "verify_independently"
+        label: "Close this page and verify through the official app or phone number from your bill"
+        hint: "Safer"
+      - decision: "enter_credentials"
+        label: "Enter my account number to check the bill"
+        hint: "Risky"
+      - decision: "close_page"
+        label: "Close this page and report it"
+        hint: "Safe"
+      - decision: "question_sender"
+        label: "Go back and ask the sender for more details"
+        hint: "Less safe than verification"
+    
+    branches:
+      - decision: "verify_independently"
+        next_step_id: null
+        outcome_description: "You pause and verify independently. The scenario ends safely."
+        risk_multiplier: 0.2
+      
+      - decision: "close_page"
+        next_step_id: null
+        outcome_description: "You close the page. Scenario ends safely."
+        risk_multiplier: 0.3
+      
+      - decision: "enter_credentials"
+        next_step_id: "step_3_credential_harvesting"
+        outcome_description: "You enter credentials. The attacker captures them."
+        risk_multiplier: 3.0
+      
+      - decision: "question_sender"
+        next_step_id: "step_2_sender_response"
+        outcome_description: "Attacker sends another message with more pressure"
+        risk_multiplier: 1.5
+    
+    teaching_points:
+      - "Check the domain carefully. Official electricity providers never use suspicious domains."
+      - "Real providers never ask you to enter account details on unverified websites."
+      - "Close and verify independently through official channels."
+    
+    evidence_present_at_step:
+      - signal_type: "SUSPICIOUS_DOMAIN"
+        severity: "high"
+        description: "Domain is example.test (training domain), not official"
+      - signal_type: "CREDENTIAL_FORM"
+        severity: "high"
+        description: "Page requests account details without verification"
+      - signal_type: "INSECURE_CONNECTION"
+        severity: "medium"
+        description: "HTTP connection, no visible security certificate"
+
+  step_2_independent_verification:
+    step_id: "step_2_independent_verification"
+    title: "Independent Verification"
+    description: "You open the official City Power app and check your account"
+    stimulus_type: "website"
+    stimulus_content:
+      source: "Official City Power Mobile App"
+      screen_title: "My Account"
+      account_status:
+        account_number: "1234567890"
+        consumer_name: "Your Name"
+        current_bill: "₹1,640"
+        payment_status: "Current - No pending dues"
+        last_payment_date: "2026-10-10"
+        disconnection_risk: "None"
+    
+    decision_prompt: "What did you find?"
+    decision_options:
+      - decision: "verify_independently"
+        label: "The bill is already paid. The message was fraudulent."
+        hint: "Safe action confirmed"
+    
+    branches:
+      - decision: "verify_independently"
+        next_step_id: null
+        outcome_description: "You confirmed through an independent channel that no bill was due. You avoided the scam."
+        risk_multiplier: 0.0
+    
+    teaching_points:
+      - "Independent verification is the most reliable defense against social engineering"
+      - "Legitimate service providers never threaten disconnection for phantom bills"
+    
+    evidence_present_at_step:
+      - signal_type: "INDEPENDENT_VERIFICATION_COMPLETED"
+        severity: "low"
+        description: "User verified through official channel and found no dues"
+        confidence: 0.98
+
+  step_2_inspect_domain:
+    step_id: "step_2_inspect_domain"
+    title: "You Pause to Inspect"
+    description: "You decide to examine the website more carefully before entering anything. You notice the domain is suspicious."
+    stimulus_type: "website"
+    stimulus_content:
+      inspection_result: "Safe choice"
+      domain_analysis:
+        displayed: "city-power-verify.example.test"
+        note: "Using .example.test (reserved training domain, not a real TLD)"
+      ssl_certificate:
+        status: "WARNING: No valid certificate"
+        issuer: "Self-signed"
+      page_behavior:
+        loads_external_scripts: "Yes - could track you"
+        requests_sensitive_data: "Yes - account number, password"
+    
+    decision_prompt: "You've identified issues with the website. Now the page displays a live chat button. A support agent is attempting to engage you. What do you do?"
+    decision_options:
+      - decision: "question_sender"
+        label: "Click the chat to ask the agent for proof of identity and bill details"
+        hint: "Engage cautiously"
+      - decision: "close_page"
+        label: "Close the website immediately"
+        hint: "Safest"
+      - decision: "verify_independently"
+        label: "Close this and call the official number from your bill"
+        hint: "Most reliable"
+    
+    branches:
+      - decision: "close_page"
+        next_step_id: null
+        outcome_description: "You close the page. Scenario ends safely—no credentials compromised."
+        risk_multiplier: 0.2
+      
+      - decision: "verify_independently"
+        next_step_id: null
+        outcome_description: "You call the official number. They confirm this is a known phishing scam and thank you for reporting it."
+        risk_multiplier: 0.1
+      
+      - decision: "question_sender"
+        next_step_id: "step_3_social_engineering_call"
+        outcome_description: "The agent initiates a live call to apply social engineering pressure"
+        risk_multiplier: 1.8
+    
+    teaching_points:
+      - "Pausing to inspect is a strong defense—you spotted the domain issue"
+      - "Closing the page immediately is the safest choice"
+      - "Calling the official number independently removes all doubt"
+    
+    evidence_present_at_step:
+      - signal_type: "DOMAIN_MISMATCH"
+        severity: "high"
+        description: "Domain uses .example.test instead of official provider"
+        confidence: 0.98
+      - signal_type: "SSL_CERTIFICATE_WARNING"
+        severity: "medium"
+        description: "Website shows no valid SSL certificate"
+        confidence: 0.95
+      - signal_type: "USER_PAUSED_TO_INSPECT"
+        severity: "low"
+        description: "User exhibited defensive behavior"
+        confidence: 0.99
+
+  step_3_social_engineering_call:
+    step_id: "step_3_social_engineering_call"
+    title: "The Support Call"
+    description: "The support agent initiates a live call. They are using pressure and urgency tactics, but have not independently verified your identity or shown proof of an outstanding bill."
+    stimulus_type: "agent_conversation"
+    stimulus_content:
+      scenario: "Live phone call simulation"
+      caller_display: "CITY POWER SUPPORT"
+      timestamp: "10:35 AM"
+      transcript:
+        - speaker: "AGENT"
+          text: "Thank you for trying to access your account. I am a support officer from City Power. I can see you were trying to verify on our website. To speed up the process, I can help you directly on this call."
+        - speaker: "AGENT"
+          text: "I see your account has an unpaid bill of ₹1,840. If you don't settle this TODAY, your connection will be physically disconnected at 3 PM. We have a team ready to cut off power."
+        - speaker: "AGENT"
+          text: "I'm going to stay on the line while you process the payment through UPI. For your security, do NOT hang up or the transaction will fail. Are you ready?"
+    
+    decision_prompt: "The agent is creating urgency and asking you to make a payment while staying on the call. No bill details have been independently verified. What would you do?"
+    decision_options:
+      - decision: "question_sender"
+        label: "Ask for the bill details and an official reference number you can verify independently"
+        hint: "Safer - asks for proof"
+      - decision: "verify_independently"
+        label: "Tell them you'll call back on the official number from your bill"
+        hint: "Safest - breaks social engineering"
+      - decision: "trust_and_continue"
+        label: "Open UPI and prepare to send the payment as instructed"
+        hint: "Risky - likely to lose money"
+      - decision: "cancel_payment"
+        label: "End the call immediately and do not process any payment"
+        hint: "Safe - stops the scam"
+    
+    branches:
+      - decision: "verify_independently"
+        next_step_id: "step_4_official_call"
+        outcome_description: "You break free from social engineering by using an independent verification channel"
+        risk_multiplier: 0.3
+      
+      - decision: "cancel_payment"
+        next_step_id: null
+        outcome_description: "You end the call. Scenario ends safely without loss."
+        risk_multiplier: 0.2
+      
+      - decision: "question_sender"
+        next_step_id: "step_3b_pressed_for_details"
+        outcome_description: "The agent becomes defensive and pressurizes you further"
+        risk_multiplier: 1.6
+      
+      - decision: "trust_and_continue"
+        next_step_id: "step_4_upi_payment"
+        outcome_description: "You prepare to send money. The attacker is now in position to harvest it."
+        risk_multiplier: 4.0
+    
+    teaching_points:
+      - "A legitimate provider will NEVER ask you to stay on the call during payment"
+      - "Time pressure + urgency + payment request = textbook scam pattern"
+      - "You can always hang up and call the official number independently"
+      - "If they threaten disconnection, they're using fear as a manipulation tactic"
+    
+    evidence_present_at_step:
+      - signal_type: "URGENCY_PRESSURE"
+        severity: "high"
+        confidence: 0.95
+        description: "Agent claims immediate disconnection threat (3 PM deadline)"
+      - signal_type: "UNVERIFIED_BILL_AMOUNT"
+        severity: "high"
+        confidence: 0.98
+        description: "Bill amount stated without independent verification"
+      - signal_type: "SUSPICIOUS_PAYMENT_REQUEST"
+        severity: "high"
+        confidence: 0.96
+        description: "Demands payment while on call to prevent 'transaction failure'"
+      - signal_type: "ISOLATION_TACTIC"
+        severity: "medium"
+        confidence: 0.92
+        description: "Instructs user not to hang up (prevents independent verification)"
+
+  step_3b_pressed_for_details:
+    step_id: "step_3b_pressed_for_details"
+    title: "Escalation"
+    description: "When you ask for details, the agent becomes defensive and increases pressure."
+    stimulus_type: "agent_conversation"
+    stimulus_content:
+      scenario: "Live phone call (continued)"
+      transcript:
+        - speaker: "AGENT"
+          text: "Sir/Madam, I understand your concern, but asking for details is DELAYING the payment. Every minute you waste, the disconnection gets closer."
+        - speaker: "AGENT"
+          text: "I have your consumer number right here: **** (partially hidden). The amount is final. If you don't pay in the next 5 minutes, I cannot help you. The disconnection team is already on the way."
+        - speaker: "AGENT"
+          text: "Do you want your power cut off? Just open UPI and send ₹1,840 to the number I'm about to give you."
+    
+    decision_prompt: "The agent is now more aggressive and will not provide independently verifiable proof. What do you do?"
+    decision_options:
+      - decision: "verify_independently"
+        label: "Politely end the call and verify through the official app/bill"
+        hint: "Best choice - breaks free"
+      - decision: "cancel_payment"
+        label: "End the call without sending any money"
+        hint: "Safe - stops scam"
+      - decision: "trust_and_continue"
+        label: "Feel pressured and send the payment to the UPI they provide"
+        hint: "Risky - likely to lose money"
+    
+    branches:
+      - decision: "verify_independently"
+        next_step_id: "step_4_official_call"
+        outcome_description: "You break free and verify independently"
+        risk_multiplier: 0.3
+      
+      - decision: "cancel_payment"
+        next_step_id: null
+        outcome_description: "You end the call. Scam prevented."
+        risk_multiplier: 0.2
+      
+      - decision: "trust_and_continue"
+        next_step_id: "step_4_upi_payment"
+        outcome_description: "Aggressive pressure worked. You send money."
+        risk_multiplier: 5.0
+    
+    teaching_points:
+      - "Scammers become DEFENSIVE when you ask for proof"
+      - "Escalating pressure and artificial deadlines are red flags"
+      - "You can always hang up—legitimate providers understand verification"
+    
+    evidence_present_at_step:
+      - signal_type: "DEFENSIVE_RESPONSE_TO_VERIFICATION_REQUEST"
+        severity: "high"
+        confidence: 0.97
+        description: "Agent refuses to provide details when asked"
+      - signal_type: "ARTIFICIAL_DEADLINE"
+        severity: "high"
+        confidence: 0.96
+        description: "5-minute payment deadline with escalating threats"
+      - signal_type: "PARTIAL_INFORMATION_DISCLOSURE"
+        severity: "medium"
+        confidence: 0.90
+        description: "Agent shows partial consumer number but withholds full bill"
+
+  step_4_official_call:
+    step_id: "step_4_official_call"
+    title: "Official Verification"
+    description: "You ended the suspicious call and called the official City Power number from your bill. They confirmed the scam attempt."
+    stimulus_type: "agent_conversation"
+    stimulus_content:
+      scenario: "Call to official support"
+      official_representative: "City Power — Fraud Prevention Team"
+      timestamp: "10:40 AM"
+      transcript:
+        - speaker: "OFFICIAL"
+          text: "Thank you for calling City Power. Your account is in good standing with no pending dues."
+        - speaker: "OFFICIAL"
+          text: "The call you received is a KNOWN SCAM. Do not send any money. We appreciate you verifying independently."
+        - speaker: "OFFICIAL"
+          text: "Please report this fraud attempt to the National Cyber Crime Portal (1930 or cybercrime.gov.in). It helps us protect other customers."
+    
+    decision_prompt: "Official verification complete. You successfully prevented the scam. What's your next step?"
+    decision_options:
+      - decision: "ignore_or_report"
+        label: "Report this scam attempt to official channels"
+        hint: "Helps others"
+    
+    branches:
+      - decision: "ignore_or_report"
+        next_step_id: null
+        outcome_description: "You reported the scam. Scenario ends safely without loss or credential theft."
+        risk_multiplier: 0.0
+    
+    teaching_points:
+      - "Independent verification BROKE the attacker's control"
+      - "Official provider confirmed: no bill due"
+      - "Your defensive questions saved money and identity"
+      - "Reporting helps prevent future victims"
+    
+    evidence_present_at_step:
+      - signal_type: "OFFICIAL_VERIFICATION_COMPLETED"
+        severity: "low"
+        confidence: 0.99
+        description: "Official provider confirmed no outstanding bill"
+
+  step_4_upi_payment:
+    step_id: "step_4_upi_payment"
+    title: "Fraudulent Payment"
+    description: "Under pressure, you opened your UPI app and prepared to send ₹1,840 to the attacker's account."
+    stimulus_type: "payment_request"
+    stimulus_content:
+      upi_screen: "Simulated UPI Interface"
+      transaction:
+        to: "attacker.agent@okhdfcbank"
+        amount: "₹1,840"
+        purpose: "Electricity Bill Payment"
+        payee_name: "City Power Agent"
+        warning: "⚠️ This VPA is not verified by the official provider"
+    
+    decision_prompt: "The payment screen shows. You're about to send money. Final chance to stop. What do you do?"
+    decision_options:
+      - decision: "approve_payment"
+        label: "Confirm and send the payment"
+        hint: "Will result in loss"
+      - decision: "cancel_payment"
+        label: "Cancel this transaction immediately"
+        hint: "Safe"
+    
+    branches:
+      - decision: "cancel_payment"
+        next_step_id: null
+        outcome_description: "You caught yourself at the last moment. Payment canceled, no loss."
+        risk_multiplier: 0.3
+      
+      - decision: "approve_payment"
+        next_step_id: "step_5_simulated_loss"
+        outcome_description: "Payment sent to attacker. ₹1,840 lost."
+        risk_multiplier: 5.0
+    
+    teaching_points:
+      - "Even if you got this far, you can still stop"
+      - "A final look at the payee name/VPA can reveal the scam"
+      - "UPI payments are irreversible once approved"
+    
+    evidence_present_at_step:
+      - signal_type: "UNVERIFIED_PAYEE_VPA"
+        severity: "critical"
+        confidence: 0.98
+        description: "VPA attacker.agent@okhdfcbank is not an official provider account"
+
+  step_5_simulated_loss:
+    step_id: "step_5_simulated_loss"
+    title: "Payment Completed"
+    description: "₹1,840 was transferred to the attacker's account. This is a SIMULATED loss for training purposes."
+    stimulus_type: "message"
+    stimulus_content:
+      notification: "Transaction Successful"
+      details:
+        from_account: "Your HDFC Account (****1234)"
+        to_vpa: "attacker.agent@okhdfcbank"
+        amount: "₹1,840"
+        timestamp: "10:42 AM"
+        status: "DEBIT POSTED"
+      note: "This is a simulated transaction for training only. No real money was transferred."
+    
+    decision_prompt: "Money has been sent in the simulation. What would you do next in a real scenario?"
+    decision_options:
+      - decision: "ignore_or_report"
+        label: "Immediately report to bank and cybercrime portal"
+        hint: "Correct action"
+    
+    branches:
+      - decision: "ignore_or_report"
+        next_step_id: "step_6_recovery_checklist"
+        outcome_description: "You initiated recovery steps"
+        risk_multiplier: 0.0
+    
+    teaching_points:
+      - "If you reach this point in a real scenario, act immediately"
+      - "Report to bank to freeze the receiving account"
+      - "Report to cybercrime.gov.in (1930) for investigation"
+      - "Keep transaction ID and screenshots"
+    
+    evidence_present_at_step:
+      - signal_type: "SIMULATED_FINANCIAL_LOSS"
+        severity: "critical"
+        confidence: 1.0
+        description: "₹1,840 transferred to attacker account"
+
+  step_6_recovery_checklist:
+    step_id: "step_6_recovery_checklist"
+    title: "Recovery & Reporting"
+    description: "Post-loss recovery steps to minimize damage and help authorities."
+    stimulus_type: "message"
+    stimulus_content:
+      title: "After-the-Scam Recovery Checklist"
+      immediate_actions:
+        - action: "Call your bank immediately"
+          example: "HDFC: 1860-419-5555"
+          status: "URGENT"
+        - action: "Report to National Cyber Crime Portal"
+          example: "Call 1930 or visit cybercrime.gov.in"
+          status: "URGENT"
+        - action: "File an FIR with local police"
+          example: "Visit nearest police station with transaction details"
+          status: "WITHIN 24 HOURS"
+      ongoing_actions:
+        - "Monitor your account daily for 30 days"
+        - "Watch for unauthorized transactions"
+        - "Check credit score for fraudulent loans"
+        - "Keep all transaction IDs and screenshots"
+    
+    decision_prompt: "Complete the recovery checklist:"
+    decision_options:
+      - decision: "ignore_or_report"
+        label: "I understand these recovery steps"
+        hint: "Acknowledge"
+    
+    branches:
+      - decision: "ignore_or_report"
+        next_step_id: null
+        outcome_description: "Scenario complete. Recovery steps documented."
+        risk_multiplier: 0.0
+    
+    teaching_points:
+      - "Speed is critical in scam recovery"
+      - "Official channels: Bank, Cybercrime Portal (1930), Police FIR"
+      - "Account freezing can prevent cascading losses"
+      - "Reporting helps authorities track scam networks"
+    
+    evidence_present_at_step:
+      - signal_type: "RECOVERY_PROTOCOL_INITIATED"
+        severity: "low"
+        confidence: 0.99
+        description: "User aware of proper recovery steps"
+
+  step_3_credential_harvesting:
+    step_id: "step_3_credential_harvesting"
+    title: "Credential Harvesting"
+    description: "You return to the website and enter your account details"
+    stimulus_type: "verification_form"
+    stimulus_content:
+      page_title: "Verify Account"
+      form_fields:
+        - label: "Account Number"
+          value_entered: "1234567890"
+        - label: "Consumer Name"
+          value_entered: "Your Name"
+        - label: "Enter OTP sent to your registered mobile"
+          placeholder: "XXXXXX"
+    
+    decision_prompt: "The page now asks for a 6-digit OTP sent to your phone. An SMS arrives with: 'City Power OTP: 342857. Do not share with anyone.'"
+    decision_options:
+      - decision: "enter_otp"
+        label: "Enter the OTP to verify your account"
+        hint: "Risky - loses credentials"
+      - decision: "cancel_payment"
+        label: "Stop and close this page immediately"
+        hint: "Safe"
+      - decision: "question_sender"
+        label: "Call City Power to verify if this OTP is legitimate"
+        hint: "Safer"
+    
+    branches:
+      - decision: "enter_otp"
+        next_step_id: "step_4_payment_request"
+        outcome_description: "Your credentials and OTP are captured. Attacker now has access to initiate payments."
+        risk_multiplier: 3.0
+      
+      - decision: "cancel_payment"
+        next_step_id: null
+        outcome_description: "You stop and close the page. You avoided credential harvesting."
+        risk_multiplier: 0.2
+      
+      - decision: "question_sender"
+        next_step_id: "step_3b_official_call"
+        outcome_description: "You call the official number. They warn you that this is a phishing attack."
+        risk_multiplier: 0.5
+    
+    teaching_points:
+      - "Never enter OTPs from unverified sources"
+      - "Legitimate providers never ask for OTPs on unverified websites"
+      - "An OTP proves the attacker has your credentials already"
+    
+    evidence_present_at_step:
+      - signal_type: "CREDENTIAL_SUBMISSION"
+        severity: "critical"
+        description: "User entered account details on unverified website"
+      - signal_type: "OTP_REQUEST_FROM_UNVERIFIED_SOURCE"
+        severity: "critical"
+        description: "Phishing page requesting 6-digit OTP"
+
+  step_3b_official_call:
+    step_id: "step_3b_official_call"
+    title: "Official Confirmation"
+    description: "You call the number from your bill. City Power confirms this is a scam."
+    stimulus_type: "phone_call"
+    stimulus_content:
+      caller: "City Power Official - Rahul Kumar, Fraud Prevention Team"
+      call_transcript:
+        - speaker: "City Power: Thank you for calling. How can I help?"
+        - speaker: "You: I received suspicious messages claiming my account will be suspended. Is my bill current?"
+        - speaker: "City Power: Yes, your bill is fully paid. This is a known phishing scam. Never click links from unsolicited messages."
+        - speaker: "City Power: Did you enter any credentials on the website?"
+        - speaker: "You: I almost did, but I called first."
+        - speaker: "City Power: Good decision. You avoided credential theft."
+    
+    decision_prompt: "You've confirmed this is a scam. Scenario complete."
+    decision_options:
+      - decision: "ignore_or_report"
+        label: "Report this to the cybercrime portal and block the number"
+        hint: "Good - helps protect others"
+    
+    branches:
+      - decision: "ignore_or_report"
+        next_step_id: null
+        outcome_description: "You reported the scam. Scenario ends safely without financial loss."
+        risk_multiplier: 0.0
+    
+    teaching_points:
+      - "Calling the official number before entering any credentials saved you from identity theft"
+      - "Report scams to official cybercrime channels"
+    
+    evidence_present_at_step:
+      - signal_type: "OFFICIAL_VERIFICATION_COMPLETED"
+        severity: "low"
+        description: "User verified with official provider and confirmed no threat"
+        confidence: 0.99
+
+  step_4_payment_request:
+    step_id: "step_4_payment_request"
+    title: "Fraudulent Payment Request"
+    description: "The attacker uses your captured credentials to initiate a UPI payment"
+    stimulus_type: "payment_request"
+    stimulus_content:
+      payment_app: "Simulated UPI Interface"
+      transaction_details:
+        payee_name: "City Power Collections"
+        payee_vpa: "collections.cp@okhdfcbank"
+        amount: "₹1,840"
+        purpose: "Electricity Bill Payment"
+        transaction_warning: "⚠️ Verify this transaction before approving"
+    
+    decision_prompt: "A payment approval screen appears in your UPI app. What do you do?"
+    decision_options:
+      - decision: "approve_payment"
+        label: "Approve the payment to City Power Collections"
+        hint: "Risky - money is lost"
+      - decision: "cancel_payment"
+        label: "Cancel this transaction immediately"
+        hint: "Safe"
+      - decision: "question_sender"
+        label: "Contact City Power before approving"
+        hint: "Safer"
+    
+    branches:
+      - decision: "approve_payment"
+        next_step_id: "step_5_synthetic_loss"
+        outcome_description: "Transaction completed. ₹1,840 sent to attacker's account."
+        risk_multiplier: 5.0
+      
+      - decision: "cancel_payment"
+        next_step_id: "step_5_fraud_prevention"
+        outcome_description: "You canceled the transaction. No loss occurred."
+        risk_multiplier: 0.1
+      
+      - decision: "question_sender"
+        next_step_id: "step_5_fraud_prevention"
+        outcome_description: "You contact City Power. They confirm they never initiated this payment."
+        risk_multiplier: 0.2
+    
+    teaching_points:
+      - "Always verify payment details through official channels before approving"
+      - "UPI payments are irreversible once approved"
+      - "Check the payee VPA and name carefully"
+    
+    evidence_present_at_step:
+      - signal_type: "UNAUTHORIZED_PAYMENT_INITIATION"
+        severity: "critical"
+        description: "Payment initiated from attacker using stolen credentials"
+      - signal_type: "PAYMENT_TO_INDIVIDUAL_VPA"
+        severity: "high"
+        description: "Payment targets individual VPA claiming to be official service"
+
+  step_5_synthetic_loss:
+    step_id: "step_5_synthetic_loss"
+    title: "Simulated Loss"
+    description: "Transaction completed. ₹1,840 was sent to the attacker."
+    stimulus_type: "message"
+    stimulus_content:
+      notification: "Payment Successful"
+      details:
+        from: "Your HDFC Account (****1234)"
+        to: "collections.cp@okhdfcbank"
+        amount: "₹1,840"
+        timestamp: "10:45 AM"
+    
+    decision_prompt: "Money has been sent. What are your next steps?"
+    decision_options:
+      - decision: "ignore_or_report"
+        label: "Report to bank and cybercrime portal (1930)"
+        hint: "Correct action"
+    
+    branches:
+      - decision: "ignore_or_report"
+        next_step_id: "step_6_recovery_checklist"
+        outcome_description: "You initiated recovery steps"
+        risk_multiplier: 0.0
+    
+    teaching_points:
+      - "Even after a loss, reporting quickly can help the bank freeze the account"
+      - "Keep transaction details and screenshots"
+    
+    evidence_present_at_step:
+      - signal_type: "SIMULATED_FINANCIAL_LOSS"
+        severity: "critical"
+        description: "₹1,840 transferred to attacker"
+
+  step_5_fraud_prevention:
+    step_id: "step_5_fraud_prevention"
+    title: "Fraud Prevented"
+    description: "You prevented the unauthorized payment. Scenario ends without loss."
+    stimulus_type: "message"
+    stimulus_content:
+      notification: "Transaction Canceled"
+      message: "You safely canceled the fraudulent payment and reported the scam."
+    
+    decision_prompt: "Scenario complete. You made safe decisions."
+    decision_options:
+      - decision: "verify_independently"
+        label: "Review your learning points"
+        hint: "See debrief"
+    
+    branches:
+      - decision: "verify_independently"
+        next_step_id: null
+        outcome_description: "Scenario ended successfully without loss"
+        risk_multiplier: 0.0
+    
+    teaching_points:
+      - "Independent verification is the strongest defense"
+      - "Questioning unverified requests saved you from loss"
+    
+    evidence_present_at_step:
+      - signal_type: "PAYMENT_PREVENTED"
+        severity: "low"
+        description: "User canceled fraudulent transaction"
+        confidence: 0.99
+
+  step_6_recovery_checklist:
+    step_id: "step_6_recovery_checklist"
+    title: "Recovery Assistance"
+    description: "Post-loss recovery steps and next actions"
+    stimulus_type: "message"
+    stimulus_content:
+      title: "After-the-Scam Recovery"
+      checklist:
+        - action: "Contact your bank immediately"
+          details: "HDFC: 1860-419-5555"
+          status: "Not done"
+        - action: "Report to National Cyber Crime Reporting Portal"
+          details: "https://cybercrime.gov.in"
+          status: "Not done"
+        - action: "File FIR with local police"
+          details: "Police Station (nearest)"
+          status: "Not done"
+        - action: "Monitor account for unauthorized transactions"
+          details: "Check daily for next 30 days"
+          status: "Not done"
+    
+    decision_prompt: "Take these recovery actions:"
+    decision_options:
+      - decision: "ignore_or_report"
+        label: "Complete recovery checklist"
+        hint: "Important for account safety"
+    
+    branches:
+      - decision: "ignore_or_report"
+        next_step_id: null
+        outcome_description: "Recovery steps recorded"
+        risk_multiplier: 0.0
+    
+    teaching_points:
+      - "Early reporting increases chances of account recovery"
+      - "Official cybercrime portal (1930 / cybercrime.gov.in) is the right channel"
+      - "Monitor accounts closely after scam attempts"

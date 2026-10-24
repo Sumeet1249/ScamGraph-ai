@@ -1,0 +1,84 @@
+version: "1.0.0"
+registry_name: "ScamGraph AI Dataset Candidate Registry"
+last_updated: "2026-10-24"
+
+candidates:
+  - id: "sidzzz07-scamshield-dataset"
+    name: "ScamShield Multilingual Dataset"
+    provider: "sidzzz07"
+    source: "huggingface"
+    source_url: "https://huggingface.co/datasets/sidzzz07/scamshield-dataset"
+    repo_id: "sidzzz07/scamshield-dataset"
+    revision: "main"
+    claimed_record_count: 85000
+    languages:
+      - "en"
+      - "hi"
+      - "hinglish"
+    potential_capability: "Large-scale multilingual text classification candidate"
+    license: "unspecified_community"
+    provenance: "PUBLIC_MIXED"
+    quality_concerns:
+      - "License is not clearly declared on dataset card; commercial use requires legal clarification"
+      - "Suspected high template duplication rate among notification variants"
+      - "Synthetic vs real origin not systematically flagged per record"
+    status: "UNDER_REVIEW"
+    recommended_action: "REVIEW"
+    intended_uses:
+      - "Offline multilingual candidate evaluation"
+    prohibited_uses:
+      - "Direct insertion into production training without dedup and license vetting"
+      - "Independent gold standard"
+
+  - id: "rishia2220-icfd-31k"
+    name: "ICFD-31k Conversational Fraud Dataset"
+    provider: "rishia2220"
+    source: "huggingface"
+    source_url: "https://huggingface.co/datasets/rishia2220/icfd-31k"
+    repo_id: "rishia2220/icfd-31k"
+    revision: "main"
+    claimed_record_count: 31000
+    languages:
+      - "en"
+      - "hinglish"
+    potential_capability: "Conversation intelligence, streaming chunk early-detection, voice transcript research, multi-turn journey modeling"
+    license: "cc-by-nc-4.0"
+    provenance: "SYNTHETIC_LLM"
+    quality_concerns:
+      - "Completely synthetic multi-turn phone-call conversations; contains LLM stylistic patterns"
+      - "CC-BY-NC-4.0 license restricts non-commercial research use; enterprise deployment requires re-licensing"
+      - "Must not be used to claim real-world consumer accuracy"
+    status: "BENCHMARK_ONLY"
+    recommended_action: "BENCHMARK"
+    intended_uses:
+      - "Journey stage transition research"
+      - "Pre-Loss Detection Rate and Warning Lead Time benchmark development"
+      - "Streaming chunk detection simulation"
+    prohibited_uses:
+      - "Proof of real-world consumer protection accuracy"
+      - "Contaminating the independent India Gold Set"
+
+  - id: "bolewara-hinglish-scam-text-dataset"
+    name: "Hinglish Scam Text Dataset"
+    provider: "bolewara"
+    source: "huggingface"
+    source_url: "https://huggingface.co/datasets/bolewara/hinglish-scam-text-dataset"
+    repo_id: "bolewara/hinglish-scam-text-dataset"
+    revision: "main"
+    claimed_record_count: 3787
+    languages:
+      - "hinglish"
+      - "en"
+    potential_capability: "Hinglish code-mixing robustness evaluation and challenger testing"
+    license: "mit"
+    provenance: "PUBLIC_MIXED"
+    quality_concerns:
+      - "The actual hand-written Hinglish subset is small (<500 messages); remaining records are standard English"
+      - "Class imbalance favors generic spam over targeted Indian UPI scams"
+    status: "TRAINING_CANDIDATE"
+    recommended_action: "INGEST"
+    intended_uses:
+      - "Multilingual code-mixing robustness evaluation"
+      - "Challenger model benchmark suite"
+    prohibited_uses:
+      - "Sole national benchmark due to small Hinglish sample size"

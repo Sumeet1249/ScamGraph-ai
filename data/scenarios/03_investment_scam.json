@@ -1,0 +1,66 @@
+{
+  "id": "scenario_03_investment_scam",
+  "scenario": "High-Yield Crypto Investment Scam",
+  "description": "Lure via social channel promising 30% daily returns, leading to trial task and capital pledge demand.",
+  "expected_pattern": "INVESTMENT_SCAM",
+  "expected_risk_level": "HIGH",
+  "expected_intervention": "PRE_PAYMENT_INTERVENTION",
+  "events": [
+    {
+      "event_type": "MESSAGE_RECEIVED",
+      "timestamp_offset_seconds": 0,
+      "description": "WhatsApp message: Earn guaranteed 30% daily return on AI crypto trading. Check https://crypto-vip.example.test",
+      "channel": "WHATSAPP"
+    },
+    {
+      "event_type": "URL_OPENED",
+      "timestamp_offset_seconds": 30,
+      "description": "User opens https://crypto-vip.example.test",
+      "channel": "BROWSER"
+    },
+    {
+      "event_type": "PAYMENT_REQUEST",
+      "timestamp_offset_seconds": 75,
+      "description": "Deposit 20,000 INR into liquidity pool account invest.pool@fakeupi to activate tier 1 yield",
+      "channel": "UPI"
+    },
+    {
+      "event_type": "PAYMENT_INTENT",
+      "timestamp_offset_seconds": 95,
+      "description": "User confirms deposit intent on checkout screen",
+      "channel": "UPI"
+    }
+  ],
+  "evidence": [
+    {
+      "source": "MESSAGE_ANALYZER",
+      "signal": "FINANCIAL_CONTEXT",
+      "observation": "Offers trading and wealth creation opportunities",
+      "confidence": 0.95
+    },
+    {
+      "source": "MESSAGE_ANALYZER",
+      "signal": "HIGH_RETURN_PROMISE",
+      "observation": "Guarantees unrealistically high returns (30% daily)",
+      "confidence": 0.98
+    },
+    {
+      "source": "MESSAGE_ANALYZER",
+      "signal": "TELEGRAM_COMMUNICATION_CHANNEL",
+      "observation": "Directs customer to private messaging channel for instructions",
+      "confidence": 0.88
+    },
+    {
+      "source": "URL_ANALYZER",
+      "signal": "SUSPICIOUS_URL_PRESENT",
+      "observation": "Domain crypto-vip.example.test registered on fast-flux hosting",
+      "confidence": 0.91
+    },
+    {
+      "source": "PAYMENT_MODEL",
+      "signal": "CRYPTO_OR_UPI_DEPOSIT_REQUEST",
+      "observation": "Demands direct UPI transfer to invest.pool@fakeupi for wallet balance",
+      "confidence": 0.94
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "id": "scenario_04_fake_job_scam",
+  "scenario": "Part-Time Task & Review Scam",
+  "description": "Lure offering daily earnings for rating online listings, initial micro-payout bait, followed by mandatory VIP deposit demand.",
+  "expected_pattern": "JOB_TASK_SCAM",
+  "expected_risk_level": "HIGH",
+  "expected_intervention": "PRE_PAYMENT_INTERVENTION",
+  "events": [
+    {
+      "event_type": "MESSAGE_RECEIVED",
+      "timestamp_offset_seconds": 0,
+      "description": "Telegram message: Work from home earning 2,000-5,000 INR per day rating hotels online.",
+      "channel": "TELEGRAM"
+    },
+    {
+      "event_type": "URL_OPENED",
+      "timestamp_offset_seconds": 25,
+      "description": "User opens task workspace https://easy-ratings.example.test",
+      "channel": "BROWSER"
+    },
+    {
+      "event_type": "CREDENTIAL_REQUEST",
+      "timestamp_offset_seconds": 60,
+      "description": "Platform prompts user to register worker account with phone and identity",
+      "channel": "BROWSER"
+    },
+    {
+      "event_type": "PAYMENT_REQUEST",
+      "timestamp_offset_seconds": 90,
+      "description": "Prepaid task required: Deposit 5,000 INR to task.deposit@fakeupi to unlock pending commission",
+      "channel": "UPI"
+    },
+    {
+      "event_type": "PAYMENT_INTENT",
+      "timestamp_offset_seconds": 110,
+      "description": "User opens UPI client to complete required prepaid deposit",
+      "channel": "UPI"
+    }
+  ],
+  "evidence": [
+    {
+      "source": "MESSAGE_ANALYZER",
+      "signal": "EMPLOYMENT_OFFER_CONTEXT",
+      "observation": "Unsolicited offer for remote flexible ratings job",
+      "confidence": 0.96
+    },
+    {
+      "source": "PAYMENT_MODEL",
+      "signal": "REGISTRATION_OR_BADGE_FEE",
+      "observation": "Demand for candidate upfront fee/deposit to access employment tasks",
+      "confidence": 0.97
+    },
+    {
+      "source": "MESSAGE_ANALYZER",
+      "signal": "TELEGRAM_COMMUNICATION_CHANNEL",
+      "observation": "Coordination moved to unmonitored Telegram task group",
+      "confidence": 0.88
+    },
+    {
+      "source": "URL_ANALYZER",
+      "signal": "UNVERIFIED_EMPLOYER_DOMAIN",
+      "observation": "Domain easy-ratings.example.test has no legitimate corporate history",
+      "confidence": 0.90
+    },
+    {
+      "source": "PAYMENT_MODEL",
+      "signal": "PERSONAL_VPA_PAYMENT_TARGETED",
+      "observation": "Target payment account is an unverified individual VPA task.deposit@fakeupi",
+      "confidence": 0.92
+    }
+  ]
+}

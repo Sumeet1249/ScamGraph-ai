@@ -1,0 +1,48 @@
+{
+  "id": "scenario_01_normal_payment",
+  "scenario": "Normal Utility Payment",
+  "description": "Legitimate electricity utility bill payment on verified merchant domain with long-standing DNS history.",
+  "expected_pattern": null,
+  "expected_risk_level": "LOW",
+  "expected_intervention": "NONE",
+  "events": [
+    {
+      "event_type": "MESSAGE_RECEIVED",
+      "timestamp_offset_seconds": 0,
+      "description": "SMS: Your monthly utility bill of INR 1,450 is due. View at https://utility.example.com/bill",
+      "channel": "SMS"
+    },
+    {
+      "event_type": "URL_OPENED",
+      "timestamp_offset_seconds": 30,
+      "description": "User opens https://utility.example.com/bill in browser",
+      "channel": "BROWSER"
+    },
+    {
+      "event_type": "PAYMENT_REQUEST",
+      "timestamp_offset_seconds": 60,
+      "description": "Payment gateway requests INR 1,450 transfer to utility@officialbank",
+      "channel": "UPI"
+    },
+    {
+      "event_type": "PAYMENT_INTENT",
+      "timestamp_offset_seconds": 85,
+      "description": "User clicks Proceed to Pay on utility portal",
+      "channel": "BROWSER"
+    }
+  ],
+  "evidence": [
+    {
+      "source": "DNS",
+      "signal": "ESTABLISHED_LONG_TERM_DOMAIN",
+      "observation": "Domain utility.example.com registered 14 years ago with reputable registrar",
+      "confidence": 0.98
+    },
+    {
+      "source": "PAYMENT_MODEL",
+      "signal": "OFFICIAL_MERCHANT_VPA_VERIFIED",
+      "observation": "VPA utility@officialbank verified as authorized public utility entity",
+      "confidence": 0.99
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+version: "1.0"
+
+# Multi-stage thresholds for Emerging Variant Classification
+thresholds:
+  # Minimum composite fingerprint similarity to consider a mutated variant
+  mutated_variant_threshold: 0.65
+  # Minimum composite fingerprint similarity to consider a strong known campaign
+  known_pattern_similarity_threshold: 0.80
+  # Minimum semantic similarity to trigger workflow alignment
+  semantic_workflow_threshold: 0.70
+  # Minimum journey sequence alignment to trigger workflow alignment
+  journey_workflow_threshold: 0.70
+  # Threshold below which an incident is classified as NO_SIGNIFICANT_MATCH
+  no_match_threshold: 0.40
+  # Minimum event count required to evaluate variant detection (otherwise INSUFFICIENT_EVIDENCE)
+  min_events_for_evaluation: 2
+
+# Identifier overlap checks
+identifiers:
+  check_phone: true
+  check_domain: true
+  check_vpa: true
+  check_ip: true
+  check_bank_account: true
+
+# Temporal pacing bounds (in seconds) for social engineering grooming
+temporal_bounds:
+  min_grooming_seconds: 15
+  max_grooming_seconds: 1200

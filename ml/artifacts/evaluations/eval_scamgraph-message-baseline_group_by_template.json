@@ -1,0 +1,118 @@
+{
+  "evaluation_id": "eval_aeb62359b0c34a39",
+  "schema_version": "2.0",
+  "validity_status": "INTERNAL_BENCHMARK",
+  "model_id": "scamgraph-message-baseline",
+  "model_revision": "v1.0.0",
+  "dataset_id": "canonical-journeys",
+  "dataset_revision": "main",
+  "started_at": "2026-10-24T07:28:26.366853Z",
+  "completed_at": "2026-10-24T07:28:26.429407Z",
+  "split_strategy": "GROUP_BY_TEMPLATE",
+  "sample_count": 3,
+  "overall_metrics": {
+    "accuracy": 0.6667,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0,
+    "macro_f1": 0.4,
+    "weighted_f1": 0.5333,
+    "false_positive_rate": 0.0,
+    "false_negative_rate": 1.0,
+    "specificity": 1.0,
+    "balanced_accuracy": 0.5,
+    "roc_auc": 0.0,
+    "pr_auc": 0.3333,
+    "confusion_matrix": {
+      "tn": 2,
+      "fp": 0,
+      "fn": 1,
+      "tp": 0
+    },
+    "sample_count": 3,
+    "positive_count": 1,
+    "negative_count": 2
+  },
+  "calibration": {
+    "brier_score": 0.5289,
+    "expected_calibration_error": 0.5289,
+    "maximum_calibration_error": 0.6789,
+    "is_well_calibrated": false,
+    "interpretation": "Poor calibration (ECE=0.5289). Model's worst-case bin is significant calibration issues in worst-case scenarios (MCE=0.6789).",
+    "reliability_buckets": [
+      {
+        "bin": "0.30-0.40",
+        "predicted_prob": 0.3211,
+        "observed_accuracy": 1.0,
+        "samples": 1,
+        "calibration_error": 0.6789
+      },
+      {
+        "bin": "0.40-0.50",
+        "predicted_prob": 0.4539,
+        "observed_accuracy": 0.0,
+        "samples": 2,
+        "calibration_error": 0.4539
+      }
+    ]
+  },
+  "lead_time": null,
+  "robustness": {
+    "clean_f1": 0.0,
+    "perturbed_f1": 0.0,
+    "f1_retention_ratio": 1.0,
+    "tested_transformations": [
+      "homoglyph_substitution",
+      "case_variation"
+    ],
+    "adversarial_sample_count": 3
+  },
+  "latency_cost": {
+    "mean_latency_ms": 0.618,
+    "p50_latency_ms": 0.593,
+    "p95_latency_ms": 0.674,
+    "p99_latency_ms": 0.681,
+    "throughput_items_per_sec": 4077.7,
+    "memory_peak_mb": null,
+    "model_size_mb": null
+  },
+  "language_metrics": {
+    "en": {
+      "support": 3,
+      "status": "INSUFFICIENT_SAMPLE_SIZE",
+      "notes": "N=3 below minimum threshold of 5"
+    }
+  },
+  "family_metrics": {
+    "benign": {
+      "support": 3,
+      "status": "INSUFFICIENT_SAMPLE_SIZE",
+      "notes": "N=3 below minimum threshold of 5"
+    }
+  },
+  "provenance_metrics": {
+    "scamgraph-canonical-journeys": {
+      "support": 3,
+      "status": "INSUFFICIENT_SAMPLE_SIZE",
+      "notes": "N=3 below minimum threshold of 5"
+    }
+  },
+  "leakage_report": {
+    "exact_duplicates": 0,
+    "template_overlaps": 0,
+    "near_duplicates": 0,
+    "campaign_overlaps": 0,
+    "train_samples": 10,
+    "test_samples": 3,
+    "is_leakage_free": true,
+    "warnings": [],
+    "sample_leakages": []
+  },
+  "environment": {
+    "python_version": "3.14.0",
+    "platform": "Windows-11-10.0.26200-SP0"
+  },
+  "git_commit": null,
+  "random_seed": 42,
+  "notes": null
+}

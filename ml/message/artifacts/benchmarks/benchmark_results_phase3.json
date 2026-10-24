@@ -1,0 +1,58 @@
+{
+  "generated_at": "2026-10-21T08:53:56.356953+00:00",
+  "total_results": 2,
+  "results": [
+    {
+      "model_name": "TF-IDF + Logistic Regression (Baseline)",
+      "model_id": "baseline_tfidf_lr",
+      "test_set_name": "In-Distribution Test (full)",
+      "test_set_id": "in_distribution_full",
+      "metrics": {
+        "accuracy": 0.9533,
+        "precision": 0.9384,
+        "recall": 0.9429,
+        "f1_score": 0.9406,
+        "false_positive_rate": 0.04,
+        "false_negative_rate": 0.0571,
+        "roc_auc": 0.993,
+        "confusion_matrix": {
+          "true_negative": 312,
+          "false_positive": 13,
+          "false_negative": 12,
+          "true_positive": 198
+        },
+        "test_sample_count": 535,
+        "positive_class_count": 210,
+        "negative_class_count": 325
+      },
+      "timestamp": "2026-10-21T08:53:56.320617+00:00",
+      "notes": "Baseline for comparison"
+    },
+    {
+      "model_name": "TF-IDF + Logistic Regression",
+      "model_id": "baseline_tfidf_lr",
+      "test_set_name": "Language: en (100 samples)",
+      "test_set_id": "language_en",
+      "metrics": {
+        "accuracy": 0.97,
+        "precision": 0.9487,
+        "recall": 0.9737,
+        "f1_score": 0.961,
+        "false_positive_rate": 0.0323,
+        "false_negative_rate": 0.0263,
+        "roc_auc": 0.9924,
+        "confusion_matrix": {
+          "true_negative": 60,
+          "false_positive": 2,
+          "false_negative": 1,
+          "true_positive": 37
+        },
+        "test_sample_count": 100,
+        "positive_class_count": 38,
+        "negative_class_count": 62
+      },
+      "timestamp": "2026-10-21T08:53:56.356232+00:00",
+      "notes": "Baseline evaluated on en language samples only."
+    }
+  ]
+}
