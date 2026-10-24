@@ -65,6 +65,7 @@ The top-level container for a fraud journey encounter.
 - __`incident_id`__: Prefixed non-sequential stable ID (`inc_<16hex>`).
 - __Decoupled References__: Stores lists of IDs (`event_ids`, `artifact_ids`, `entity_ids`, `evidence_ids`) instead of monolithic nested arrays, enabling horizontal scalability.
 - **Tri-Axis Metric Separation**:
+
    - `current_risk`: `RiskLevelV2` (`LOW`, `MEDIUM`, `HIGH`, `CRITICAL`, `UNKNOWN`).
    - `current_confidence`: `ConfidenceLevelV2` (`LOW`, `MEDIUM`, `HIGH`, `UNKNOWN`).
    - `current_urgency`: `UrgencyLevelV2` (`NONE`, `LOW`, `MEDIUM`, `HIGH`, `CRITICAL`).
@@ -77,11 +78,13 @@ Canonical representation of digital/physical identifiers.
 
 - __`entity_type`__: `PHONE`, `EMAIL`, `URL`, `DOMAIN`, `UPI_VPA`, `BANK_ACCOUNT_TOKEN`, `SOCIAL_ACCOUNT`, `TELEGRAM_HANDLE`, `WHATSAPP_NUMBER`, `BRAND`, `ORGANIZATION`, `IP_ADDRESS`, `CRYPTO_ADDRESS`, `DEVICE_TOKEN`, `OTHER`.
 - **Privacy Enforcement**:
+
    - `masked_value`: Safe for display (`******3210`, `s***@oksbi`).
    - `canonical_hash`: Deterministic SHA-256 or HMAC-SHA256 for secure database matching.
    - `canonical_value`: Restricted to internal processing.
 
 - __Verification States__: `UNKNOWN`, `UNVERIFIED`, `OBSERVED`, `CORROBORATED`, `DISPUTED`, `VERIFIED_LEGITIMATE`, `VERIFIED_MALICIOUS`.
+
    > [!IMPORTANT]
    > `VERIFIED_MALICIOUS` requires verified multi-incident corroboration or official reporting. Single user reports or heuristic scores cannot unilaterally apply this label.
 
