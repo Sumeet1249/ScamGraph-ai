@@ -446,6 +446,15 @@ __all__ = [
     "RescueTriage",
     "MissedPreventionReview",
     "RescueCasePackage",
+    # Multilingual Intelligence V2 (Phase 5C)
+    "ScriptType",
+    "LanguageSupportTier",
+    "LanguageSegment",
+    "LanguageProfile",
+    "MultilingualTextRepresentation",
+    "UserLanguagePreference",
+    "NegationSignal",
+    "BehavioralFeatureSet",
 ]
 
 from packages.schemas.rescue import (
@@ -470,5 +479,16 @@ from packages.schemas.rescue import (
     RescueTriage,
     MissedPreventionReview,
     RescueCasePackage,
+)
+
+from packages.schemas.multilingual import (
+    ScriptType,
+    LanguageSupportTier,
+    LanguageSegment,
+    LanguageProfile,
+    MultilingualTextRepresentation,
+    UserLanguagePreference,
+    NegationSignal,
+    BehavioralFeatureSet,
 )
 

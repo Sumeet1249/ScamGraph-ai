@@ -86,6 +86,21 @@ interface InvestigationResultsProps {
         notes?: string;
       }>;
     };
+    multilingual_text?: {
+      original_text: string;
+      normalized_text: string;
+      language_profile: {
+        primary_language: string;
+        scripts: string[];
+        code_mixed: boolean;
+        code_mix_score: number;
+        support_tier: string;
+        confidence: number;
+      };
+      transliterations?: Record<string, string>;
+      translation?: string;
+      warnings?: string[];
+    };
   };
 }
 
@@ -184,6 +199,7 @@ export function InvestigationResults({ data }: InvestigationResultsProps) {
     graph_correlation,
     unified_assessment,
     tripartite_decision,
+    multilingual_text,
   } = data || {};
 
   const confScore = getConfidenceScore(assessment);
@@ -426,6 +442,69 @@ export function InvestigationResults({ data }: InvestigationResultsProps) {
                 </div>
               </div>
             )}
+          </Card>
+        </PageSection>
+      )}
+
+      {/* Multilingual Intelligence Card (Phase 5C) */}
+      {multilingual_text && (
+        <PageSection
+          title="Multilingual Intelligence V2 (Phase 5C)"
+          description="Code-mixed Indic understanding, deterministic script analysis, and security-token invariant normalization"
+        >
+          <Card className="p-4 sm:p-5 border-border/80 bg-surface-subtle/50 space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-border/60">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-mono font-semibold uppercase text-text-muted">
+                  Detected Language:
+                </span>
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-primary/20 text-primary border border-primary/30 uppercase">
+                  {multilingual_text.language_profile?.primary_language}
+                </span>
+                {multilingual_text.language_profile?.code_mixed && (
+                  <span className="px-2 py-0.5 rounded text-[11px] font-mono bg-amber-500/10 text-amber-300 border border-amber-500/30">
+                    Code-Mixed ({Math.round((multilingual_text.language_profile?.code_mix_score ?? 0) * 100)}%)
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center gap-2 text-xs font-mono text-text-muted">
+                <span>Scripts:</span>
+                <span className="text-text-primary font-medium">
+                  {multilingual_text.language_profile?.scripts?.join(", ") || "LATIN"}
+                </span>
+                <span className="text-border">|</span>
+                <span>Support Tier:</span>
+                <span className="text-emerald-400 font-medium">
+                  {multilingual_text.language_profile?.support_tier || "PRODUCTION_VALIDATED"}
+                </span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
+              <div className="p-3 rounded bg-surface-1 border border-border/60 space-y-1">
+                <span className="text-[11px] text-text-muted uppercase block font-semibold">
+                  Original Immutable Evidence:
+                </span>
+                <p className="text-text-primary font-sans text-xs break-words whitespace-pre-wrap">
+                  {multilingual_text.original_text}
+                </p>
+              </div>
+
+              <div className="p-3 rounded bg-surface-1 border border-border/60 space-y-1">
+                <span className="text-[11px] text-text-muted uppercase block font-semibold">
+                  Indic Normalized Representation:
+                </span>
+                <p className="text-accent font-sans text-xs break-words whitespace-pre-wrap">
+                  {multilingual_text.normalized_text}
+                </p>
+                {multilingual_text.translation && (
+                  <div className="pt-2 mt-2 border-t border-border/40 text-[11px] text-text-muted">
+                    <span className="font-semibold text-text-secondary uppercase">Supporting Semantic Translation: </span>
+                    <span className="text-text-primary">{multilingual_text.translation}</span>
+                  </div>
+                )}
+              </div>
+            </div>
           </Card>
         </PageSection>
       )}
