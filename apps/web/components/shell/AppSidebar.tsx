@@ -131,16 +131,16 @@ export function AppSidebar() {
           )}
         >
           <div className="flex items-center gap-2.5 text-[11px] text-text-muted font-mono whitespace-nowrap">
-            <span className="sg-dot shrink-0" data-tone="neutral" aria-hidden />
+            <span className="sg-dot shrink-0" data-tone="live" aria-hidden />
             <span
               className={cn(
-                "transition-all duration-200 truncate",
+                "transition-all duration-200 truncate text-[11px] font-mono",
                 isHovered
-                  ? "opacity-100 translate-x-0"
+                  ? "opacity-100 translate-x-0 text-text-secondary"
                   : "opacity-0 -translate-x-2 w-0 overflow-hidden pointer-events-none",
               )}
             >
-              Engine offline
+              Node sync: Active
             </span>
           </div>
         </div>

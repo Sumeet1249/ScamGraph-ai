@@ -32,24 +32,15 @@ export const navGroups: NavGroup[] = [
       { label: "Campaigns", href: "/campaigns", hint: "Syndicate clusters", icon: FolderKanban },
       { label: "Incidents", href: "/incidents", hint: "Victim reports stream", icon: AlertTriangle },
       { label: "Investigate", href: "/investigate", hint: "Multi-signal correlation bench", icon: Search },
-      { label: "Knowledge Graph", href: "/graph", hint: "Interactive cytoscape canvas", icon: GitFork },
       { label: "Entities", href: "/entities", hint: "VPA & phone intelligence registry", icon: Database },
-    ],
-  },
-  {
-    label: "Operations & Enforcement",
-    items: [
-      { label: "Alert Center", href: "/alerts", hint: "Real-time velocity spikes", icon: AlertTriangle },
-      { label: "Review Queue", href: "/review", hint: "Human-in-the-loop triage", icon: FolderKanban },
+      { label: "Alerts", href: "/alerts", hint: "Real-time velocity spikes", icon: AlertTriangle },
+      { label: "Reviews", href: "/review", hint: "Human-in-the-loop triage", icon: FolderKanban },
       { label: "Cases", href: "/cases", hint: "Formal statutory FIR & BSA cases", icon: Boxes },
-      { label: "MuleHunter", href: "/mulehunter", hint: "Multi-hop mule tracking", icon: GitFork },
     ],
   },
   {
-    label: "Management & Governance",
+    label: "Management",
     items: [
-      { label: "Global Search", href: "/search", hint: "1.4M node search", icon: Search },
-      { label: "Saved Views", href: "/saved", hint: "Bookmarked monitors", icon: FolderKanban },
       { label: "Members & Access", href: "/access", hint: "RBAC governance", icon: Database },
       { label: "Audit Log", href: "/audit", hint: "Tamper-evident logs", icon: LayoutDashboard },
     ],
