@@ -15,54 +15,83 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // ── Canonical Mocha surfaces (Section 3.1 & 3.2) ──
-        background: "var(--sg-bg)",
-        "surface-1": "var(--sg-surface)",
-        "surface-2": "var(--sg-surface-raised)",
-        "surface-3": "var(--sg-surface-hover)",
-        "surface-subtle": "var(--sg-bg-subtle)",
-        "surface-hover": "var(--sg-surface-hover)",
-        "surface-pressed": "var(--sg-surface-pressed)",
-        "surface-inset": "var(--sg-surface-inset)",
+        // ── Sovereign Trust Canonical Light Tokens ──
+        ground: "var(--sg-ground, #FBFBFB)",
+        "on-surface": "var(--sg-on-surface, #1A1C1E)",
+        "on-surface-variant": "var(--sg-on-surface-variant, #3F4946)",
+        "surface-subtle": "var(--sg-surface-subtle, #F3F4F5)",
+        "border-divider": "var(--sg-border-divider, #E1E4E8)",
+        "border-control": "var(--sg-border-control, #80858C)",
+        "viz-primary": "var(--sg-viz-primary, #0B6256)",
+        "viz-text": "var(--sg-viz-text, #1B1D1F)",
+        "viz-neutral": "var(--sg-viz-neutral, #565C65)",
+        "viz-warning": "var(--sg-viz-warning, #B86200)",
+        "viz-info": "var(--sg-viz-info, #205493)",
+        "selected-tint": "var(--sg-selected-tint, rgba(15, 123, 108, 0.08))",
+        "primary-container": "var(--sg-primary-container, #0B6256)",
+        "on-primary-container": "var(--sg-on-primary-container, #91DBCB)",
+        "on-primary": "var(--sg-on-primary, #FFFFFF)",
+        primary: "var(--sg-primary, #00483F)",
+        secondary: "var(--sg-secondary, #006B5D)",
+        "secondary-container": "var(--sg-secondary-container, #96F0DE)",
+
+        // 7-State Semantic Status Tones
+        "tone-info-bg": "var(--sg-tone-info-bg, #E7EDF4)",
+        "tone-info-text": "var(--sg-tone-info-text, #1A446C)",
+        "tone-warning-bg": "var(--sg-tone-warning-bg, #F1ECE3)",
+        "tone-warning-text": "var(--sg-tone-warning-text, #614714)",
+        "tone-warning-strong-bg": "var(--sg-tone-warning-strong-bg, #E8DFCF)",
+        "tone-warning-strong-text": "var(--sg-tone-warning-strong-text, #4A3306)",
+        "tone-danger-bg": "var(--sg-tone-danger-bg, #F6E7E5)",
+        "tone-danger-text": "var(--sg-tone-danger-text, #781C18)",
+        "tone-danger-strong-bg": "var(--sg-tone-danger-strong-bg, #F0D6D3)",
+        "tone-danger-strong-text": "var(--sg-tone-danger-strong-text, #541210)",
+
+        // ── Canonical surfaces & backward-compat ──
+        background: "var(--sg-ground, #FBFBFB)",
+        "surface-1": "var(--sg-surface, #FFFFFF)",
+        "surface-2": "var(--sg-surface-raised, #FFFFFF)",
+        "surface-3": "var(--sg-surface-hover, #F3F4F5)",
+        "surface-hover": "var(--sg-surface-hover, #F3F4F5)",
+        "surface-pressed": "var(--sg-surface-pressed, #E8E8EA)",
+        "surface-inset": "var(--sg-surface-inset, #F3F4F5)",
 
         // ── Borders ──
-        border: "var(--sg-border)",
-        "border-strong": "var(--sg-border-strong)",
-        "border-input": "var(--sg-input-border)",
-        "border-subtle": "rgba(229, 228, 226, 0.05)",
+        border: "var(--sg-border-divider, #E1E4E8)",
+        "border-strong": "var(--sg-border-control, #80858C)",
+        "border-input": "var(--sg-border-control, #80858C)",
+        "border-subtle": "rgba(225, 228, 232, 0.6)",
 
-        // ── Platinum & Silver Text ──
-        "text-primary": "var(--sg-text)",
-        "text-secondary": "var(--sg-text-muted)",
-        "text-muted": "var(--sg-text-subtle)",
+        // ── Text ──
+        "text-primary": "var(--sg-on-surface, #1A1C1E)",
+        "text-secondary": "var(--sg-on-surface-variant, #3F4946)",
+        "text-muted": "var(--sg-viz-neutral, #565C65)",
 
-        // ── Pale Lavender Brand / Action (Section 2 & 3.2) ──
-        "brand-primary": "var(--sg-accent)",
-        "brand-secondary": "var(--sg-accent-hover)",
-        "brand-hover": "var(--sg-accent-hover)",
-        "brand-soft": "var(--sg-accent-soft)",
-        "brand-line": "var(--sg-accent-line)",
-        "on-brand": "var(--sg-on-accent)",
+        // ── Brand / Action ──
+        "brand-primary": "var(--sg-viz-primary, #0B6256)",
+        "brand-secondary": "var(--sg-primary, #00483F)",
+        "brand-hover": "var(--sg-primary, #00483F)",
+        "brand-soft": "rgba(11, 98, 86, 0.08)",
+        "brand-line": "rgba(11, 98, 86, 0.35)",
+        "on-brand": "#FFFFFF",
 
-        // ── Mocha structure ──
-        structure: "var(--sg-structure)",
-        "structure-soft": "var(--sg-structure-soft)",
-
-        // ── Risk index bands ──
-        "risk-low": "var(--sg-low)",
-        "risk-medium": "var(--sg-medium)",
-        "risk-high": "var(--sg-high)",
-        "risk-critical": "var(--sg-critical)",
-        "risk-insufficient": "var(--sg-neutral)",
+        // ── Structure & Risk ──
+        structure: "var(--sg-border-divider, #E1E4E8)",
+        "structure-soft": "rgba(225, 228, 232, 0.5)",
+        "risk-low": "#205493",
+        "risk-medium": "#B86200",
+        "risk-high": "#BA1A1A",
+        "risk-critical": "#541210",
+        "risk-insufficient": "#565C65",
 
         // ── Semantic status ──
-        success: "var(--sg-success)",
-        warning: "var(--sg-warning)",
-        danger: "var(--sg-danger)",
-        info: "var(--sg-info)",
-        neutral: "var(--sg-neutral)",
-        safe: "var(--sg-success)",
-        caution: "var(--sg-warning)",
+        success: "#0B6256",
+        warning: "#B86200",
+        danger: "#BA1A1A",
+        info: "#205493",
+        neutral: "#565C65",
+        safe: "#0B6256",
+        caution: "#B86200",
 
         // ── Direct palette steps (Section 3.1) ──
         "mocha-950": "#120e0c",

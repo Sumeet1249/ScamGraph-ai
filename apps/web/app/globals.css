@@ -10,60 +10,70 @@
    ============================================================ */
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 
-  /* MOCHA: surfaces and structure (Section 3.1) */
-  --mocha-950: #120e0c;  /* canvas */
-  --mocha-900: #17120f;  /* sidebar, recessed regions */
-  --mocha-800: #1d1714;  /* default panels, cards */
-  --mocha-700: #261e1a;  /* raised: graph canvases, selected/inset areas */
-  --mocha-650: #2c231f;  /* hover surface */
-  --mocha-600: #3a2f28;  /* pressed surface, strong tonal step */
-  --mocha-500: #6b4f3f;  /* THE mocha brown: secondary fills, accents on structure */
-  --mocha-400: #8a6a57;
-  --mocha-300: #a98873;  /* mocha text/icon on dark (5.45:1 on panel) */
-  --mocha-200: #cdb3a0;
+  /* SOVEREIGN TRUST LIGHT DESIGN TOKENS (Audited from Stitch MCP) */
+  --sg-ground: #FBFBFB;
+  --sg-on-surface: #1A1C1E;
+  --sg-on-surface-variant: #3F4946;
+  --sg-surface: #FFFFFF;
+  --sg-surface-raised: #FFFFFF;
+  --sg-surface-subtle: #F3F4F5;
+  --sg-surface-hover: #F3F4F5;
+  --sg-surface-pressed: #E8E8EA;
+  --sg-surface-inset: #F3F4F5;
 
-  /* PLATINUM / SILVER: ink and lines */
-  --platinum-100: #edebe9; /* primary text */
-  --platinum-200: #e5e4e2; /* platinum silver, canonical */
-  --silver-300:  #b9b4b1;  /* secondary text */
-  --silver-400:  #a9a5a9;  /* neutral state, secondary icons */
-  --silver-500:  #948e8a;  /* tertiary metadata only */
+  --sg-border-divider: #E1E4E8;
+  --sg-border-control: #80858C;
+  --sg-border: #E1E4E8;
+  --sg-border-strong: #80858C;
+  --sg-input-border: #80858C;
 
-  /* PALE LAVENDER: action and selection only */
-  --lavender-300: #d3c7f0; /* hover */
-  --lavender-400: #c4b5e8; /* base */
-  --lavender-500: #b5a4dd; /* pressed */
-  --lavender-ink: #1a1420; /* text/icon placed ON lavender fills */
+  --sg-viz-primary: #0B6256;      /* Botanical Teal */
+  --sg-primary: #00483F;          /* High authority teal */
+  --sg-secondary: #006B5D;
+  --sg-primary-container: #0B6256;
+  --sg-on-primary-container: #91DBCB;
+  --sg-on-primary: #FFFFFF;
+  --sg-secondary-container: #96F0DE;
+  --sg-selected-tint: rgba(15, 123, 108, 0.08);
 
-  /* Semantic layer (Section 3.2) */
-  --sg-bg:              var(--mocha-950);
-  --sg-bg-subtle:       var(--mocha-900);
-  --sg-surface:         var(--mocha-800);
-  --sg-surface-raised:  var(--mocha-700);
-  --sg-surface-hover:   var(--mocha-650);
-  --sg-surface-pressed: var(--mocha-600);
-  --sg-surface-inset:   #140f0d;
+  --sg-viz-text: #1B1D1F;
+  --sg-viz-neutral: #565C65;
+  --sg-viz-warning: #B86200;
+  --sg-viz-info: #205493;
 
-  --sg-border:          rgba(229, 228, 226, 0.09);
-  --sg-border-strong:   rgba(229, 228, 226, 0.17);
-  --sg-input-border:    #756b65;
+  /* 7-State Semantic Risk Status Tones */
+  --sg-tone-info-bg: #E7EDF4;
+  --sg-tone-info-text: #1A446C;
+  --sg-tone-warning-bg: #F1ECE3;
+  --sg-tone-warning-text: #614714;
+  --sg-tone-warning-strong-bg: #E8DFCF;
+  --sg-tone-warning-strong-text: #4A3306;
+  --sg-tone-danger-bg: #F6E7E5;
+  --sg-tone-danger-text: #781C18;
+  --sg-tone-danger-strong-bg: #F0D6D3;
+  --sg-tone-danger-strong-text: #541210;
 
-  --sg-text:            var(--platinum-100);
-  --sg-text-muted:      var(--silver-300);
-  --sg-text-subtle:     var(--silver-500);
+  --sg-bg: #FBFBFB;
+  --sg-bg-subtle: #F3F4F5;
+  --sg-text: #1A1C1E;
+  --sg-text-muted: #565C65;
+  --sg-text-subtle: #80858C;
+  --sg-surface-hover: #F3F4F5;
+  --sg-surface-pressed: #E8E8EA;
+  --sg-surface-inset: #F3F4F5;
 
-  --sg-accent:          var(--lavender-400);
-  --sg-accent-hover:    var(--lavender-300);
-  --sg-accent-pressed:  var(--lavender-500);
-  --sg-accent-soft:     rgba(196, 181, 232, 0.12);
-  --sg-accent-line:     rgba(196, 181, 232, 0.35);
-  --sg-on-accent:       var(--lavender-ink);
-  --sg-ring:            var(--lavender-400);
+  --sg-accent: #0B6256;
+  --sg-accent-hover: #0F7B6C;
+  --sg-accent-pressed: #00483F;
+  --sg-accent-soft: rgba(11, 98, 86, 0.08);
+  --sg-accent-line: rgba(11, 98, 86, 0.35);
+  --sg-on-accent: #FFFFFF;
+  --sg-ring: #0B6256;
 
-  --sg-structure:       var(--mocha-500);
-  --sg-structure-soft:  rgba(107, 79, 63, 0.35);
+  --sg-structure: #E1E4E8;
+  --sg-structure-soft: rgba(225, 228, 232, 0.5);
 
   --sg-critical:        #ec6b65;
   --sg-high:            #e8924f;
