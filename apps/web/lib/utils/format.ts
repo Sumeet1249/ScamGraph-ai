@@ -1,88 +1,58 @@
-export function formatDateTime(val?: string | number | Date | null): string {
-  if (!val) return "—";
-  try {
-    const d = new Date(val);
-    if (isNaN(d.getTime())) return String(val);
-    return d.toLocaleString("en-IN", {
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  } catch {
-    return String(val);
-  }
+export function humanize(text: string): string {
+  if (!text) return "";
+  return text
+    .replace(/[_-]/g, " ")
+    .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
-export function formatTime(val?: string | number | Date | null): string {
-  if (!val) return "—";
-  try {
-    const d = new Date(val);
-    if (isNaN(d.getTime())) return String(val);
-    return d.toLocaleTimeString("en-IN", {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    });
-  } catch {
-    return String(val);
-  }
-}
-
-export function formatOffset(seconds?: number): string {
-  if (typeof seconds !== "number" || isNaN(seconds)) return "+00s";
-  const abs = Math.abs(seconds);
-  const mins = Math.floor(abs / 60);
-  const secs = abs % 60;
-  const sign = seconds >= 0 ? "+" : "-";
-  if (mins === 0) return `${sign}${secs}s`;
-  return `${sign}${mins}m ${secs.toString().padStart(2, "0")}s`;
-}
-
-export function humanize(str?: string | null): string {
-  if (!str) return "—";
-  return str
-    .replace(/[_-]+/g, " ")
-    .replace(/\b\w/g, (c) => c.toUpperCase())
-    .trim();
-}
-
-export function humanizeStage(stage?: string | null): string {
-  if (!stage) return "Initial Contact";
+export function humanizeStage(stage: string): string {
+  if (!stage) return "";
   const map: Record<string, string> = {
-    INITIAL_CONTACT: "Initial Contact",
-    IMPERSONATION: "Entity Impersonation",
-    URGENCY_INDUCEMENT: "Psychological Coercion",
-    MALICIOUS_LINK: "Malicious Lure / Link",
-    CREDENTIAL_HARVEST: "Credential / OTP Harvesting",
-    REMOTE_ACCESS: "Remote Access Exploit",
-    PAYMENT_INTENT: "Payment Intent Initiation",
-    SETTLEMENT: "Fund Transfer / Mule Settlement",
+    initial_contact: "Initial Contact",
+    impersonation: "Impersonation",
+    pressure_coercion: "Coercive Pressure",
+    fake_intent: "Malicious APK / Intent",
+    mule_exfiltration: "Mule Exfiltration",
   };
-  return map[stage] || humanize(stage);
+  return map[stage.toLowerCase()] || humanize(stage);
 }
 
-export function pct(num?: number | null): string {
-  if (typeof num !== "number" || isNaN(num)) return "0%";
-  const normalized = num <= 1 ? num * 100 : num;
-  return `${Math.round(normalized)}%`;
+export function formatTime(timestamp?: string | number | Date): string {
+  if (!timestamp) return "Just now";
+  const date = new Date(timestamp);
+  if (isNaN(date.getTime())) return String(timestamp);
+  return date.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true });
 }
 
-export function similarityBucket(score?: number | null): string {
-  if (typeof score !== "number" || isNaN(score)) return "Low";
-  const s = score <= 1 ? score * 100 : score;
-  if (s >= 85) return "Very High";
-  if (s >= 70) return "High";
-  if (s >= 50) return "Moderate";
-  return "Low";
+export function formatOffset(minutes: number): string {
+  const sign = minutes >= 0 ? "+" : "-";
+  const abs = Math.abs(minutes);
+  const hrs = Math.floor(abs / 60);
+  const mins = abs % 60;
+  return `T ${sign} ${hrs.toString().padStart(2, "0")}:${mins.toString().padStart(2, "0")}`;
 }
 
-export function shortId(id?: string | null, startLen = 8, endLen?: number): string {
-  if (!id) return "—";
-  if (endLen !== undefined) {
-    if (id.length <= startLen + endLen) return id;
-    return `${id.slice(0, startLen)}…${id.slice(-endLen)}`;
-  }
-  if (id.length <= startLen) return id;
-  return id.slice(0, startLen);
+export function formatDateTime(timestamp?: string | number | Date): string {
+  if (!timestamp) return "Just now";
+  const date = new Date(timestamp);
+  if (isNaN(date.getTime())) return String(timestamp);
+  return date.toLocaleString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+}
+
+export function formatDate(timestamp?: string | number | Date): string {
+  if (!timestamp) return "Today";
+  const date = new Date(timestamp);
+  if (isNaN(date.getTime())) return String(timestamp);
+  return date.toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
 }

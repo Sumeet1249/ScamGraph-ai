@@ -1,21 +1,23 @@
 import {
-  ShieldCheck,
-  Search,
-  Radio,
-  Layers,
+  LayoutDashboard,
+  Radar,
+  FolderKanban,
+  AlertTriangle,
   GitFork,
-  Network,
-  Database,
-  Activity,
+  Boxes,
+  Search,
   FlaskConical,
-  AlertOctagon,
+  Database,
+  BellRing,
+  CheckSquare,
+  Briefcase,
   type LucideIcon,
 } from "lucide-react";
 
 export interface NavItem {
-  href: string;
   label: string;
-  hint?: string;
+  href: string;
+  hint: string;
   icon: LucideIcon;
 }
 
@@ -26,87 +28,41 @@ export interface NavGroup {
 
 export const navGroups: NavGroup[] = [
   {
-    label: "Detection & Shield",
+    label: "Intelligence",
     items: [
-      {
-        href: "/shield",
-        label: "Shield Hub",
-        hint: "Unified multi-modal protection center",
-        icon: ShieldCheck,
-      },
-      {
-        href: "/investigate",
-        label: "Investigate",
-        hint: "Analyze messages, URLs, calls, and UPI QR",
-        icon: Search,
-      },
-      {
-        href: "/radar",
-        label: "Campaign Radar",
-        hint: "Early outbreak & emerging cluster radar",
-        icon: Radio,
-      },
+      { label: "Command Center", href: "/command", hint: "National threat telemetry", icon: LayoutDashboard },
+      { label: "Outbreak Radar", href: "/radar", hint: "Regional velocity spikes", icon: Radar },
+      { label: "Alert Center", href: "/alerts", hint: "Actionable operational alerts", icon: BellRing },
     ],
   },
   {
-    label: "Intelligence & Graph",
+    label: "Investigations",
     items: [
-      {
-        href: "/incidents",
-        label: "Incidents",
-        hint: "Reconstructed scam journeys and triaged cases",
-        icon: AlertOctagon,
-      },
-      {
-        href: "/campaigns",
-        label: "Campaigns",
-        hint: "Correlated threat campaigns and clusters",
-        icon: Layers,
-      },
-      {
-        href: "/graph",
-        label: "Graph Explorer",
-        hint: "Multi-hop graph paths and circular flow detection",
-        icon: GitFork,
-      },
+      { label: "Campaigns", href: "/campaigns", hint: "Syndicate clusters", icon: FolderKanban },
+      { label: "Incidents", href: "/incidents", hint: "Victim reports stream", icon: AlertTriangle },
+      { label: "Knowledge Graph", href: "/graph", hint: "Interactive cytoscape canvas", icon: GitFork },
+      { label: "Investigation Cases", href: "/cases", hint: "Operational analyst casefiles", icon: Briefcase },
+      { label: "MuleHunter", href: "/mulehunter", hint: "Multi-hop mule tracking", icon: Boxes },
     ],
   },
   {
-    label: "Mule & Compliance",
+    label: "Operations & Governance",
     items: [
-      {
-        href: "/mulehunter",
-        label: "Mule Hunter",
-        hint: "RBIH MuleHunter behavioral profiling and network canvas",
-        icon: Network,
-      },
-      {
-        href: "/registry",
-        label: "Smart Registry",
-        hint: "RBIH DPIP keyed fraud registry & audit trail",
-        icon: Database,
-      },
-      {
-        href: "/command",
-        label: "Command Center",
-        hint: "Operational readiness & live telemetry",
-        icon: Activity,
-      },
-      {
-        href: "/lab",
-        label: "Simulation Lab",
-        hint: "Adversarial benchmark scenarios and test runners",
-        icon: FlaskConical,
-      },
+      { label: "Investigate", href: "/investigate", hint: "Multi-signal correlation", icon: Search },
+      { label: "Review Queue", href: "/reviews", hint: "Human-in-the-loop decisions", icon: CheckSquare },
+      { label: "Simulator Lab", href: "/lab", hint: "Synthetic outbreak simulator", icon: FlaskConical },
+      { label: "Registry", href: "/registry", hint: "Mule & entity registry", icon: Database },
     ],
   },
 ];
 
 export function activeItem(pathname: string): NavItem | undefined {
-  const all = navGroups.flatMap((g) => g.items);
-  if (pathname === "/") return all[0];
-  return (
-    all.find((item) => item.href === pathname) ||
-    all.find((item) => item.href !== "/" && pathname.startsWith(item.href))
-  );
+  for (const group of navGroups) {
+    for (const item of group.items) {
+      if (pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href))) {
+        return item;
+      }
+    }
+  }
+  return undefined;
 }

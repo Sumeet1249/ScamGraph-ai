@@ -131,6 +131,39 @@ export function InvestigationComposer({
                 >
                   বাংলা KYC
                 </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMessage("[Screenshot OCR: WhatsApp] premium task unlock karne ke liye 5000 pay kro. Official Telegram: @taskguru. UPI ID: fake.task@oksbi");
+                    setVpa("fake.task@oksbi");
+                    setMode("combined");
+                  }}
+                  className="px-1.5 py-0.5 rounded bg-surface-2 border border-purple-500/30 hover:bg-surface-3 text-purple-400"
+                >
+                  📷 Screenshot OCR
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMessage("[Call Transcript: 00:00-01:45] CBI Office se bol rahe hain. Aapke aadhar par cyber case hai. Call mat kaatna. Kisi ko mat batana. Abhi verification fees jama karo.");
+                    setMode("combined");
+                  }}
+                  className="px-1.5 py-0.5 rounded bg-surface-2 border border-emerald-500/30 hover:bg-surface-3 text-emerald-400"
+                >
+                  🎙️ Audio Call
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setQrPayload("upi://pay?pa=fake.desk@oksbi&pn=PoliceVerification&am=5000&cu=INR");
+                    setVpa("fake.desk@oksbi");
+                    setAmount("5000");
+                    setMode("payment");
+                  }}
+                  className="px-1.5 py-0.5 rounded bg-surface-2 border border-blue-500/30 hover:bg-surface-3 text-blue-400"
+                >
+                  🏁 UPI QR
+                </button>
               </div>
             </div>
             <Textarea

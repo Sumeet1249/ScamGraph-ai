@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 export interface ProgressStep {
   id: string;
@@ -9,12 +9,13 @@ export interface ProgressStep {
 export function useInvestigationProgress() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [steps, setSteps] = useState<ProgressStep[]>([
-    { id: "1", label: "Extracting lexical and punycode URL signals", status: "complete" },
-    { id: "2", label: "Evaluating SMS linguistic urgency & dialect", status: "complete" },
-    { id: "3", label: "Cross-modal vishing & OTP correlation", status: "complete" },
-    { id: "4", label: "Inspecting UPI QR & Reverse-Collect fraud", status: "active" },
-    { id: "5", label: "Reconstructing forensic digital twin", status: "pending" },
+    { id: "s1", label: "Semantic analysis of message signals", status: "complete" },
+    { id: "s2", label: "TinyFish web infrastructure query", status: "complete" },
+    { id: "s3", label: "Payment VPA handle adjudication", status: "active" },
+    { id: "s4", label: "Scam journey stage correlation", status: "pending" },
+    { id: "s5", label: "Historical campaign clustering", status: "pending" },
+    { id: "s6", label: "Dual-axis risk scoring & friction recommendation", status: "pending" },
   ]);
 
-  return { steps, containerRef, setSteps };
+  return { steps, setSteps, containerRef };
 }

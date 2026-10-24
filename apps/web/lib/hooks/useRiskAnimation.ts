@@ -1,31 +1,27 @@
 import { useState, useEffect } from "react";
 
-export function useRiskAnimation(targetScore: number): number {
-  const [val, setVal] = useState(0);
+export function useRiskAnimation(targetScore: number, durationMs = 1200): number {
+  const [current, setCurrent] = useState(0);
 
   useEffect(() => {
-    let frame: number;
-    const start = performance.now();
-    const duration = 600;
-    const initial = val;
+    let start = 0;
+    const startTime = performance.now();
 
-    const animate = (now: number) => {
-      const elapsed = now - start;
-      const progress = Math.min(1, elapsed / duration);
-      // ease-out cubic
+    const frame = (now: number) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / durationMs, 1);
+      // Ease out cubic
       const eased = 1 - Math.pow(1 - progress, 3);
-      setVal(Math.round(initial + (targetScore - initial) * eased));
+      setCurrent(Math.round(eased * targetScore));
+
       if (progress < 1) {
-        frame = requestAnimationFrame(animate);
+        requestAnimationFrame(frame);
       }
     };
 
-    frame = requestAnimationFrame(animate);
-    return () => {
-      if (frame) cancelAnimationFrame(frame);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [targetScore]);
+    const handle = requestAnimationFrame(frame);
+    return () => cancelAnimationFrame(handle);
+  }, [targetScore, durationMs]);
 
-  return val;
+  return current;
 }

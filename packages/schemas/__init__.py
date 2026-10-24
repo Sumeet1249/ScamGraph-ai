@@ -455,6 +455,22 @@ __all__ = [
     "UserLanguagePreference",
     "NegationSignal",
     "BehavioralFeatureSet",
+    # Multimodal Intelligence V2 (Phase 5D)
+    "MultimodalModality",
+    "ScreenshotCategory",
+    "QRPayloadType",
+    "ObservationType",
+    "OCRBoundingBox",
+    "OCRTextBlock",
+    "OCRResult",
+    "UPIQRPayload",
+    "QRDecodeResult",
+    "PaymentScreenshotExtraction",
+    "AudioTranscriptSegment",
+    "TranscriptArtifact",
+    "SyntheticMediaSignal",
+    "DerivedObservation",
+    "EvidenceFusionResult",
 ]
 
 from packages.schemas.rescue import (
@@ -490,5 +506,36 @@ from packages.schemas.multilingual import (
     UserLanguagePreference,
     NegationSignal,
     BehavioralFeatureSet,
+)
+
+from packages.schemas.multimodal import (
+    MultimodalModality,
+    ScreenshotCategory,
+    QRPayloadType,
+    ObservationType,
+    OCRBoundingBox,
+    OCRTextBlock,
+    OCRResult,
+    UPIQRPayload,
+    QRDecodeResult,
+    PaymentScreenshotExtraction,
+    AudioTranscriptSegment,
+    TranscriptArtifact,
+    SyntheticMediaSignal,
+    DerivedObservation,
+    EvidenceFusionResult,
+)
+
+from packages.schemas.console import (
+    AlertType,
+    AlertStatus,
+    ReviewType,
+    ReviewDecisionType,
+    CaseStatus,
+    IntelligenceAlert,
+    ReviewQueueItem,
+    InvestigationCase,
+    SystemIntelligenceHealth,
+    CommandCenterSummary,
 )
 
