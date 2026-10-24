@@ -35,11 +35,11 @@ export default function InvestigatePage() {
         const signals = Array.isArray(result.signals) ? result.signals : [];
         const detectedSignalsConf = signals.length > 0
           ? Math.max(
-              ...signals.map((s: any) => {
-                const c = typeof s.confidence === "number" ? s.confidence : 0;
-                return c <= 1 ? Math.round(c * 100) : Math.round(c);
-              })
-            )
+            ...signals.map((s: any) => {
+              const c = typeof s.confidence === "number" ? s.confidence : 0;
+              return c <= 1 ? Math.round(c * 100) : Math.round(c);
+            })
+          )
           : 0;
         const patternConf = typeof result.pattern_match?.match_score === "number"
           ? Math.round(result.pattern_match.match_score * 100)
@@ -54,14 +54,14 @@ export default function InvestigatePage() {
           finalRiskScore >= 70
             ? "HIGH"
             : finalRiskScore >= 40
-            ? "MEDIUM"
-            : (result.assessment?.risk_level || "LOW");
+              ? "MEDIUM"
+              : (result.assessment?.risk_level || "LOW");
         const computedConfidence =
           finalRiskScore >= 70
             ? "HIGH"
             : finalRiskScore >= 40
-            ? "MEDIUM"
-            : (result.assessment?.evidence_confidence || "LOW");
+              ? "MEDIUM"
+              : (result.assessment?.evidence_confidence || "LOW");
 
         const newIncident = {
           id: result.incident_id,

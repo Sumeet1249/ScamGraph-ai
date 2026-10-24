@@ -95,16 +95,14 @@ export default function GuardContextQuestionsPage() {
                   <div
                     key={opt.id}
                     onClick={() => setSelectedUrgency(opt.id)}
-                    className={`group relative flex items-start p-4 sm:p-5 rounded-xl cursor-pointer transition-all ${
-                      isSelected
+                    className={`group relative flex items-start p-4 sm:p-5 rounded-xl cursor-pointer transition-all ${isSelected
                         ? 'border-2 border-primary bg-selected-tint shadow-sm'
                         : 'border border-border-divider bg-surface hover:border-border-control hover:bg-surface-subtle'
-                    }`}
+                      }`}
                   >
                     <div
-                      className={`flex items-center justify-center w-6 h-6 rounded-full mr-4 shrink-0 mt-0.5 ${
-                        isSelected ? 'bg-primary text-white' : 'border border-border-control bg-surface'
-                      }`}
+                      className={`flex items-center justify-center w-6 h-6 rounded-full mr-4 shrink-0 mt-0.5 ${isSelected ? 'bg-primary text-white' : 'border border-border-control bg-surface'
+                        }`}
                     >
                       {isSelected ? (
                         <span className="material-symbols-outlined text-[15px] font-bold">check</span>

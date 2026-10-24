@@ -320,9 +320,8 @@ function UniversalCheckContent() {
                 setIsDragging(false);
                 handleProcessFiles(e.dataTransfer.files);
               }}
-              className={`bg-surface rounded-xl border p-5 md:p-6 shadow-sm flex flex-col gap-4 transition-all ${
-                isDragging ? "border-viz-primary ring-2 ring-viz-primary/20 bg-selected-tint" : "border-border-divider"
-              }`}
+              className={`bg-surface rounded-xl border p-5 md:p-6 shadow-sm flex flex-col gap-4 transition-all ${isDragging ? "border-viz-primary ring-2 ring-viz-primary/20 bg-selected-tint" : "border-border-divider"
+                }`}
             >
               <div className="flex flex-col gap-1.5 relative">
                 <div className="flex items-center justify-between">

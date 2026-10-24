@@ -264,11 +264,11 @@ export function InvestigationResults({ data }: InvestigationResultsProps) {
   // Use detected signal confidence directly for the risk score
   const detectedSignalsConf = signals.length > 0
     ? Math.max(
-        ...signals.map((s) => {
-          const c = typeof s.confidence === "number" ? s.confidence : 0;
-          return c <= 1 ? Math.round(c * 100) : Math.round(c);
-        })
-      )
+      ...signals.map((s) => {
+        const c = typeof s.confidence === "number" ? s.confidence : 0;
+        return c <= 1 ? Math.round(c * 100) : Math.round(c);
+      })
+    )
     : 0;
 
   const patternConf = typeof pattern_match?.match_score === "number"
@@ -287,10 +287,10 @@ export function InvestigationResults({ data }: InvestigationResultsProps) {
     assessment.risk_level === "INSUFFICIENT_EVIDENCE" && riskScore < 40
       ? "INSUFFICIENT_EVIDENCE"
       : riskScore >= 70
-      ? "HIGH"
-      : riskScore >= 40
-      ? "MEDIUM"
-      : (assessment.risk_level || "LOW");
+        ? "HIGH"
+        : riskScore >= 40
+          ? "MEDIUM"
+          : (assessment.risk_level || "LOW");
 
   const rawAction = tripartite_decision
     ? (tripartite_decision.action || (tripartite_decision as any).primary_action || "ALLOW")
@@ -377,9 +377,8 @@ export function InvestigationResults({ data }: InvestigationResultsProps) {
                 </div>
                 <div className="w-full bg-surface-3 h-2 rounded-full mt-2 overflow-hidden">
                   <div
-                    className={`h-full transition-all duration-500 ${
-                      tripartite_decision.risk_score >= 0.7 ? "bg-red-500" : tripartite_decision.risk_score >= 0.4 ? "bg-amber-500" : "bg-emerald-500"
-                    }`}
+                    className={`h-full transition-all duration-500 ${tripartite_decision.risk_score >= 0.7 ? "bg-red-500" : tripartite_decision.risk_score >= 0.4 ? "bg-amber-500" : "bg-emerald-500"
+                      }`}
                     style={{ width: `${Math.round(tripartite_decision.risk_score * 100)}%` }}
                   />
                 </div>
@@ -429,9 +428,8 @@ export function InvestigationResults({ data }: InvestigationResultsProps) {
                 </div>
                 <div className="w-full bg-surface-3 h-2 rounded-full mt-2 overflow-hidden">
                   <div
-                    className={`h-full transition-all duration-500 ${
-                      tripartite_decision.urgency_score >= 0.7 ? "bg-red-500" : tripartite_decision.urgency_score >= 0.4 ? "bg-amber-500" : "bg-blue-500"
-                    }`}
+                    className={`h-full transition-all duration-500 ${tripartite_decision.urgency_score >= 0.7 ? "bg-red-500" : tripartite_decision.urgency_score >= 0.4 ? "bg-amber-500" : "bg-blue-500"
+                      }`}
                     style={{ width: `${Math.round(tripartite_decision.urgency_score * 100)}%` }}
                   />
                 </div>
@@ -589,19 +587,19 @@ export function InvestigationResults({ data }: InvestigationResultsProps) {
             effectiveRiskLevel === "INSUFFICIENT_EVIDENCE"
               ? "neutral"
               : riskScore >= 70
-              ? "danger"
-              : riskScore >= 40
-              ? "caution"
-              : "success"
+                ? "danger"
+                : riskScore >= 40
+                  ? "caution"
+                  : "success"
           }
           detail={
             effectiveRiskLevel === "INSUFFICIENT_EVIDENCE"
               ? "Insufficient evidence to calibrate index"
               : riskScore >= 70
-              ? "High multi-signal corroboration index"
-              : riskScore >= 40
-              ? "Moderate threat indicators observed"
-              : "Baseline activity — corroboration index"
+                ? "High multi-signal corroboration index"
+                : riskScore >= 40
+                  ? "Moderate threat indicators observed"
+                  : "Baseline activity — corroboration index"
           }
         />
         <MetricCard
@@ -643,10 +641,10 @@ export function InvestigationResults({ data }: InvestigationResultsProps) {
                 {assessment.emerging_status === "KNOWN_PATTERN"
                   ? "Matches a known scam workflow"
                   : assessment.emerging_status === "MUTATED_VARIANT"
-                  ? "Variant of a known pattern detected"
-                  : assessment.emerging_status === "POSSIBLE_EMERGING_CAMPAIGN"
-                  ? "May be part of an emerging threat"
-                  : "No significant pattern match"}
+                    ? "Variant of a known pattern detected"
+                    : assessment.emerging_status === "POSSIBLE_EMERGING_CAMPAIGN"
+                      ? "May be part of an emerging threat"
+                      : "No significant pattern match"}
               </p>
             </AssessmentCard>
           )}
@@ -726,8 +724,8 @@ export function InvestigationResults({ data }: InvestigationResultsProps) {
                         signal.severity === "CRITICAL" || signal.severity === "HIGH"
                           ? "danger"
                           : signal.severity === "MEDIUM"
-                          ? "caution"
-                          : "neutral"
+                            ? "caution"
+                            : "neutral"
                       }
                     >
                       {signal.severity}
@@ -798,8 +796,8 @@ export function InvestigationResults({ data }: InvestigationResultsProps) {
                       data.unified_assessment.risk_level === "CRITICAL" || data.unified_assessment.risk_level === "HIGH"
                         ? "danger"
                         : data.unified_assessment.risk_level === "MEDIUM"
-                        ? "caution"
-                        : "success"
+                          ? "caution"
+                          : "success"
                     }
                   >
                     {data.unified_assessment.risk_level}
@@ -864,13 +862,12 @@ export function InvestigationResults({ data }: InvestigationResultsProps) {
                     <span className="text-[10px] font-mono font-bold tracking-widest text-indigo-400 uppercase">
                       Canonical Threat Signature
                     </span>
-                    <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase border ${
-                      scam_dna.quality === "HIGH"
+                    <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase border ${scam_dna.quality === "HIGH"
                         ? "bg-emerald-950/60 text-emerald-300 border-emerald-600"
                         : scam_dna.quality === "MEDIUM"
-                        ? "bg-amber-950/60 text-amber-300 border-amber-600"
-                        : "bg-surface-3 text-text-secondary border-border"
-                    }`}>
+                          ? "bg-amber-950/60 text-amber-300 border-amber-600"
+                          : "bg-surface-3 text-text-secondary border-border"
+                      }`}>
                       Quality: {scam_dna.quality}
                     </span>
                   </div>
@@ -922,20 +919,18 @@ export function InvestigationResults({ data }: InvestigationResultsProps) {
                   return (
                     <div
                       key={dimKey}
-                      className={`p-3 rounded-lg border transition-all ${
-                        dim.available
+                      className={`p-3 rounded-lg border transition-all ${dim.available
                           ? "bg-surface-1 border-indigo-500/40 shadow-sm"
                           : "bg-surface-inset/50 border-border/40 opacity-60"
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center justify-between text-xs font-mono">
                         <span className={`font-bold ${dim.available ? "text-text-primary" : "text-text-muted"}`}>
                           {dimKey}
                         </span>
                         <span
-                          className={`h-2 w-2 rounded-full ${
-                            dim.available ? "bg-emerald-400 animate-pulse-soft" : "bg-text-muted/40"
-                          }`}
+                          className={`h-2 w-2 rounded-full ${dim.available ? "bg-emerald-400 animate-pulse-soft" : "bg-text-muted/40"
+                            }`}
                         />
                       </div>
 
@@ -948,9 +943,8 @@ export function InvestigationResults({ data }: InvestigationResultsProps) {
 
                       <div className="w-full bg-surface-3 h-1.5 rounded-full mt-1.5 overflow-hidden">
                         <div
-                          className={`h-full transition-all duration-500 ${
-                            dim.available ? "bg-indigo-400" : "bg-transparent"
-                          }`}
+                          className={`h-full transition-all duration-500 ${dim.available ? "bg-indigo-400" : "bg-transparent"
+                            }`}
                           style={{ width: `${Math.round(dim.confidence * 100)}%` }}
                         />
                       </div>

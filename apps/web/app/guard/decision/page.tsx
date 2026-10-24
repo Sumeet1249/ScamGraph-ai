@@ -146,11 +146,10 @@ export default function GuardDecisionPage() {
                     <button
                       onClick={() => setDeclined(!declined)}
                       type="button"
-                      className={`inline-flex items-center gap-2 h-10 px-4 rounded-lg text-xs font-bold transition-all border ${
-                        declined
+                      className={`inline-flex items-center gap-2 h-10 px-4 rounded-lg text-xs font-bold transition-all border ${declined
                           ? 'bg-tone-info-bg text-tone-info-text border-tone-info-text/30'
                           : 'bg-surface-subtle text-on-surface border-border-divider hover:bg-surface'
-                      }`}
+                        }`}
                     >
                       <span className={`material-symbols-outlined text-[18px] ${declined ? 'text-secondary' : 'text-error'}`}>
                         {declined ? 'check_circle' : 'cancel'}
@@ -438,5 +437,7 @@ export default function GuardDecisionPage() {
         </div>
       </div>
     </div>
+  );
+}
   );
 }

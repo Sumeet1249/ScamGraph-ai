@@ -175,21 +175,19 @@ export default function RadarPage() {
           <div className="flex items-center gap-3">
             <button
               onClick={() => setReducedMotion(!reducedMotion)}
-              className={`rounded-lg px-3 py-1.5 text-xs font-medium border transition-colors ${
-                reducedMotion
+              className={`rounded-lg px-3 py-1.5 text-xs font-medium border transition-colors ${reducedMotion
                   ? "bg-surface-raised border-brand-primary text-brand-primary"
                   : "bg-surface-subtle border-border text-text-secondary hover:text-text-primary"
-              }`}
+                }`}
             >
               {reducedMotion ? "Motion: Reduced" : "Motion: Dynamic"}
             </button>
             <button
               onClick={() => setDemoMode(!demoMode)}
-              className={`rounded-lg px-3 py-1.5 text-xs font-medium border transition-colors ${
-                demoMode
+              className={`rounded-lg px-3 py-1.5 text-xs font-medium border transition-colors ${demoMode
                   ? "bg-amber-500/10 border-amber-500/30 text-amber-400"
                   : "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
-              }`}
+                }`}
             >
               {demoMode ? "DEMO DATA" : "LIVE NETWORK"}
             </button>
@@ -273,11 +271,10 @@ export default function RadarPage() {
             <button
               key={w}
               onClick={() => setTimeFilter(w)}
-              className={`rounded-lg px-2.5 py-1 text-xs font-mono font-medium transition-colors ${
-                timeFilter === w
+              className={`rounded-lg px-2.5 py-1 text-xs font-mono font-medium transition-colors ${timeFilter === w
                   ? "bg-brand-primary text-black font-bold"
                   : "bg-surface-raised text-text-secondary hover:text-text-primary"
-              }`}
+                }`}
             >
               {w}
             </button>
@@ -442,8 +439,8 @@ export default function RadarPage() {
                   blip.ring === "CRITICAL"
                     ? 70 + (blip.radius_norm * 40)
                     : blip.ring === "SURGING"
-                    ? 140 + (blip.radius_norm * 50)
-                    : 220 + (blip.radius_norm * 55);
+                      ? 140 + (blip.radius_norm * 50)
+                      : 220 + (blip.radius_norm * 55);
 
                 const cx = 350 + targetRadius * Math.cos(blip.angle_rad);
                 const cy = 350 + targetRadius * Math.sin(blip.angle_rad);
@@ -704,5 +701,172 @@ export default function RadarPage() {
         </div>
       </Card>
     </div>
+  );
+}
+              </Card >
+            ) : (
+  <Card pad="md" className="border-border bg-surface-card text-center text-text-muted py-8">
+    <Eye className="mx-auto h-8 w-8 opacity-40 mb-2" />
+    <p className="text-xs">Click any radar blip to inspect campaign dynamics</p>
+  </Card>
+)}
+
+{/* Top Outbreaks Sidebar */ }
+<Card pad="md" className="border-border bg-surface-card">
+  <div className="flex items-center justify-between border-b border-border pb-3">
+    <span className="text-xs font-bold uppercase tracking-wider text-text-primary flex items-center gap-1.5">
+      <Flame className="h-4 w-4 text-orange-400" /> Top Outbreaks
+    </span>
+    <span className="text-[11px] font-mono text-text-muted">Live Rank</span>
+  </div>
+
+  <div className="mt-3 space-y-2.5">
+    {filteredBlips
+      .filter((b) => b.ring === "CRITICAL" || b.ring === "SURGING")
+      .map((b, idx) => (
+        <div
+          key={b.blip_id}
+          onClick={() => setSelectedBlip(b)}
+          className="flex cursor-pointer items-center justify-between rounded-lg border border-border bg-surface-subtle/50 p-2.5 hover:bg-surface-raised transition-colors"
+        >
+          <div className="space-y-0.5">
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-xs font-bold text-text-muted">#{idx + 1}</span>
+              <p className="text-xs font-semibold text-text-primary line-clamp-1">{b.title}</p>
+            </div>
+            <span className="text-[10px] text-text-muted">
+              {b.incident_count} reports · +{b.growth_percent}%
+            </span>
+          </div>
+          <Badge tone={getTone(b.ring)}>{b.ring}</Badge>
+        </div>
+      ))}
+  </div>
+</Card>
+          </div >
+        </div >
+      )}
+
+{/* VIEW 2: ACCESSIBLE SYNCHRONIZED TABLE LEDGER (PART O #56) */ }
+{
+  activeView === "ledger" && (
+    <Card pad="none" className="border-border bg-surface-card overflow-hidden">
+      <div className="flex items-center justify-between border-b border-border px-5 py-3.5 bg-surface-subtle/50">
+        <span className="text-xs font-bold uppercase tracking-wider text-text-primary">
+          Campaign Threat Ledger ({filteredBlips.length} Tracked Syndicates)
+        </span>
+        <span className="text-xs text-text-muted font-mono">
+          Accessible Table Projection
+        </span>
+      </div>
+
+      <div className="overflow-x-auto">
+        <table className="w-full text-left text-xs">
+          <thead className="border-b border-border bg-surface-subtle/30 text-text-muted font-mono uppercase text-[11px]">
+            <tr>
+              <th className="px-4 py-3">Campaign &amp; Cluster ID</th>
+              <th className="px-4 py-3">Family</th>
+              <th className="px-4 py-3">Zone / Lifecycle</th>
+              <th className="px-4 py-3">Incidents</th>
+              <th className="px-4 py-3">Velocity Trend</th>
+              <th className="px-4 py-3">Primary Evidence Reason</th>
+              <th className="px-4 py-3 text-right">Action</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border">
+            {filteredBlips.map((b) => (
+              <tr key={b.blip_id} className="hover:bg-surface-subtle/50 transition-colors">
+                <td className="px-4 py-3">
+                  <div className="font-bold text-text-primary">{b.title}</div>
+                  <div className="font-mono text-[10px] text-text-muted">{b.campaign_id}</div>
+                </td>
+                <td className="px-4 py-3">
+                  <span className="rounded bg-surface-subtle px-2 py-0.5 font-mono text-[11px] text-text-secondary border border-border">
+                    {b.scam_family}
+                  </span>
+                </td>
+                <td className="px-4 py-3">
+                  <Badge tone={getTone(b.ring)}>{b.ring}</Badge>
+                </td>
+                <td className="px-4 py-3 font-mono font-bold text-text-primary">
+                  {b.incident_count}
+                </td>
+                <td className="px-4 py-3 font-mono font-bold text-amber-400">
+                  +{b.growth_percent}%
+                </td>
+                <td className="px-4 py-3 text-text-secondary max-w-xs truncate">
+                  {b.top_reason}
+                </td>
+                <td className="px-4 py-3 text-right">
+                  <Link
+                    href={`/campaigns/${b.campaign_id}`}
+                    className="inline-flex items-center gap-1 rounded bg-brand-primary/10 border border-brand-primary/30 px-2.5 py-1 text-xs font-bold text-brand-primary hover:bg-brand-primary/20"
+                  >
+                    Inspect <ArrowUpRight className="h-3 w-3" />
+                  </Link>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </Card>
+  )
+}
+
+{/* Bottom Feed: Emerging Signals Timeline */ }
+<Card pad="none" className="border-border bg-surface-card">
+  <div className="flex items-center justify-between border-b border-border px-5 py-3.5 bg-surface-subtle/50">
+    <div className="flex items-center gap-2">
+      <Zap className="h-4 w-4 text-brand-primary" />
+      <span className="text-xs font-bold uppercase tracking-wider text-text-primary">
+        Outbreak Signal Chronology
+      </span>
+    </div>
+    <span className="font-mono text-[11px] text-text-muted">
+      {signals.length} real-time escalations recorded
+    </span>
+  </div>
+
+  <div className="divide-y divide-border">
+    {signals.slice(0, 6).map((sig) => (
+      <div key={sig.signal_id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-3 hover:bg-surface-subtle/30 transition-colors">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2.5">
+            <Badge tone={getTone(sig.severity)}>{sig.signal_type}</Badge>
+            <span className="font-mono text-xs font-bold text-text-primary">
+              Campaign: {sig.campaign_id}
+            </span>
+            <span className="text-[11px] text-text-muted">
+              {(sig.confidence * 100).toFixed(0)}% confidence
+            </span>
+          </div>
+          <p className="text-xs text-text-secondary">
+            {sig.strongest_evidence.join(" · ") || sig.reason_codes.join(", ")}
+          </p>
+          {sig.regions.length > 0 && (
+            <div className="flex items-center gap-1.5 text-[11px] text-text-muted pt-0.5">
+              <Globe className="h-3 w-3" />
+              <span>Regions: {sig.regions.join(", ")}</span>
+            </div>
+          )}
+        </div>
+
+        <div className="flex items-center gap-3 shrink-0">
+          <span className="font-mono text-xs text-text-muted">
+            Velocity: {sig.current_velocity.toFixed(1)}/day
+          </span>
+          <Link
+            href={`/campaigns/${sig.campaign_id}`}
+            className="rounded-lg border border-border bg-surface-subtle px-2.5 py-1 text-xs text-brand-primary hover:bg-surface-raised"
+          >
+            View Campaign
+          </Link>
+        </div>
+      </div>
+    ))}
+  </div>
+</Card>
+    </div >
   );
 }

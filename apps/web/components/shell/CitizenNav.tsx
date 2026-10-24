@@ -60,11 +60,10 @@ export function CitizenNav() {
                   <Link
                     key={link.href}
                     href={link.href}
-                    className={`flex h-16 items-center border-b-[3px] px-3.5 text-sm transition-colors ${
-                      isActive
+                    className={`flex h-16 items-center border-b-[3px] px-3.5 text-sm transition-colors ${isActive
                         ? "border-viz-primary bg-selected-tint font-semibold text-viz-primary"
                         : "border-transparent font-medium text-on-surface-variant hover:bg-surface-subtle hover:text-on-surface"
-                    }`}
+                      }`}
                   >
                     {link.label}
                   </Link>

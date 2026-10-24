@@ -126,23 +126,21 @@ export default function CheckResultPage() {
 
         {/* Top Risk Verdict Banner */}
         <div
-          className={`mb-8 rounded-xl p-5 md:p-6 border-2 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4 ${
-            isHighRisk
+          className={`mb-8 rounded-xl p-5 md:p-6 border-2 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4 ${isHighRisk
               ? "bg-tone-danger-strong-bg border-tone-danger-text text-tone-danger-strong-text"
               : isLowRisk
-              ? "bg-tone-info-bg border-viz-info text-tone-info-text"
-              : "bg-tone-warning-bg border-tone-warning-strong-text text-tone-warning-strong-text"
-          }`}
+                ? "bg-tone-info-bg border-viz-info text-tone-info-text"
+                : "bg-tone-warning-bg border-tone-warning-strong-text text-tone-warning-strong-text"
+            }`}
         >
           <div className="flex items-start gap-3.5">
             <div
-              className={`flex h-11 w-11 items-center justify-center rounded-xl shrink-0 shadow-sm ${
-                isHighRisk
+              className={`flex h-11 w-11 items-center justify-center rounded-xl shrink-0 shadow-sm ${isHighRisk
                   ? "bg-tone-danger-text text-surface"
                   : isLowRisk
-                  ? "bg-viz-info text-surface"
-                  : "bg-viz-warning text-surface"
-              }`}
+                    ? "bg-viz-info text-surface"
+                    : "bg-viz-warning text-surface"
+                }`}
             >
               {isHighRisk ? (
                 <ShieldAlert className="h-6 w-6" />
@@ -155,13 +153,12 @@ export default function CheckResultPage() {
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <span
-                  className={`text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
-                    isHighRisk
+                  className={`text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${isHighRisk
                       ? "bg-tone-danger-text text-surface"
                       : isLowRisk
-                      ? "bg-viz-info text-surface"
-                      : "bg-viz-warning text-surface"
-                  }`}
+                        ? "bg-viz-info text-surface"
+                        : "bg-viz-warning text-surface"
+                    }`}
                 >
                   {stateLabel}
                 </span>
@@ -313,13 +310,12 @@ export default function CheckResultPage() {
                 </div>
                 <div className="w-full bg-surface-subtle h-2.5 rounded-full overflow-hidden border border-border-divider">
                   <div
-                    className={`h-full transition-all duration-700 rounded-full ${
-                      score >= 70
+                    className={`h-full transition-all duration-700 rounded-full ${score >= 70
                         ? "bg-tone-danger-text"
                         : score >= 40
-                        ? "bg-viz-warning"
-                        : "bg-viz-info"
-                    }`}
+                          ? "bg-viz-warning"
+                          : "bg-viz-info"
+                      }`}
                     style={{ width: `${Math.min(100, Math.max(5, score))}%` }}
                   />
                 </div>
@@ -338,22 +334,20 @@ export default function CheckResultPage() {
                     <div className="flex items-center justify-between text-xs font-bold text-on-surface">
                       <div className="flex items-center gap-2">
                         <span
-                          className={`w-2 h-2 rounded-full ${
-                            sig.severity === "critical"
+                          className={`w-2 h-2 rounded-full ${sig.severity === "critical"
                               ? "bg-tone-danger-text"
                               : sig.severity === "high"
-                              ? "bg-tone-warning-strong-text"
-                              : "bg-viz-info"
-                          }`}
+                                ? "bg-tone-warning-strong-text"
+                                : "bg-viz-info"
+                            }`}
                         />
                         <span>{sig.title}</span>
                       </div>
                       <span
-                        className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded border ${
-                          sig.severity === "critical"
+                        className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded border ${sig.severity === "critical"
                             ? "text-tone-danger-text bg-tone-danger-bg border-tone-danger-strong-bg"
                             : "text-viz-neutral bg-surface border-border-divider"
-                        }`}
+                          }`}
                       >
                         {sig.category}
                       </span>

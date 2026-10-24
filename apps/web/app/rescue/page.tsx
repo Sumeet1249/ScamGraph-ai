@@ -328,16 +328,14 @@ export default function RescuePage() {
                   setLossType(opt.type);
                   initRescue(opt.type);
                 }}
-                className={`group flex flex-col items-center justify-center rounded-xl border p-3.5 text-center transition-all card-interactive ${
-                  isSelected
+                className={`group flex flex-col items-center justify-center rounded-xl border p-3.5 text-center transition-all card-interactive ${isSelected
                     ? "border-red-500 bg-red-50/90 text-red-800 shadow-sm ring-2 ring-red-400/20 -translate-y-0.5"
                     : "border-border-divider bg-surface text-on-surface-variant hover:border-border-control hover:bg-surface-subtle hover:text-on-surface"
-                }`}
+                  }`}
               >
                 <div
-                  className={`flex h-9 w-9 items-center justify-center rounded-full transition-transform group-hover:scale-110 ${
-                    isSelected ? "bg-red-100 text-red-600" : "bg-surface-subtle text-on-surface-variant"
-                  }`}
+                  className={`flex h-9 w-9 items-center justify-center rounded-full transition-transform group-hover:scale-110 ${isSelected ? "bg-red-100 text-red-600" : "bg-surface-subtle text-on-surface-variant"
+                    }`}
                 >
                   <Icon className="h-4 w-4" />
                 </div>
@@ -401,11 +399,10 @@ export default function RescuePage() {
       <div className="flex flex-wrap gap-2 border-b border-border-divider pb-2 text-sm font-medium">
         <button
           onClick={() => setActiveTab("actions")}
-          className={`flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-semibold transition-all ${
-            activeTab === "actions"
+          className={`flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-semibold transition-all ${activeTab === "actions"
               ? "bg-viz-primary text-white shadow-sm"
               : "text-on-surface-variant hover:bg-surface-subtle hover:text-on-surface"
-          }`}
+            }`}
         >
           <CheckCircle2 className="h-3.5 w-3.5" />
           <span>
@@ -415,11 +412,10 @@ export default function RescuePage() {
 
         <button
           onClick={() => setActiveTab("loss")}
-          className={`flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-semibold transition-all ${
-            activeTab === "loss"
+          className={`flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-semibold transition-all ${activeTab === "loss"
               ? "bg-viz-primary text-white shadow-sm"
               : "text-on-surface-variant hover:bg-surface-subtle hover:text-on-surface"
-          }`}
+            }`}
         >
           <Clock className="h-3.5 w-3.5" />
           <span>Loss Timeline ({lossEvents.length})</span>
@@ -427,11 +423,10 @@ export default function RescuePage() {
 
         <button
           onClick={() => setActiveTab("recovery_warning")}
-          className={`flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-semibold transition-all ${
-            activeTab === "recovery_warning"
+          className={`flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-semibold transition-all ${activeTab === "recovery_warning"
               ? "bg-red-600 text-white shadow-sm"
               : "text-red-700 bg-red-50 hover:bg-red-100"
-          }`}
+            }`}
         >
           <ShieldAlert className="h-3.5 w-3.5" />
           <span>Recovery Scam Shield</span>
@@ -439,11 +434,10 @@ export default function RescuePage() {
 
         <button
           onClick={() => setActiveTab("package")}
-          className={`flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-semibold transition-all ${
-            activeTab === "package"
+          className={`flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-semibold transition-all ${activeTab === "package"
               ? "bg-viz-primary text-white shadow-sm"
               : "text-on-surface-variant hover:bg-surface-subtle hover:text-on-surface"
-          }`}
+            }`}
         >
           <FileText className="h-3.5 w-3.5" />
           <span>Case Package Export</span>
@@ -470,20 +464,18 @@ export default function RescuePage() {
                 .map((item, idx) => (
                   <div
                     key={item.action_id}
-                    className={`flex items-start justify-between rounded-xl border p-4 transition-all card-interactive ${
-                      item.status === "DONE"
+                    className={`flex items-start justify-between rounded-xl border p-4 transition-all card-interactive ${item.status === "DONE"
                         ? "border-emerald-200 bg-emerald-50/50 opacity-80"
                         : item.is_immediate_lifeline
-                        ? "border-red-200 bg-red-50/60 shadow-sm"
-                        : "border-border-divider bg-surface shadow-sm"
-                    }`}
+                          ? "border-red-200 bg-red-50/60 shadow-sm"
+                          : "border-border-divider bg-surface shadow-sm"
+                      }`}
                   >
                     <div className="space-y-1.5 pr-4">
                       <div className="flex items-center gap-2">
                         <span
-                          className={`font-semibold text-sm ${
-                            item.status === "DONE" ? "text-on-surface-variant line-through" : "text-on-surface"
-                          }`}
+                          className={`font-semibold text-sm ${item.status === "DONE" ? "text-on-surface-variant line-through" : "text-on-surface"
+                            }`}
                         >
                           {item.title}
                         </span>
@@ -521,11 +513,10 @@ export default function RescuePage() {
 
                     <button
                       onClick={() => toggleActionDone(item.action_id, item.status)}
-                      className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all ${
-                        item.status === "DONE"
+                      className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all ${item.status === "DONE"
                           ? "bg-emerald-600 text-white shadow-sm hover:bg-emerald-700"
                           : "border border-border-control bg-surface text-on-surface-variant hover:border-viz-primary hover:text-viz-primary hover:bg-surface-subtle"
-                      }`}
+                        }`}
                     >
                       {item.status === "DONE" ? "✓ Done" : "Mark Done"}
                     </button>
@@ -551,17 +542,15 @@ export default function RescuePage() {
                 .map((item) => (
                   <div
                     key={item.action_id}
-                    className={`flex items-start justify-between rounded-xl border p-4 transition-all card-interactive ${
-                      item.status === "DONE"
+                    className={`flex items-start justify-between rounded-xl border p-4 transition-all card-interactive ${item.status === "DONE"
                         ? "border-emerald-200 bg-emerald-50/50 opacity-80"
                         : "border-border-divider bg-surface shadow-sm"
-                    }`}
+                      }`}
                   >
                     <div className="space-y-1.5 pr-4">
                       <div
-                        className={`font-semibold text-sm ${
-                          item.status === "DONE" ? "text-on-surface-variant line-through" : "text-on-surface"
-                        }`}
+                        className={`font-semibold text-sm ${item.status === "DONE" ? "text-on-surface-variant line-through" : "text-on-surface"
+                          }`}
                       >
                         {item.title}
                       </div>
@@ -582,11 +571,10 @@ export default function RescuePage() {
                     </div>
                     <button
                       onClick={() => toggleActionDone(item.action_id, item.status)}
-                      className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all ${
-                        item.status === "DONE"
+                      className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all ${item.status === "DONE"
                           ? "bg-emerald-600 text-white shadow-sm hover:bg-emerald-700"
                           : "border border-border-control bg-surface text-on-surface-variant hover:border-viz-primary hover:text-viz-primary hover:bg-surface-subtle"
-                      }`}
+                        }`}
                     >
                       {item.status === "DONE" ? "✓ Done" : "Mark Done"}
                     </button>
@@ -890,3 +878,341 @@ export default function RescuePage() {
   );
 }
 
+                </div >
+
+                <div className="rounded-xl border border-red-300 bg-red-50/70 p-3 text-xs space-y-1 ring-1 ring-red-400/30">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-red-800">Stage 3: Freeze</span>
+                  <div className="text-base font-black text-red-900">₹25,000 &ndash; ₹50,000+</div>
+                  <div className="text-[11px] text-red-800">Withdrawal blocked due to &ldquo;credit score / KYC error&rdquo;</div>
+                  <span className="inline-block text-[10px] bg-red-200 text-red-900 font-black px-1.5 py-0.2 rounded">OUTFLOW LOST</span>
+                </div>
+
+                <div className="rounded-xl border border-dashed border-red-400 bg-red-50/30 p-3 text-xs space-y-1">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-red-800">Stage 4: Advance Fee</span>
+                  <div className="text-base font-black text-red-700">₹50,000 Demanded</div>
+                  <div className="text-[11px] text-red-700">Told to pay 30% tax or release fee to unfreeze. <strong>DO NOT PAY!</strong></div>
+                  <span className="inline-block text-[10px] bg-red-100 text-red-800 font-bold px-1.5 py-0.2 rounded">BLOCKED / SCAM</span>
+                </div>
+              </div >
+            </div >
+          </div >
+
+  {/* Record a Loss Event Form */ }
+  < div className = "rounded-2xl border border-border-divider bg-surface p-6 shadow-sm" >
+            <h3 className="text-sm font-semibold text-on-surface mb-3">Record an Additional Outflow / Payment</h3>
+            <form onSubmit={handleRecordPayment} className="grid gap-3.5 sm:grid-cols-2 md:grid-cols-4">
+              <div>
+                <label className="text-[11px] font-medium text-on-surface-variant">Amount (INR)</label>
+                <input
+                  type="number"
+                  value={newAmount}
+                  onChange={(e) => setNewAmount(e.target.value)}
+                  className="mt-1 w-full rounded-lg border border-border-divider bg-surface-subtle px-3 py-2 text-sm text-on-surface outline-none transition-all focus:border-viz-primary focus:bg-surface focus:ring-1 focus:ring-viz-primary"
+                  placeholder="e.g. 25000"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="text-[11px] font-medium text-on-surface-variant">Payment Channel</label>
+                <select
+                  value={newMethod}
+                  onChange={(e) => setNewMethod(e.target.value)}
+                  className="mt-1 w-full rounded-lg border border-border-divider bg-surface-subtle px-3 py-2 text-sm text-on-surface outline-none transition-all focus:border-viz-primary focus:bg-surface focus:ring-1 focus:ring-viz-primary"
+                >
+                  <option value="UPI">UPI</option>
+                  <option value="IMPS">IMPS</option>
+                  <option value="NEFT">NEFT</option>
+                  <option value="CARD">Debit / Credit Card</option>
+                  <option value="CRYPTO">Cryptocurrency</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="text-[11px] font-medium text-on-surface-variant">Recipient VPA / Account</label>
+                <input
+                  type="text"
+                  value={newVpa}
+                  onChange={(e) => setNewVpa(e.target.value)}
+                  className="mt-1 w-full rounded-lg border border-border-divider bg-surface-subtle px-3 py-2 text-sm text-on-surface outline-none transition-all focus:border-viz-primary focus:bg-surface focus:ring-1 focus:ring-viz-primary"
+                  placeholder="e.g. payee@oksbi"
+                />
+              </div>
+
+              <div>
+                <label className="text-[11px] font-medium text-on-surface-variant">12-Digit UTR / Txn Ref</label>
+                <input
+                  type="text"
+                  value={newRef}
+                  onChange={(e) => setNewRef(e.target.value)}
+                  className="mt-1 w-full rounded-lg border border-border-divider bg-surface-subtle px-3 py-2 text-sm text-on-surface outline-none transition-all focus:border-viz-primary focus:bg-surface focus:ring-1 focus:ring-viz-primary"
+                  placeholder="e.g. 423456789012"
+                />
+              </div>
+
+              <div className="sm:col-span-2 md:col-span-4 flex justify-end pt-2">
+                <button
+                  type="submit"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-viz-primary px-5 py-2 text-xs font-bold text-white shadow-sm hover:bg-primary"
+                >
+                  <PlusCircle className="h-3.5 w-3.5" />
+                  <span>Log Loss Record</span>
+                </button>
+              </div>
+            </form>
+          </div >
+
+  {/* Payment List */ }
+  < div className = "space-y-3" >
+    <h3 className="text-sm font-semibold text-on-surface">Recorded Outflows for Case #{incidentId || "active"}</h3>
+{
+  lossEvents.length === 0 ? (
+    <div className="rounded-xl border border-dashed border-border-divider bg-surface-subtle p-8 text-center text-xs text-on-surface-variant">
+      No payment events logged yet. Use the form above to record transfers.
+    </div>
+  ) : (
+  <div className="divide-y divide-border-divider rounded-xl border border-border-divider bg-surface shadow-sm">
+    {lossEvents.map((pe, idx) => (
+      <div key={pe.loss_event_id} className="flex items-center justify-between p-4 text-xs">
+        <div className="space-y-1">
+          <div className="font-semibold text-on-surface flex items-center gap-2">
+            <span>Payment #{idx + 1}: {pe.currency} {pe.amount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
+            <span className="rounded bg-red-100 text-red-800 text-[10px] font-bold px-1.5 py-0.5">CONFIRMED PAID</span>
+          </div>
+          <div className="text-on-surface-variant">
+            Method: {pe.payment_method} • Recipient:{" "}
+            <code className="rounded bg-surface-subtle px-1 font-mono text-viz-primary">
+              {pe.recipient_identifier || "N/A"}
+            </code>
+          </div>
+          <div className="text-on-surface-variant">
+            Ref: {pe.transaction_reference_tokenized || "Masked"}
+          </div>
+        </div>
+        <div className="text-right text-[11px] text-on-surface-variant">
+          {new Date(pe.occurred_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+        </div>
+      </div>
+    ))}
+  </div>
+)
+}
+          </div >
+        </div >
+      )}
+
+{/* ── TAB 3: RESCUE TIMELINE (PART W, X, Y, Z) ───────────────── */ }
+{
+  activeTab === "timeline" && (
+    <div className="space-y-6 animate-fade-in">
+      <div className="rounded-2xl border border-border-divider bg-surface p-6 shadow-sm space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border-divider pb-3">
+          <div>
+            <h3 className="text-base font-bold text-on-surface">Incident Reconstruction Timeline</h3>
+            <p className="text-xs text-on-surface-variant">
+              Chronological sequence reconstructed from user submissions and verified banking artifacts.
+            </p>
+          </div>
+          <Link
+            href="/rescue/timeline"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-viz-primary hover:underline"
+          >
+            <span>Full Ledger &amp; Provenance Diff</span>
+            <ChevronRight className="h-3.5 w-3.5" />
+          </Link>
+        </div>
+
+        {timeline.length === 0 ? (
+          <div className="rounded-xl border border-dashed border-border-divider bg-surface-subtle p-8 text-center text-xs text-on-surface-variant">
+            Timeline events are generated as payments and exposure details are submitted.
+          </div>
+        ) : (
+          <div className="relative border-l-2 border-border-control ml-3 space-y-6 py-2">
+            {timeline.map((ev, idx) => (
+              <div key={ev.timeline_event_id} className="relative pl-6">
+                <div className="absolute -left-[9px] top-1 h-4 w-4 rounded-full border-2 border-viz-primary bg-surface" />
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-on-surface">{ev.title}</span>
+                    <span className="rounded bg-surface-subtle border border-border-divider px-1.5 py-0.2 text-[10px] font-mono text-on-surface-variant">
+                      {ev.time_confidence || "EXACT"}
+                    </span>
+                    <span className="rounded bg-sky-50 border border-sky-200 px-1.5 py-0.2 text-[10px] font-semibold text-sky-800">
+                      {ev.origin || "USER_CONFIRMED"}
+                    </span>
+                  </div>
+                  <p className="text-xs text-on-surface-variant leading-relaxed">{ev.description}</p>
+                  <div className="text-[10px] font-mono text-on-surface-variant">
+                    {new Date(ev.occurred_at).toLocaleString()}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+{/* ── TAB 4: RECOVERY SCAM SHIELD (PART AZ, BA, BB, BC, BD) ──── */ }
+{
+  activeTab === "recovery_warning" && (
+    <div className="space-y-6 animate-fade-in">
+      {/* Hero Banner */}
+      <div className="rounded-2xl border border-red-200 bg-red-50 p-6 space-y-4 shadow-sm">
+        <div className="flex items-start gap-3">
+          <ShieldAlert className="h-6 w-6 text-red-600 shrink-0 mt-0.5" />
+          <div className="space-y-2">
+            <h3 className="text-base font-bold text-red-900">
+              Be careful with anyone promising to recover your money for an upfront fee.
+            </h3>
+            <p className="text-xs text-red-800 leading-relaxed font-medium">
+              Victims of fraud are frequently targeted a second time by cybercriminals posing as &ldquo;ethical hackers&rdquo;,
+              &ldquo;dispute recovery lawyers&rdquo;, or &ldquo;police nodal agents&rdquo;. They promise to retrieve lost money if you pay
+              a &ldquo;processing fee&rdquo;, &ldquo;tax clearance&rdquo;, or &ldquo;chargeback registration&rdquo;.
+            </p>
+            <div className="rounded-lg border border-red-300 bg-white/90 p-3 text-xs text-red-950 font-mono font-bold">
+              UNIVERSAL RULE: Legitimate cyber police (1930) and Indian banks NEVER charge any fee to investigate, freeze, or return defrauded money.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Interactive Screener */}
+      <div className="rounded-2xl border border-border-divider bg-surface p-6 space-y-4 shadow-sm">
+        <h4 className="text-sm font-semibold text-on-surface">
+          Check a Suspicious Recovery Offer or Message
+        </h4>
+        <p className="text-xs text-on-surface-variant">
+          Did someone contact you claiming they can reverse your payment or hack the mule account? Paste their message to verify for secondary fraud patterns:
+        </p>
+        <div className="space-y-3">
+          <textarea
+            value={suspectMessage}
+            onChange={(e) => setSuspectMessage(e.target.value)}
+            placeholder="e.g. 'I am Advocate Sharma from Cyber Cell. We located your ₹25,000. Send ₹2,500 verification fee to release funds.'"
+            rows={3}
+            className="w-full rounded-xl border border-border-divider bg-surface-subtle p-3 text-xs text-on-surface outline-none transition-all focus:border-red-500 focus:bg-surface focus:ring-1 focus:ring-red-500"
+          />
+          <button
+            onClick={handleCheckRecoveryScam}
+            disabled={checkingRecovery || !suspectMessage.trim()}
+            className="inline-flex items-center gap-1.5 rounded-full bg-red-600 px-5 py-2 text-xs font-bold text-white shadow-sm hover:bg-red-700 disabled:opacity-50"
+          >
+            <Send className="h-3.5 w-3.5" />
+            <span>{checkingRecovery ? "Analyzing..." : "Analyze Recovery Message"}</span>
+          </button>
+        </div>
+
+        {recoveryAnalysis && (
+          <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-4 space-y-2 animate-scale-in">
+            <div className="flex items-center gap-2 text-xs font-bold text-red-700">
+              <AlertOctagon className="h-4 w-4" />
+              <span>ANALYSIS RESULT: {recoveryAnalysis.risk_level} RISK &mdash; RECOVERY SCAM DETECTED</span>
+            </div>
+            <p className="text-xs text-red-900 leading-relaxed font-medium">{recoveryAnalysis.warning_text}</p>
+            <div className="flex flex-wrap gap-1.5 pt-1">
+              {recoveryAnalysis.threat_patterns_detected?.map((p: string) => (
+                <span
+                  key={p}
+                  className="rounded-full bg-red-100 border border-red-200 px-2.5 py-0.5 text-[10px] font-mono font-bold text-red-800"
+                >
+                  {p}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+{/* ── TAB 5: CASE PACKAGE & SECTION 65B DOSSIER ─────────────── */ }
+{
+  activeTab === "package" && (
+    <div className="space-y-6 animate-fade-in">
+      <div className="rounded-2xl border border-border-divider bg-surface p-6 space-y-4 shadow-sm">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h3 className="text-base font-bold text-on-surface">
+              Section 65B BSA Statutory Digital Dossier
+            </h3>
+            <p className="text-xs text-on-surface-variant">
+              Cryptographically verified evidentiary bundle admissible under Bharatiya Sakshya Adhiniyam 2023.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Link
+              href={`/rescue/package/${incidentId || "SG-2026-89412"}`}
+              className="inline-flex items-center gap-1.5 rounded-full border border-border-control bg-surface px-4 py-2 text-xs font-bold text-viz-primary shadow-sm hover:bg-surface-subtle"
+            >
+              <FileText className="h-3.5 w-3.5" />
+              <span>View Full Certificate</span>
+            </Link>
+            <button
+              onClick={handleDownloadDossier}
+              disabled={downloadingDossier}
+              className="inline-flex items-center gap-1.5 rounded-full bg-emerald-700 px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-emerald-800 disabled:opacity-50"
+            >
+              <FileSpreadsheet className="h-3.5 w-3.5" />
+              <span>{downloadingDossier ? "Generating..." : "Download CSV Ledger"}</span>
+            </button>
+            <button
+              onClick={handleCopySummary}
+              className="inline-flex items-center gap-1.5 rounded-full bg-viz-primary px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-primary"
+            >
+              {copied ? (
+                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-300" />
+              ) : (
+                <Copy className="h-3.5 w-3.5" />
+              )}
+              <span>{copied ? "Copied!" : "Copy 1930 Statement"}</span>
+            </button>
+          </div>
+        </div>
+
+        <div className="rounded-xl border border-border-divider bg-surface-subtle p-4 text-xs font-mono text-on-surface-variant space-y-2">
+          <div className="text-amber-800 font-semibold">[OFFICIAL STATUTORY NOTICE]</div>
+          <p className="leading-relaxed">
+            This case package organizes victim-provided transaction references, timestamps, and extracted evidence
+            with SHA-256 Merkle root hashing. ScamGraph does not process recoveries directly; this package empowers
+            the user to report swiftly to National Cybercrime Helpline 1930 and bank nodal fraud units.
+          </p>
+        </div>
+
+        <div className="space-y-3 pt-2">
+          <div className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
+            Verified Emergency Channels Included
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
+            {resources.slice(0, 6).map((res) => (
+              <div
+                key={res.resource_id}
+                className="rounded-xl border border-border-divider bg-surface p-3.5 space-y-1 shadow-sm card-interactive"
+              >
+                <div className="text-xs font-bold text-on-surface">{res.display_name}</div>
+                <div className="text-[11px] text-on-surface-variant">{res.organization}</div>
+                {res.official_phone && (
+                  <div className="text-xs font-semibold text-viz-primary">Phone: {res.official_phone}</div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+    </div >
+  );
+}
+
+export default function RescuePage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center text-xs text-on-surface-variant">Loading Rescue Triage...</div>}>
+      <RescueContent />
+    </Suspense>
+  );
+}

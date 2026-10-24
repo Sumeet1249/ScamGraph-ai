@@ -123,11 +123,10 @@ export default function GuardCheckpointPage() {
                     <div
                       key={opt.id}
                       onClick={() => setSelectedAction(opt.id)}
-                      className={`group relative flex flex-col justify-between p-4 rounded-xl cursor-pointer min-h-[115px] border transition-all ${
-                        isSelected
+                      className={`group relative flex flex-col justify-between p-4 rounded-xl cursor-pointer min-h-[115px] border transition-all ${isSelected
                           ? 'border-2 border-primary bg-selected-tint shadow-sm'
                           : 'border-border-divider bg-surface-subtle hover:border-border-control'
-                      }`}
+                        }`}
                     >
                       <div className="flex items-start gap-3">
                         <div className={`w-5 h-5 rounded-full mt-0.5 shrink-0 flex items-center justify-center ${isSelected ? 'bg-primary text-white' : 'border border-border-control bg-surface'}`}>
