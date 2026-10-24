@@ -24,14 +24,20 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#120E0C",
-  colorScheme: "dark",
+  themeColor: "#0B6256",
+  colorScheme: "light",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable} dark`}>
-      <body className="font-sans antialiased">
+    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable} light`}>
+      <head>
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
+        />
+      </head>
+      <body className="font-sans antialiased bg-ground text-on-surface">
         <QueryProvider>
           <AppShell>{children}</AppShell>
         </QueryProvider>
