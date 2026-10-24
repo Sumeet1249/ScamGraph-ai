@@ -11,6 +11,7 @@ import {
   Briefcase,
   Share2,
   Scale,
+  Layers,
   type LucideIcon,
 } from "lucide-react";
 
@@ -48,8 +49,16 @@ export const navGroups: NavGroup[] = [
         ],
       },
       { label: "Outbreak Radar", href: "/radar", hint: "Regional velocity spikes", icon: Radar },
-      { label: "Campaigns", href: "/campaigns", hint: "Syndicate clusters", icon: FolderKanban },
-      { label: "Incidents", href: "/incidents", hint: "Victim reports stream", icon: AlertTriangle },
+      {
+        label: "Threat Operations",
+        href: "/campaigns",
+        hint: "Syndicate campaigns & citizen incident telemetry",
+        icon: Layers,
+        subItems: [
+          { label: "Campaign Clusters", href: "/campaigns", hint: "Syndicate clusters", icon: FolderKanban },
+          { label: "Incidents Stream", href: "/incidents", hint: "Victim reports stream", icon: AlertTriangle },
+        ],
+      },
       {
         label: "Entities",
         href: "/entities",
