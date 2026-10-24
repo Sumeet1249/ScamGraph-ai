@@ -75,6 +75,7 @@ export async function POST(request: NextRequest) {
           unified_assessment: backendData.unified_assessment,
           graph_correlation: backendData.graph_correlation,
           dataset_evidence: backendData.dataset_evidence,
+          scam_dna: backendData.scam_dna,
           is_simulated: false,
         };
 

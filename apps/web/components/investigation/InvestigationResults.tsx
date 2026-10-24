@@ -9,13 +9,34 @@ import {
   PageSection,
   AssessmentCard,
 } from "@/components/ui";
-import { AlertTriangle, CheckCircle, AlertCircle, Info, ShieldAlert, Clock, ShieldCheck, Zap, Shield, Database, FileCheck, Hash, Link2, Sparkles, Check } from "lucide-react";
+import { AlertTriangle, CheckCircle, AlertCircle, Info, ShieldAlert, Clock, ShieldCheck, Zap, Shield, Database, FileCheck, Hash, Link2, Sparkles, Check, Dna, Fingerprint, Activity } from "lucide-react";
 
 interface InvestigationResultsProps {
   data: {
     incident_id: string;
     analyzed_at: string;
     is_simulated?: boolean;
+    scam_dna?: {
+      dna_id: string;
+      quality: string;
+      confidence: number;
+      canonical_signature: string;
+      dimensions: Record<string, {
+        available: boolean;
+        confidence: number;
+        quality: string;
+        features: Record<string, any>;
+      }>;
+      available_dimensions: string[];
+      consumer_view?: {
+        summary_headline: string;
+        variant_verdict: string;
+        why_it_matches: string[];
+        behavioral_traits: string[];
+        recommended_action: string;
+        confidence_label: string;
+      };
+    };
     assessment: {
       risk_level: string;
       evidence_confidence: string;
@@ -235,6 +256,7 @@ export function InvestigationResults({ data }: InvestigationResultsProps) {
     tripartite_decision,
     multilingual_text,
     dataset_evidence,
+    scam_dna,
   } = data || {};
 
   const confScore = getConfidenceScore(assessment);
@@ -820,6 +842,164 @@ export function InvestigationResults({ data }: InvestigationResultsProps) {
             <p className="text-xs font-mono text-text-secondary bg-surface-1 p-3 rounded border border-border">
               {data.unified_assessment.explanation}
             </p>
+          </Card>
+        </PageSection>
+      )}
+
+      {/* ScamDNA™ 8-Dimensional Behavioral Fingerprint */}
+      {scam_dna && (
+        <PageSection
+          title="ScamDNA™ 8-Dimensional Behavioral Fingerprint"
+          description="Decoupled multi-dimensional forensic vector tracking behavioral mutation, threat family lineage, and consumer risk"
+        >
+          <Card pad="lg" className="bg-surface-2 border border-border space-y-6 shadow-xl">
+            {/* Top Bar: Canonical Signature & Global Confidence */}
+            <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-border/80">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-lg bg-indigo-950/60 border border-indigo-500/50 text-indigo-400">
+                  <Dna className="h-6 w-6" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-mono font-bold tracking-widest text-indigo-400 uppercase">
+                      Canonical Threat Signature
+                    </span>
+                    <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase border ${
+                      scam_dna.quality === "HIGH"
+                        ? "bg-emerald-950/60 text-emerald-300 border-emerald-600"
+                        : scam_dna.quality === "MEDIUM"
+                        ? "bg-amber-950/60 text-amber-300 border-amber-600"
+                        : "bg-surface-3 text-text-secondary border-border"
+                    }`}>
+                      Quality: {scam_dna.quality}
+                    </span>
+                  </div>
+                  <h4 className="text-xl font-black font-mono tracking-tight text-text-primary mt-1">
+                    {scam_dna.canonical_signature || "family:UNKNOWN"}
+                  </h4>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4 text-xs font-mono">
+                <div className="text-right">
+                  <span className="text-text-muted uppercase text-[10px] block">Fingerprint Confidence</span>
+                  <span className="text-lg font-black font-mono text-cyan-400">
+                    {Math.round((scam_dna.confidence || 0) * 100)}%
+                  </span>
+                </div>
+                <div className="h-8 w-px bg-border/60" />
+                <div className="text-right">
+                  <span className="text-text-muted uppercase text-[10px] block">Active Dimensions</span>
+                  <span className="text-lg font-black font-mono text-text-primary">
+                    {scam_dna.available_dimensions?.length || 0} / 8
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* 8-Dimensional Decoupled Vector Grid */}
+            <div className="space-y-3">
+              <span className="text-caption text-text-muted uppercase font-mono font-bold block">
+                Decoupled Forensic Dimensions:
+              </span>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {[
+                  "SEMANTIC",
+                  "JOURNEY",
+                  "TACTIC",
+                  "INFRASTRUCTURE",
+                  "PAYMENT",
+                  "IDENTITY",
+                  "TEMPORAL",
+                  "GRAPH",
+                ].map((dimKey) => {
+                  const dim = scam_dna.dimensions?.[dimKey] || {
+                    available: false,
+                    confidence: 0,
+                    quality: "LOW",
+                    features: {},
+                  };
+                  return (
+                    <div
+                      key={dimKey}
+                      className={`p-3 rounded-lg border transition-all ${
+                        dim.available
+                          ? "bg-surface-1 border-indigo-500/40 shadow-sm"
+                          : "bg-surface-inset/50 border-border/40 opacity-60"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between text-xs font-mono">
+                        <span className={`font-bold ${dim.available ? "text-text-primary" : "text-text-muted"}`}>
+                          {dimKey}
+                        </span>
+                        <span
+                          className={`h-2 w-2 rounded-full ${
+                            dim.available ? "bg-emerald-400 animate-pulse-soft" : "bg-text-muted/40"
+                          }`}
+                        />
+                      </div>
+
+                      <div className="mt-2 flex items-baseline justify-between text-xs font-mono">
+                        <span className="text-text-muted text-[10px]">Confidence:</span>
+                        <span className={`font-bold ${dim.available ? "text-cyan-400" : "text-text-muted"}`}>
+                          {Math.round(dim.confidence * 100)}%
+                        </span>
+                      </div>
+
+                      <div className="w-full bg-surface-3 h-1.5 rounded-full mt-1.5 overflow-hidden">
+                        <div
+                          className={`h-full transition-all duration-500 ${
+                            dim.available ? "bg-indigo-400" : "bg-transparent"
+                          }`}
+                          style={{ width: `${Math.round(dim.confidence * 100)}%` }}
+                        />
+                      </div>
+
+                      {dim.features && Object.keys(dim.features).length > 0 && (
+                        <div className="mt-2 pt-1.5 border-t border-border/40 text-[10px] font-mono text-text-muted truncate">
+                          {Object.keys(dim.features).slice(0, 2).join(", ")}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Consumer Guidance Card */}
+            {scam_dna.consumer_view && (
+              <div className="p-4 rounded-lg bg-surface-1 border border-border space-y-2.5">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <Fingerprint className="h-4 w-4 text-cyan-400" />
+                    <h5 className="text-sm font-bold font-mono text-text-primary">
+                      {scam_dna.consumer_view.summary_headline}
+                    </h5>
+                  </div>
+                  <span className="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-cyan-950/60 text-cyan-300 border border-cyan-700">
+                    {scam_dna.consumer_view.variant_verdict}
+                  </span>
+                </div>
+
+                <p className="text-xs font-mono text-text-secondary">
+                  <strong className="text-amber-400">Recommended Action: </strong>
+                  {scam_dna.consumer_view.recommended_action}
+                </p>
+
+                {scam_dna.consumer_view.behavioral_traits && scam_dna.consumer_view.behavioral_traits.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    {scam_dna.consumer_view.behavioral_traits.map((trait: string, idx: number) => (
+                      <span
+                        key={idx}
+                        className="px-2 py-0.5 rounded bg-surface-2 text-[10px] font-mono text-text-muted border border-border"
+                      >
+                        • {trait}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </Card>
         </PageSection>
       )}
