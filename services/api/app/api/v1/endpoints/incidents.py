@@ -1,7 +1,7 @@
 """Incident Ingestion, Multi-Signal Evidence Extraction, and Journey Endpoints."""
 
 from typing import Any, Dict, List, Optional
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, HTTPException, status, Depends, Query
 from pydantic import BaseModel, Field
 
 from packages.schemas import (
@@ -37,6 +37,13 @@ from services.journey_engine.service import JourneyEngineService
 from packages.schemas.journey import JourneyEvent
 from packages.schemas.dna import ScamDNA, ConsumerDNAView
 from services.dna_engine.service import ScamDNAService
+from packages.schemas.correlation import (
+    ConsumerNetworkSignal,
+    IncidentCorrelation,
+    CandidateIncident,
+    AnalystCorrelationView,
+)
+from services.correlation_engine.service import correlation_service
 
 from datetime import datetime, timezone
 from uuid import uuid4
@@ -643,6 +650,49 @@ async def get_consumer_dna_view(incident_id: str):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"No DNA available for incident {incident_id}")
     return view
 
+
+# -----------------------------------------------------------------------------
+# Correlation & Network Intelligence Endpoints (Phase 3B)
+# -----------------------------------------------------------------------------
+
+@router.get("/{incident_id}/network-signal", response_model=ConsumerNetworkSignal)
+async def get_incident_network_signal(incident_id: str):
+    """Retrieve privacy-safe collective network signal for an incident (No victim PII)."""
+    return correlation_service.get_network_signal(incident_id)
+
+
+@router.get("/{incident_id}/related")
+async def get_incident_related(
+    incident_id: str,
+    access_tier: str = Query("CONSUMER", pattern="^(CONSUMER|ANALYST)$"),
+):
+    """Retrieve related incidents.
+    - If CONSUMER: Returns privacy-safe aggregated summary without foreign incident IDs.
+    - If ANALYST: Returns detailed multi-signal correlations and graph paths.
+    """
+    if access_tier == "CONSUMER":
+        return correlation_service.get_network_signal(incident_id)
+    correlations = correlation_service.get_related_incidents(incident_id)
+    return [c.model_dump() for c in correlations]
+
+
+@router.get("/{incident_id}/correlation-candidates", response_model=List[CandidateIncident])
+async def get_incident_correlation_candidates(incident_id: str):
+    """Stage 1: Multi-source candidate retrieval for cross-incident analysis."""
+    return correlation_service.find_candidates(incident_id)
+
+
+@router.post("/{incident_id}/correlate")
+async def run_incident_correlation(incident_id: str, top_k: int = 10):
+    """Runs candidate retrieval and detailed correlation for an incident."""
+    correlations = correlation_service.correlate_incident(incident_id, top_k=top_k)
+    return [c.model_dump() for c in correlations]
+
+
+@router.get("/{source_id}/correlations/{target_id}", response_model=AnalystCorrelationView)
+async def get_pair_correlation_view(source_id: str, target_id: str):
+    """Retrieve deep analyst correlation telemetry for a specific incident pair."""
+    return correlation_service.get_analyst_view(source_id, target_id)
 
 
 @router.get("/{incident_id}/assessment", response_model=AssessmentResult)

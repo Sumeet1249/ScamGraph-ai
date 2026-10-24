@@ -139,6 +139,18 @@ from packages.schemas.dna import (
     ScamDNAMatch,
     ConsumerDNAView,
 )
+from packages.schemas.correlation import (
+    RelationshipStatus,
+    EvidenceStrength,
+    RelationshipEvidenceType,
+    ConsumerNetworkSignalType,
+    CorrelationFeatures,
+    IncidentCorrelation,
+    CandidateIncident,
+    ConsumerNetworkSignal,
+    AnalystCorrelationView,
+    CandidateIncidentGroup,
+)
 from packages.schemas.graph import (
     GraphNodeType,
     CytoscapeNodeData,
@@ -332,4 +344,15 @@ __all__ = [
     "MuleEvaluationResponse",
     "BatchMuleEvaluationRequest",
     "BatchMuleEvaluationResponse",
+    # Correlation Intelligence (Phase 3B)
+    "RelationshipStatus",
+    "EvidenceStrength",
+    "RelationshipEvidenceType",
+    "ConsumerNetworkSignalType",
+    "CorrelationFeatures",
+    "IncidentCorrelation",
+    "CandidateIncident",
+    "ConsumerNetworkSignal",
+    "AnalystCorrelationView",
+    "CandidateIncidentGroup",
 ]

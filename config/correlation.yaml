@@ -1,0 +1,96 @@
+schema_version: "2.0.0"
+engine_version: "3.2.0"
+
+# -----------------------------------------------------------------------------
+# Correlation Status Thresholds
+# -----------------------------------------------------------------------------
+thresholds:
+  strongly_related_threshold: 0.78
+  likely_related_threshold: 0.62
+  possibly_related_threshold: 0.45
+  weak_signal_threshold: 0.28
+  minimum_confidence_for_materialization: 0.40
+  review_threshold: 0.55
+  contradiction_penalty_factor: 0.40
+  minimum_cohort_size_for_disclosure: 2  # Anti-small-cohort privacy protection
+
+# -----------------------------------------------------------------------------
+# Evidence Group Weights (Sum normalized per comparison)
+# -----------------------------------------------------------------------------
+feature_group_weights:
+  entity_weight: 0.35          # Direct shared payment/phone/domain identifiers
+  behavioral_weight: 0.30      # ScamDNA, Journey sequence, Tactic profiles
+  infrastructure_weight: 0.15  # Channel progression, hosting, redirect chains
+  temporal_weight: 0.10        # Burst proximity, inter-incident timing
+  graph_weight: 0.10           # Path length, degree-adjusted motif sharing
+
+# Maximum score contribution per feature group (Double-counting protection)
+group_score_caps:
+  entity: 0.45
+  behavioral: 0.35
+  infrastructure: 0.20
+  temporal: 0.15
+  graph: 0.15
+
+# -----------------------------------------------------------------------------
+# Candidate Retrieval Budget (Sub-linear scaling)
+# -----------------------------------------------------------------------------
+retrieval:
+  max_candidates_per_source: 25
+  max_total_candidates: 60
+  time_window_days: 90
+  min_retrieval_similarity: 0.35
+
+# -----------------------------------------------------------------------------
+# Super-Node & Generic Entity Downweighting (Section 15, 23, 60-63, 97-98)
+# -----------------------------------------------------------------------------
+super_nodes:
+  # Generic brands that scammers impersonate heavily (Never link incidents by brand alone)
+  generic_brands:
+    - "STATE BANK OF INDIA"
+    - "SBI"
+    - "HDFC BANK"
+    - "ICICI BANK"
+    - "RESERVE BANK OF INDIA"
+    - "RBI"
+    - "AMAZON"
+    - "FLIPKART"
+    - "YOUTUBE"
+    - "TELEGRAM"
+    - "WHATSAPP"
+    - "INSTAGRAM"
+    - "FACEBOOK"
+    - "FEDEX"
+    - "TRAI"
+    - "MUMBAI POLICE"
+    - "DELHI POLICE"
+    - "CYBER CRIME"
+    - "CBI"
+
+  # Shared commercial infrastructure/CDNs (Weight = 0.0)
+  common_infrastructure_domains:
+    - "cloudflare.com"
+    - "cloudfront.net"
+    - "amazonaws.com"
+    - "azureedge.net"
+    - "akamai.net"
+    - "fastly.net"
+    - "bit.ly"
+    - "tinyurl.com"
+    - "t.me"
+    - "wa.me"
+    - "google.com"
+    - "gmail.com"
+
+# -----------------------------------------------------------------------------
+# Feature Informativeness Multipliers
+# -----------------------------------------------------------------------------
+entity_type_informativeness:
+  PAYMENT_IDENTIFIER: 1.00  # Rare UPI VPAs, bank token IDs (Highest discriminative power)
+  PHONE_NUMBER: 0.85        # Dedicated calling/messaging numbers
+  DOMAIN: 0.80              # Custom scam phishing/APK hosting domain
+  TELEGRAM_HANDLE: 0.75     # Specific personal/group handle
+  EMAIL: 0.70               # Custom mailbox
+  URL_PATH: 0.65            # Specific full deep link
+  BRAND: 0.05               # High-frequency impersonation target (Downweighted)
+  PLATFORM: 0.00            # Generic communication channel

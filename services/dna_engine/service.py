@@ -127,3 +127,7 @@ class ScamDNAService:
         if target_incident_id:
             match = self.compare_incidents(incident_id, target_incident_id)
         return DNASerializer.serialize_analyst_view(dna, match)
+
+
+# Default singleton instance
+scam_dna_service = ScamDNAService()
