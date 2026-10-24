@@ -761,24 +761,26 @@ export function InvestigationResults({ data }: InvestigationResultsProps) {
             </div>
 
             {/* Score Breakdown across 4 engines */}
-            <div>
-              <span className="text-caption text-text-muted uppercase font-mono block mb-2">
-                Subsystem Signal Breakdown & Normalized Weights:
-              </span>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs font-mono">
-                {Object.entries(data.unified_assessment.score_breakdown).map(([engine, score]) => (
-                  <div key={engine} className="p-2.5 bg-surface-1 rounded border border-border">
-                    <div className="text-text-muted capitalize">{engine} Engine</div>
-                    <div className="text-sm font-bold text-text-primary mt-1">
-                      {Math.round(score * 100)}%
+            {data.unified_assessment?.score_breakdown && (
+              <div>
+                <span className="text-caption text-text-muted uppercase font-mono block mb-2">
+                  Subsystem Signal Breakdown & Normalized Weights:
+                </span>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs font-mono">
+                  {Object.entries(data.unified_assessment.score_breakdown || {}).map(([engine, score]) => (
+                    <div key={engine} className="p-2.5 bg-surface-1 rounded border border-border">
+                      <div className="text-text-muted capitalize">{engine} Engine</div>
+                      <div className="text-sm font-bold text-text-primary mt-1">
+                        {Math.round(score * 100)}%
+                      </div>
+                      <div className="text-[10px] text-text-muted mt-0.5">
+                        Weight: {Math.round(((data.unified_assessment?.active_weights || {})[engine] || 0) * 100)}%
+                      </div>
                     </div>
-                    <div className="text-[10px] text-text-muted mt-0.5">
-                      Weight: {Math.round((data.unified_assessment?.active_weights[engine] || 0) * 100)}%
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             <p className="text-xs font-mono text-text-secondary bg-surface-1 p-3 rounded border border-border">
               {data.unified_assessment.explanation}

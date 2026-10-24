@@ -137,7 +137,7 @@ class LanguageIntelligenceService:
                 "pay", "deposit", "transfer", "bhejo", "karo", "पेमेंट", "भुगतान", "जमा", "रुपये", "₹",
             ]
         )
-        if payment_pressure and urgency_detected:
+        if payment_pressure and (urgency_detected or any(w in norm for w in ["task", "unlock", "fee", "penalty", "fine", "charges", "immediately", "urgent"])):
             tactics.append(TacticType.PAYMENT_PRESSURE)
             actions.append(ActionRequestedType.SEND_PAYMENT)
 
