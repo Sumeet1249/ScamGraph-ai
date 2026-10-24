@@ -241,24 +241,9 @@ export default function IncidentsPage() {
   }, [incidents, selectedId]);
 
   return (
-    <div className="flex flex-col w-full -mx-4 -my-6 lg:-mx-8 lg:-my-8 min-h-screen bg-ground text-viz-text">
-      {/* 1. Synthetic Demo Banner */}
-      <div className="h-7 bg-[#E8DFCF] border-b border-border-divider/50 flex items-center justify-between px-4 lg:px-8 text-[11px] uppercase tracking-wider font-semibold text-[#4A3306] select-none shrink-0">
-        <div className="flex items-center gap-2">
-          <Lock className="w-3.5 h-3.5 text-viz-warning" />
-          <span>SYNTHETIC DEMO DATA — ANALYST WORKSPACE (FIXTURE MODE)</span>
-        </div>
-        <div className="hidden sm:flex items-center gap-3 text-viz-neutral normal-case font-normal">
-          <span>Strict Zero PII Retention</span>
-          <span>•</span>
-          <span>Stream A05 Telemetry</span>
-          <span>•</span>
-          <span className="font-mono text-viz-text">Verified Ingestion Queue</span>
-        </div>
-      </div>
-
-      {/* 2. Workspace Header Block */}
-      <div className="bg-surface border-b border-border-divider px-4 lg:px-8 py-4 shrink-0">
+    <div className="w-full space-y-4 text-viz-text">
+      {/* 1. Workspace Header Block */}
+      <div className="bg-surface border border-border-divider rounded-lg p-5 shadow-xs shrink-0">
         <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2.5 flex-wrap">
@@ -563,11 +548,11 @@ export default function IncidentsPage() {
                   <span>Issue Golden Hour Bank Freeze</span>
                 </button>
                 <Link
-                  href="/graph"
+                  href={`/investigate?q=${encodeURIComponent(selectedIncident.target_vpa || selectedIncident.ref)}`}
                   className="w-full h-8 px-3 rounded bg-surface-subtle hover:bg-surface-container-high border border-border-control text-xs font-medium text-viz-text flex items-center justify-center gap-1.5 transition-colors"
                 >
-                  <Layers className="w-3.5 h-3.5 text-viz-neutral" />
-                  <span>Explore in Knowledge Graph (A08)</span>
+                  <Search className="w-3.5 h-3.5 text-viz-neutral" />
+                  <span>Cross-Correlate in Investigate (A07)</span>
                 </Link>
               </div>
             </div>

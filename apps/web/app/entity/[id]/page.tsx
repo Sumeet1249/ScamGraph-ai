@@ -100,23 +100,8 @@ export default function EntityDetailPage({ params }: { params: { id: string } })
   };
 
   return (
-    <div className="flex flex-col w-full -mx-4 -my-6 lg:-mx-8 lg:-my-8 min-h-screen bg-ground text-viz-text">
-      {/* 1. Synthetic Demo Banner */}
-      <div className="h-7 bg-[#E8DFCF] border-b border-border-divider/50 flex items-center justify-between px-4 lg:px-8 text-[11px] uppercase tracking-wider font-semibold text-[#4A3306] select-none shrink-0">
-        <div className="flex items-center gap-2">
-          <Lock className="w-3.5 h-3.5 text-viz-warning" />
-          <span>SYNTHETIC DEMO DATA — ANALYST WORKSPACE (FIXTURE MODE)</span>
-        </div>
-        <div className="hidden sm:flex items-center gap-3 text-viz-neutral normal-case font-normal">
-          <span>Jurisdiction: IN-KA (Bengaluru Urban)</span>
-          <span>•</span>
-          <span>Entity Dossier A09</span>
-          <span>•</span>
-          <span className="font-mono text-viz-text">Zero-PII Tokenized</span>
-        </div>
-      </div>
-
-      <div className="p-4 lg:p-8 space-y-4 max-w-[1520px] mx-auto w-full">
+    <div className="w-full space-y-4 text-viz-text">
+      <div className="space-y-4 w-full">
         {/* Breadcrumb Bar */}
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2 text-xs">

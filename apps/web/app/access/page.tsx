@@ -61,19 +61,8 @@ export default function MembersAccessPage() {
   const [members, setMembers] = useState<Member[]>(CANONICAL_MEMBERS);
 
   return (
-    <div className="flex flex-col w-full -mx-4 -my-6 lg:-mx-8 lg:-my-8 min-h-screen bg-ground text-viz-text">
-      {/* Synthetic Demo Banner */}
-      <div className="h-7 bg-[#E8DFCF] border-b border-border-divider/50 flex items-center justify-between px-4 lg:px-8 text-[11px] uppercase tracking-wider font-semibold text-[#4A3306] select-none shrink-0">
-        <div className="flex items-center gap-2">
-          <Lock className="w-3.5 h-3.5 text-viz-warning" />
-          <span>SYNTHETIC DEMO DATA — ANALYST WORKSPACE (FIXTURE MODE)</span>
-        </div>
-        <div className="hidden sm:flex items-center gap-3 text-viz-neutral normal-case font-normal">
-          <span>Sprint PG30 · §7 A18 RBAC &amp; Access Governance</span>
-        </div>
-      </div>
-
-      <div className="p-4 lg:p-8 space-y-5 max-w-[1280px] mx-auto w-full">
+    <div className="w-full space-y-4 text-viz-text">
+      <div className="bg-surface border border-border-divider rounded-lg p-5 shadow-xs space-y-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2.5">
