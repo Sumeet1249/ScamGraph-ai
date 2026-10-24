@@ -31,8 +31,27 @@ class IncidentRepository(ABC):
         pass
 
     @abstractmethod
+    async def get_incident_scoped(
+        self,
+        incident_id: str,
+        owner_id: Optional[str] = None,
+        org_id: Optional[str] = None,
+    ) -> Optional[Incident]:
+        """Retrieve incident enforcing tenant or owner boundary at query time."""
+        pass
+
+    @abstractmethod
     async def list_incidents(self) -> List[Incident]:
         """Retrieve all incidents."""
+        pass
+
+    @abstractmethod
+    async def list_incidents_scoped(
+        self,
+        owner_id: Optional[str] = None,
+        org_id: Optional[str] = None,
+    ) -> List[Incident]:
+        """Retrieve incidents matching tenant or owner boundary at query time."""
         pass
 
     @abstractmethod
@@ -81,9 +100,40 @@ class InMemoryIncidentRepository(IncidentRepository):
         async with self._lock:
             return self._incidents.get(incident_id)
 
+    async def get_incident_scoped(
+        self,
+        incident_id: str,
+        owner_id: Optional[str] = None,
+        org_id: Optional[str] = None,
+    ) -> Optional[Incident]:
+        async with self._lock:
+            inc = self._incidents.get(incident_id)
+            if not inc:
+                return None
+            if owner_id and inc.owner_id != owner_id:
+                return None
+            if org_id and inc.org_id != org_id:
+                return None
+            return inc
+
     async def list_incidents(self) -> List[Incident]:
         async with self._lock:
             return list(self._incidents.values())
+
+    async def list_incidents_scoped(
+        self,
+        owner_id: Optional[str] = None,
+        org_id: Optional[str] = None,
+    ) -> List[Incident]:
+        async with self._lock:
+            results = []
+            for inc in self._incidents.values():
+                if owner_id and inc.owner_id != owner_id:
+                    continue
+                if org_id and inc.org_id != org_id:
+                    continue
+                results.append(inc)
+            return results
 
     async def add_event(self, incident_id: str, event: Event) -> Event:
         async with self._lock:

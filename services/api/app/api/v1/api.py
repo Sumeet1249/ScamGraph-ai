@@ -19,9 +19,12 @@ from services.api.app.api.v1.endpoints import (
     multilingual,
     multimodal,
     console,
+    enterprise,
+    auth,
 )
 
 api_router = APIRouter()
+api_router.include_router(auth.router)
 api_router.include_router(incidents.router, prefix="/incidents", tags=["incidents"])
 api_router.include_router(entities.router)
 api_router.include_router(analyze.router, prefix="/analyze", tags=["analyze"])
@@ -40,6 +43,7 @@ api_router.include_router(rescue.router, prefix="/rescue", tags=["rescue"])
 api_router.include_router(multilingual.router, prefix="/multilingual", tags=["multilingual"])
 api_router.include_router(multimodal.router)
 api_router.include_router(console.router)
+api_router.include_router(enterprise.router)
 
 
 

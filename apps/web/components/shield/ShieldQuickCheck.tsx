@@ -13,6 +13,13 @@ interface QuickCheckResult {
   isAnalyzing?: boolean;
 }
 
+const riskColors: Record<string, "success" | "caution" | "danger" | "neutral"> = {
+  LOW: "success",
+  MEDIUM: "caution",
+  HIGH: "danger",
+  CRITICAL: "danger",
+};
+
 export function ShieldQuickCheck() {
   const [message, setMessage] = useState("");
   const [url, setUrl] = useState("");
