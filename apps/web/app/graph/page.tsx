@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   GitFork,
   ArrowRight,
@@ -21,6 +21,11 @@ import {
   Network,
   Check,
 } from "lucide-react";
+import {
+  InteractiveCorrelationGraph,
+  VisualNode,
+  VisualEdge,
+} from "@/components/graph/InteractiveCorrelationGraph";
 
 // Synthetic Presets for Path Exploration
 const PATH_PRESETS = [
@@ -84,6 +89,7 @@ export default function GraphExplorerPage() {
   const [isTracingPaths, setIsTracingPaths] = useState(false);
   const [pathsResult, setPathsResult] = useState<any>(null);
   const [pathError, setPathError] = useState<string | null>(null);
+  const [selectedPathIndex, setSelectedPathIndex] = useState<number | null>(0);
 
   // Tab 2: Cluster Detection State
   const [minClusterSize, setMinClusterSize] = useState<number>(2);
@@ -218,6 +224,195 @@ export default function GraphExplorerPage() {
   useEffect(() => {
     handleTracePaths();
   }, []);
+
+  // Visual Graph Data for Tab 1 (Paths)
+  const pathGraphData = useMemo(() => {
+    if (!pathsResult || !pathsResult.paths || pathsResult.paths.length === 0) {
+      return { nodes: [], edges: [] };
+    }
+    const nodeMap = new Map<string, VisualNode>();
+    const edgeList: VisualEdge[] = [];
+
+    pathsResult.paths.forEach((p: any) => {
+      p.nodes?.forEach((nId: string, idx: number) => {
+        if (!nodeMap.has(nId)) {
+          let label = nId;
+          let tier = `Hop ${idx}`;
+
+          if (nId.includes("VICTIM") || nId.includes("INFLOW")) {
+            label = nId.includes("001") ? "Victim (SBI - R. Sharma)" : nId.replace(/_/g, " ");
+            tier = "Origin (Victim)";
+          } else if (nId === "ACC_MULE_1") {
+            label = "Tier-1 Mule (ICICI - Rohit Ent.)";
+            tier = "Layer 1 Dispersal";
+          } else if (nId === "ACC_MULE_2") {
+            label = "Tier-2 Rapid Pass (HDFC)";
+            tier = "Layer 2 Rapid Turnover";
+          } else if (nId === "ACC_EXIT_GATEWAY") {
+            label = "Crypto P2P OTC Desk (Exit)";
+            tier = "Cashout Gateway";
+          } else if (nId === "ACC_NODE_A") {
+            label = "Wash Ring Node A (Kavya Traders)";
+            tier = "Mule Ring Hub";
+          } else if (nId === "ACC_NODE_B") {
+            label = "Wash Ring Node B (Zenith Global)";
+            tier = "Shell Company";
+          } else if (nId === "ACC_NODE_C") {
+            label = "Wash Ring Node C (Sunrise Metal)";
+            tier = "Wash Cycle";
+          } else if (nId.includes("HUB")) {
+            label = "Syndicate Aggregator Hub (Jaipur)";
+            tier = "Pooling Hub";
+          } else if (nId.includes("CASHOUT")) {
+            label = nId.replace(/_/g, " ");
+            tier = "Cashout Exit";
+          }
+
+          nodeMap.set(nId, {
+            id: nId,
+            label,
+            node_type: "ACCOUNT",
+            risk_score: idx === 0 && !nId.includes("HUB") ? 0.05 : Math.min(0.98, 0.70 + idx * 0.1),
+            tier,
+          });
+        }
+      });
+
+      p.hops?.forEach((h: any, hIdx: number) => {
+        const edgeId = `edge_${h.from_account}_${h.to_account}_${hIdx}`;
+        if (!edgeList.some((e) => e.source === h.from_account && e.target === h.to_account)) {
+          edgeList.push({
+            id: edgeId,
+            source: h.from_account,
+            target: h.to_account,
+            amount: h.amount,
+            dwell_time_seconds: h.dwell_time_seconds,
+            transaction_id: h.txn_id,
+            is_circular: p.is_circular,
+          });
+        }
+      });
+    });
+
+    return {
+      nodes: Array.from(nodeMap.values()),
+      edges: edgeList,
+    };
+  }, [pathsResult]);
+
+  // Selected path nodes array for highlight
+  const selectedPathNodes = useMemo(() => {
+    if (
+      !pathsResult ||
+      !pathsResult.paths ||
+      selectedPathIndex === null ||
+      !pathsResult.paths[selectedPathIndex]
+    ) {
+      return [];
+    }
+    return pathsResult.paths[selectedPathIndex]?.nodes || [];
+  }, [pathsResult, selectedPathIndex]);
+
+  // Visual Graph Data for Tab 2 (Clusters)
+  const clusterGraphData = useMemo(() => {
+    if (!clustersResult || !clustersResult.clusters || clustersResult.clusters.length === 0) {
+      return { nodes: [], edges: [] };
+    }
+    const nodeMap = new Map<string, VisualNode>();
+    const edgeList: VisualEdge[] = [];
+
+    clustersResult.clusters.forEach((c: any) => {
+      c.nodes?.forEach((n: any) => {
+        if (!nodeMap.has(n.id)) {
+          nodeMap.set(n.id, {
+            id: n.id,
+            label: n.label || n.id,
+            node_type: n.node_type || "ACCOUNT",
+            risk_score: n.risk_score || c.suspicion_score,
+            tier: c.cluster_type?.replace(/_/g, " "),
+          });
+        }
+      });
+      c.edges?.forEach((e: any, idx: number) => {
+        edgeList.push({
+          id: e.id || `edge_c_${idx}`,
+          source: e.source_id,
+          target: e.target_id,
+          amount: e.amount,
+          relationship_type: e.relationship_type,
+          transaction_id: e.transaction_id,
+        });
+      });
+    });
+
+    return {
+      nodes: Array.from(nodeMap.values()),
+      edges: edgeList,
+    };
+  }, [clustersResult]);
+
+  // Visual Graph Data for Tab 3 (Propagation)
+  const propagationGraphData = useMemo(() => {
+    if (!propagationResult || !propagationResult.nodes || propagationResult.nodes.length === 0) {
+      return { nodes: [], edges: [] };
+    }
+    const nodeMap = new Map<string, VisualNode>();
+    const edgeList: VisualEdge[] = [];
+
+    const nodesList = propagationResult.nodes;
+    nodesList.forEach((n: any) => {
+      nodeMap.set(n.node_id, {
+        id: n.node_id,
+        label: n.node_id,
+        node_type: n.node_type || "ACCOUNT",
+        risk_score: n.total_risk,
+        propagatedRisk: n.propagated_risk,
+        isSeed: n.hops_from_seed === 0,
+        tier: `${n.hops_from_seed} Hop(s) [λ=${propagationResult.decay_factor_used}]`,
+      });
+    });
+
+    const seed = nodesList.find((n: any) => n.hops_from_seed === 0);
+    const hop1 = nodesList.filter((n: any) => n.hops_from_seed === 1);
+    const hop2 = nodesList.filter((n: any) => n.hops_from_seed === 2);
+    const hop3 = nodesList.filter((n: any) => n.hops_from_seed === 3);
+
+    if (seed) {
+      hop1.forEach((h1: any, idx: number) => {
+        edgeList.push({
+          id: `prop_edge_0_${idx}`,
+          source: seed.node_id,
+          target: h1.node_id,
+          amount: 85000,
+        });
+      });
+    }
+    hop1.forEach((h1: any) => {
+      hop2.forEach((h2: any, idx: number) => {
+        edgeList.push({
+          id: `prop_edge_1_${idx}`,
+          source: h1.node_id,
+          target: h2.node_id,
+          amount: 80000,
+        });
+      });
+    });
+    hop2.forEach((h2: any) => {
+      hop3.forEach((h3: any, idx: number) => {
+        edgeList.push({
+          id: `prop_edge_2_${idx}`,
+          source: h2.node_id,
+          target: h3.node_id,
+          amount: 75000,
+        });
+      });
+    });
+
+    return {
+      nodes: Array.from(nodeMap.values()),
+      edges: edgeList,
+    };
+  }, [propagationResult]);
 
   return (
     <div className="flex flex-col space-y-6">
@@ -433,6 +628,18 @@ export default function GraphExplorerPage() {
                 </div>
               )}
 
+              {/* Dynamic Interactive Visual Topology Graph */}
+              {pathGraphData.nodes.length > 0 && (
+                <InteractiveCorrelationGraph
+                  nodes={pathGraphData.nodes}
+                  edges={pathGraphData.edges}
+                  highlightedPath={selectedPathNodes}
+                  isCircularDetected={pathsResult.circular_flows_detected}
+                  title={`Visual Flow Topology: ${pathsResult.source_id}`}
+                  subtitle={`Discovered ${pathsResult.paths_found} flow path(s) • Click path cards below or nodes to inspect`}
+                />
+              )}
+
               <div className="flex items-center justify-between text-xs font-mono text-text-muted px-1">
                 <span>Discovered {pathsResult.paths_found} flow path(s) originating from <strong className="text-cyan-400">{pathsResult.source_id}</strong>:</span>
                 <span>Max Depth Checked: {maxDepth} hops</span>
@@ -443,7 +650,12 @@ export default function GraphExplorerPage() {
                   {pathsResult.paths.map((p: any, idx: number) => (
                     <div
                       key={idx}
-                      className="bg-surface-1 border border-border rounded-xl p-5 space-y-4"
+                      onClick={() => setSelectedPathIndex(idx)}
+                      className={`bg-surface-1 border rounded-xl p-5 space-y-4 cursor-pointer transition ${
+                        selectedPathIndex === idx
+                          ? "border-cyan-500/80 shadow-[0_0_15px_rgba(6,182,212,0.15)] ring-1 ring-cyan-500/40"
+                          : "border-border hover:border-border-strong hover:bg-surface-2/40"
+                      }`}
                     >
                       {/* Path Card Header */}
                       <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-border">
@@ -577,6 +789,16 @@ export default function GraphExplorerPage() {
           {/* Cluster List */}
           {clustersResult && (
             <div className="space-y-4">
+              {/* Dynamic Cluster Topology Graph */}
+              {clusterGraphData.nodes.length > 0 && (
+                <InteractiveCorrelationGraph
+                  nodes={clusterGraphData.nodes}
+                  edges={clusterGraphData.edges}
+                  title={`Cluster & Mule Ring Topology: ${clustersResult.total_clusters} Communities`}
+                  subtitle="Weakly connected components, shared-device links, and laundering rings"
+                />
+              )}
+
               <div className="flex items-center justify-between text-xs font-mono text-text-muted px-1">
                 <span>Detected {clustersResult.total_clusters} suspicious entity cluster(s):</span>
                 <span>Algorithm: NetworkX Weakly Connected Components + Shared Identity Rings</span>
@@ -766,6 +988,16 @@ export default function GraphExplorerPage() {
           {/* Propagation Results */}
           {propagationResult && (
             <div className="space-y-4">
+              {/* Dynamic Risk Propagation Decay Graph */}
+              {propagationGraphData.nodes.length > 0 && (
+                <InteractiveCorrelationGraph
+                  nodes={propagationGraphData.nodes}
+                  edges={propagationGraphData.edges}
+                  title={`Geometric Risk Decay Topology (λ = ${propagationResult.decay_factor_used})`}
+                  subtitle={`Seeds: ${propagationResult.seeds_processed} • Downstream Contaminated: ${propagationResult.affected_nodes_count}`}
+                />
+              )}
+
               {/* Summary Stats */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="p-4 bg-surface-1 rounded-xl border border-border">

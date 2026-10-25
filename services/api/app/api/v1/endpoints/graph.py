@@ -64,6 +64,27 @@ async def build_or_update_graph(
     }
 
 
+@router.get("/topology")
+async def get_graph_topology(
+    engine: TransactionGraphEngine = Depends(get_transaction_graph_engine),
+):
+    """Retrieve full nodes, edges, and topology summary of the correlation graph."""
+    nodes = list(engine._nodes.values())
+    edges = list(engine._edges.values())
+    return {
+        "nodes": nodes,
+        "edges": edges,
+        "stats": {
+            "total_nodes": len(nodes),
+            "total_edges": len(edges),
+            "accounts_count": sum(1 for n in nodes if n.node_type == CorrelationNodeType.ACCOUNT),
+            "shared_phones_count": sum(1 for n in nodes if n.node_type == CorrelationNodeType.PHONE),
+            "shared_devices_count": sum(1 for n in nodes if n.node_type == CorrelationNodeType.DEVICE),
+            "shared_ips_count": sum(1 for n in nodes if n.node_type == CorrelationNodeType.IP),
+        },
+    }
+
+
 @router.get("/entities/{entity_id}", response_model=GraphNode)
 async def get_graph_entity(
     entity_id: str,
