@@ -6,7 +6,7 @@ import { DemoDataBadge } from "@/components/shared/DemoDataBadge";
 import { ScenarioCard } from "@/components/lab/ScenarioCard";
 import { SimulationSession } from "@/components/lab/SimulationSession";
 import { Card, Button } from "@/components/ui";
-import { RotateCcw } from "lucide-react";
+import { RotateCcw, Shield, Play, CheckCircle2, ArrowRight } from "lucide-react";
 
 interface Scenario {
   scenario_id: string;
@@ -75,42 +75,37 @@ export default function LabPage() {
         }
       />
 
-      {/* Section 11.2: 4/8 Split Layout */}
-      <div className="grid gap-8 lg:grid-cols-[380px_1fr]">
+      {/* 4/8 Split Layout with sticky sidebar alignment */}
+      <div className="grid gap-8 lg:grid-cols-[380px_1fr] items-start">
         {/* Left Workbench: Scenario Selection & Controls */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <span className="eyebrow">Available Scenarios</span>
-            <span className="font-mono text-[11px] text-text-muted">{scenarios.length} loaded</span>
+        <div className="space-y-4 lg:sticky lg:top-6">
+          <div className="flex items-center justify-between pb-1">
+            <span className="eyebrow text-text-muted">Training Scenarios</span>
+            <span className="font-mono text-[11px] text-text-muted">{scenarios.length} available</span>
           </div>
 
           {loading ? (
             <div className="rounded-xl border border-border bg-surface-1 p-8 text-center">
               <div className="h-6 w-6 animate-spin rounded-full border-2 border-border-strong border-t-brand-primary mx-auto mb-3" />
-              <p className="text-xs text-text-muted">Loading scenarios...</p>
+              <p className="text-xs text-text-muted">Loading scenario library...</p>
             </div>
           ) : (
             <div className="space-y-3">
               {scenarios.map((scenario) => {
                 const isSelected = running === scenario.scenario_id;
                 return (
-                  <div
+                  <ScenarioCard
                     key={scenario.scenario_id}
-                    className={`transition-all rounded-xl ${
-                      isSelected ? "ring-2 ring-brand-primary rounded-xl" : ""
-                    }`}
-                  >
-                    <ScenarioCard
-                      title={scenario.title}
-                      badge={scenario.expected_risk_level}
-                      description={scenario.description}
-                      steps={Math.ceil(scenario.estimated_duration_minutes / 2)}
-                      difficulty={scenario.difficulty}
-                      duration={scenario.estimated_duration_minutes}
-                      onRun={() => handleRunScenario(scenario.scenario_id)}
-                      disabled={isSelected && !debrief}
-                    />
-                  </div>
+                    title={scenario.title}
+                    badge={scenario.expected_risk_level}
+                    description={scenario.description}
+                    steps={Math.ceil(scenario.estimated_duration_minutes / 2)}
+                    difficulty={scenario.difficulty}
+                    duration={scenario.estimated_duration_minutes}
+                    onRun={() => handleRunScenario(scenario.scenario_id)}
+                    disabled={isSelected && !debrief}
+                    isSelected={isSelected}
+                  />
                 );
               })}
             </div>
@@ -138,20 +133,31 @@ export default function LabPage() {
               )}
             </div>
           ) : (
-            <div className="rounded-2xl border border-dashed border-border-strong bg-surface-1/40 p-12 text-center flex flex-col items-center justify-center min-h-[420px]">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-surface-2 border border-border text-text-muted mb-4">
-                <RotateCcw className="h-5 w-5" />
+            <div className="rounded-2xl border border-dashed border-border-strong bg-surface-1/40 p-8 sm:p-12 text-center flex flex-col items-center justify-center min-h-[440px]">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-surface-2 border border-border text-brand-primary shadow-sm mb-4">
+                <Shield className="h-7 w-7" />
               </div>
-              <h3 className="text-base font-semibold text-text-primary">No Active Scenario</h3>
-              <p className="mt-1.5 max-w-md text-xs text-text-secondary leading-relaxed">
-                Select a training scenario from the workbench on the left to begin an interactive simulation session.
-                You will be presented with real-time victim choices to see how risk evolves.
+              <h3 className="text-base font-semibold text-text-primary">No Active Scenario Selected</h3>
+              <p className="mt-2 max-w-md text-xs text-text-secondary leading-relaxed">
+                Choose a simulation module from the left workbench to enter the real-time victim defense simulator.
+                You will experience multi-channel fraud tactics and learn how every decision alters exposure.
               </p>
-              <div className="mt-6 flex items-center gap-3 text-xs font-mono text-text-muted">
-                <span>· Branching decision trees</span>
-                <span>· Dual-axis risk tracking</span>
-                <span>· Post-run debrief</span>
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-2 text-xs font-mono text-text-muted">
+                <span className="rounded-md border border-border bg-surface-2 px-2.5 py-1">· Branching Paths</span>
+                <span className="rounded-md border border-border bg-surface-2 px-2.5 py-1">· Real-time Risk Engine</span>
+                <span className="rounded-md border border-border bg-surface-2 px-2.5 py-1">· Debrief Scoring</span>
               </div>
+              {scenarios.length > 0 && (
+                <Button
+                  variant="primary"
+                  size="sm"
+                  className="mt-6"
+                  onClick={() => handleRunScenario(scenarios[0].scenario_id)}
+                >
+                  <Play className="h-3.5 w-3.5 mr-1.5 fill-current" />
+                  Launch {scenarios[0].title.split(" ")[0]} Scenario
+                </Button>
+              )}
             </div>
           )}
         </div>
@@ -195,7 +201,7 @@ function SimulationDebrief({ debrief, onRestart, onSelectScenario }: DebriefProp
         </div>
       </Card>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card pad="md" className="border border-border bg-surface-1">
           <span className="eyebrow text-text-muted">Final Risk</span>
           <p className={`text-2xl font-bold font-mono mt-1 ${riskColor}`}>{riskScore}/100</p>
@@ -228,6 +234,24 @@ function SimulationDebrief({ debrief, onRestart, onSelectScenario }: DebriefProp
         </div>
       </Card>
 
+      {/* Emergency Recovery Checklist */}
+      {debrief.recovery_checklist && debrief.recovery_checklist.length > 0 && (
+        <Card pad="lg" className="border border-border bg-surface-1">
+          <div className="flex items-center justify-between mb-4 pb-2 border-b border-border">
+            <span className="eyebrow text-text-muted">Emergency Recovery Checklist</span>
+            <span className="text-[11px] font-mono text-rose-400">Golden Hour Protocol</span>
+          </div>
+          <div className="space-y-2.5">
+            {debrief.recovery_checklist.map((item: string, idx: number) => (
+              <div key={idx} className="flex items-start gap-3 p-3 rounded-xl bg-surface-2/60 border border-border/50 text-xs">
+                <span className="text-rose-400 font-bold mt-0.5">!</span>
+                <p className="text-text-secondary leading-relaxed">{item}</p>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+
       <div className="flex flex-col sm:flex-row gap-3">
         <Button variant="secondary" className="flex-1" onClick={onRestart}>
           <RotateCcw className="h-3.5 w-3.5 mr-1.5" />
@@ -240,6 +264,7 @@ function SimulationDebrief({ debrief, onRestart, onSelectScenario }: DebriefProp
             onClick={() => onSelectScenario(debrief.recommended_next_scenario)}
           >
             Recommended Next Challenge
+            <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
           </Button>
         )}
       </div>

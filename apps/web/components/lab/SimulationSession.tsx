@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, Button, Badge } from "@/components/ui";
+import { Card, Button } from "@/components/ui";
 import {
   ChevronRight,
   RotateCcw,
   CheckCircle,
   AlertCircle,
   TrendingUp,
+  TrendingDown,
   Phone,
   Globe,
   MessageSquare,
@@ -18,7 +19,7 @@ import {
   AlertTriangle,
   ArrowRight,
   Lock,
-  ExternalLink,
+  GitBranch,
 } from "lucide-react";
 
 interface StepStimulus {
@@ -42,6 +43,7 @@ interface StepStimulus {
   call_transcript?: Array<string | { speaker: string; text: string }>;
   scenario?: string;
   upi_screen?: string;
+  payment_app?: string;
   transaction?: {
     to?: string;
     amount?: string;
@@ -266,11 +268,15 @@ export function SimulationSession({ sessionId, scenarioId, onComplete }: Props) 
   // Decision outcome & feedback state
   if (result) {
     const isTerminated = sessionEnded || !result.next_step;
+    const isDanger = (result.risk_score ?? 50) >= 60;
+    const isCaution = (result.risk_score ?? 50) >= 30 && (result.risk_score ?? 50) < 60;
+    const riskColor = isDanger ? "text-rose-400" : isCaution ? "text-amber-400" : "text-emerald-400";
+
     return (
       <div className="space-y-6 animate-fadeIn">
         {/* Outcome Banner */}
         <div
-          className={`rounded-2xl p-6 border transition-all ${
+          className={`rounded-2xl p-5 sm:p-6 border transition-all ${
             result.is_safer_decision
               ? "border-emerald-500/40 bg-emerald-500/10 text-text-primary"
               : "border-rose-500/40 bg-rose-500/10 text-text-primary"
@@ -278,7 +284,7 @@ export function SimulationSession({ sessionId, scenarioId, onComplete }: Props) 
         >
           <div className="flex items-start gap-4">
             <div
-              className={`p-2.5 rounded-xl ${
+              className={`p-2.5 rounded-xl flex-shrink-0 ${
                 result.is_safer_decision ? "bg-emerald-500/20 text-emerald-400" : "bg-rose-500/20 text-rose-400"
               }`}
             >
@@ -288,53 +294,73 @@ export function SimulationSession({ sessionId, scenarioId, onComplete }: Props) 
                 <ShieldAlert className="h-6 w-6" />
               )}
             </div>
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1.5">
                 <span
-                  className={`text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
+                  className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
                     result.is_safer_decision ? "bg-emerald-500/20 text-emerald-300" : "bg-rose-500/20 text-rose-300"
                   }`}
                 >
                   {result.is_safer_decision ? "Safe Decision" : "Vulnerability Exploited"}
                 </span>
               </div>
-              <h3 className="font-semibold text-lg text-text-primary mb-2">{result.outcome_text}</h3>
-              <p className="text-xs text-text-secondary leading-relaxed bg-surface-1/60 p-3 rounded-lg border border-border">
-                💡 <span className="font-medium text-text-primary">Debrief Feedback:</span> {result.feedback}
-              </p>
+              <h3 className="font-semibold text-base sm:text-lg text-text-primary mb-2 leading-snug">
+                {result.outcome_text}
+              </h3>
+              <div className="text-xs text-text-secondary leading-relaxed bg-surface-1/70 p-3.5 rounded-xl border border-border/80">
+                <span className="font-semibold text-text-primary">💡 Debrief Feedback:</span> {result.feedback}
+              </div>
             </div>
           </div>
         </div>
 
         {/* Risk & Impact Metrics */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Card pad="md" className="border border-border bg-surface-1">
-            <span className="eyebrow text-text-muted">Calculated Risk Score</span>
-            <div className="flex items-baseline gap-2 mt-2">
-              <p
-                className={`text-2xl font-bold font-mono ${
-                  result.risk_level === "CRITICAL" || result.risk_level === "HIGH"
-                    ? "text-rose-400"
-                    : result.risk_level === "MEDIUM"
-                    ? "text-amber-400"
-                    : "text-emerald-400"
-                }`}
-              >
-                {result.risk_score}/100
+            <div className="flex items-center justify-between">
+              <span className="eyebrow text-text-muted">Calculated Risk Score</span>
+              <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-surface-2 text-text-muted border border-border">
+                {result.risk_level}
+              </span>
+            </div>
+            <div className="flex items-baseline gap-1.5 mt-2">
+              <p className={`text-3xl font-bold font-mono ${riskColor}`}>
+                {result.risk_score}
               </p>
-              <span className="text-xs font-mono uppercase text-text-muted">[{result.risk_level}]</span>
+              <span className="text-xs text-text-muted font-mono">/100</span>
+            </div>
+            <div className="mt-3 h-1.5 w-full bg-surface-2 rounded-full overflow-hidden border border-border/40">
+              <div
+                className={`h-full transition-all duration-500 rounded-full ${
+                  result.risk_score >= 70 ? "bg-rose-500" : result.risk_score >= 40 ? "bg-amber-500" : "bg-emerald-500"
+                }`}
+                style={{ width: `${Math.min(100, Math.max(5, result.risk_score))}%` }}
+              />
             </div>
           </Card>
 
           <Card pad="md" className="border border-border bg-surface-1">
             <span className="eyebrow text-text-muted">Trajectory Impact</span>
-            <div className="flex items-center gap-2.5 mt-2">
-              <TrendingUp
-                className={`h-5 w-5 ${result.is_safer_decision ? "text-emerald-400 rotate-180" : "text-rose-400"}`}
-              />
-              <span className="text-sm font-semibold text-text-primary">
-                {result.is_safer_decision ? "Attack Surface Mitigated" : "Attacker Leverage Escalated"}
-              </span>
+            <div className="flex items-center gap-3 mt-3">
+              <div
+                className={`p-2.5 rounded-xl flex-shrink-0 ${
+                  result.is_safer_decision ? "bg-emerald-500/10 text-emerald-400" : "bg-rose-500/10 text-rose-400"
+                }`}
+              >
+                {result.is_safer_decision ? (
+                  <TrendingDown className="h-5 w-5" />
+                ) : (
+                  <TrendingUp className="h-5 w-5" />
+                )}
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-text-primary">
+                  {result.is_safer_decision ? "Attack Surface Mitigated" : "Attacker Leverage Escalated"}
+                </p>
+                <p className="text-[11px] text-text-muted mt-0.5">
+                  {result.is_safer_decision ? "Defensive posture maintained" : "Vulnerability window expanded"}
+                </p>
+              </div>
             </div>
           </Card>
         </div>
@@ -343,24 +369,27 @@ export function SimulationSession({ sessionId, scenarioId, onComplete }: Props) 
         {result.counterfactual_outcomes && Object.keys(result.counterfactual_outcomes).length > 0 && (
           <Card pad="md" className="border border-border-strong bg-surface-1">
             <div className="flex items-center justify-between mb-3 pb-2 border-b border-border">
-              <span className="eyebrow text-text-muted">Counterfactual Analysis (Alternative Decisions)</span>
-              <span className="text-[11px] text-text-muted">Compare Path Outcomes</span>
+              <div className="flex items-center gap-2">
+                <GitBranch className="h-4 w-4 text-brand-primary" />
+                <span className="eyebrow text-text-muted">Counterfactual Analysis</span>
+              </div>
+              <span className="text-[11px] font-mono text-text-muted">What-If Branch Outcomes</span>
             </div>
             <div className="space-y-2">
               {Object.entries(result.counterfactual_outcomes).map(([alt_decision, alt_result]: [string, any]) => (
                 <div
                   key={alt_decision}
-                  className="flex items-center justify-between rounded-lg bg-surface-2/70 p-3 text-xs border border-border/50"
+                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 rounded-xl bg-surface-2/60 p-3 text-xs border border-border/50"
                 >
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 min-w-0">
                     <span className="font-mono text-text-primary font-medium capitalize">
                       {alt_decision.replace(/_/g, " ")}
                     </span>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-text-muted truncate max-w-xs">{alt_result?.outcome}</span>
+                  <div className="flex items-center justify-between sm:justify-end gap-3 flex-wrap">
+                    <span className="text-text-muted text-[11px] truncate max-w-sm">{alt_result?.outcome}</span>
                     <span
-                      className={`font-mono font-bold px-1.5 py-0.5 rounded ${
+                      className={`font-mono font-bold px-2 py-0.5 rounded text-[11px] whitespace-nowrap ${
                         (alt_result?.risk_score ?? 50) >= 60
                           ? "bg-rose-500/20 text-rose-300"
                           : "bg-emerald-500/20 text-emerald-300"
@@ -377,11 +406,11 @@ export function SimulationSession({ sessionId, scenarioId, onComplete }: Props) 
 
         {/* Navigation / Completion Action */}
         {isTerminated ? (
-          <div className="rounded-xl border border-border bg-surface-2 p-5 text-center space-y-3">
-            <CheckCircle className="h-6 w-6 text-emerald-400 mx-auto" />
-            <h4 className="text-sm font-semibold text-text-primary">Scenario Path Complete</h4>
-            <p className="text-xs text-text-secondary max-w-md mx-auto">
-              Your decision path has concluded. Generating post-simulation analytical debrief and behavioral score.
+          <div className="rounded-2xl border border-border bg-surface-2 p-6 text-center space-y-3">
+            <CheckCircle className="h-7 w-7 text-emerald-400 mx-auto" />
+            <h4 className="text-base font-semibold text-text-primary">Scenario Path Complete</h4>
+            <p className="text-xs text-text-secondary max-w-md mx-auto leading-relaxed">
+              Your decision path has concluded. Generating post-simulation analytical debrief and behavioral defense score.
             </p>
             <Button
               variant="primary"
@@ -395,7 +424,7 @@ export function SimulationSession({ sessionId, scenarioId, onComplete }: Props) 
         ) : (
           <Button
             variant="primary"
-            className="w-full py-3"
+            className="w-full py-3 h-11 text-sm font-medium"
             onClick={handleContinue}
             disabled={isLoading || !result.next_step}
           >
@@ -428,7 +457,7 @@ export function SimulationSession({ sessionId, scenarioId, onComplete }: Props) 
 
         {/* Stimulus Presentation Box */}
         <div className="rounded-2xl border border-border bg-surface-1 overflow-hidden shadow-sm">
-          <div className="p-4 bg-surface-2 border-b border-border flex items-center justify-between">
+          <div className="p-4 bg-surface-2 border-b border-border flex items-center justify-between flex-wrap gap-2">
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-bold font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-brand-primary/10 text-brand-primary border border-brand-primary/20">
                 Stimulus: {currentStep.stimulus_type.replace(/_/g, " ")}
@@ -437,9 +466,9 @@ export function SimulationSession({ sessionId, scenarioId, onComplete }: Props) 
             <span className="text-[11px] font-mono text-text-muted">Interactive Scenario Workbench</span>
           </div>
 
-          <div className="p-6 space-y-4">
+          <div className="p-5 sm:p-6 space-y-4">
             <div>
-              <h2 className="text-lg font-bold text-text-primary mb-1">{currentStep.title}</h2>
+              <h2 className="text-base sm:text-lg font-bold text-text-primary mb-1">{currentStep.title}</h2>
               <p className="text-xs text-text-secondary leading-relaxed">{currentStep.description}</p>
             </div>
 
@@ -472,29 +501,46 @@ export function SimulationSession({ sessionId, scenarioId, onComplete }: Props) 
             <span className="eyebrow text-text-muted">Victim Decision Point</span>
             <span className="text-[11px] text-text-muted font-mono">Select your next action</span>
           </div>
-          <p className="text-sm font-semibold text-text-primary mb-4">{currentStep.decision_prompt}</p>
+          <p className="text-sm font-semibold text-text-primary mb-4 leading-snug">{currentStep.decision_prompt}</p>
 
-          <div className="space-y-2.5">
-            {currentStep.decision_options?.map((option) => {
+          <div className="space-y-3">
+            {currentStep.decision_options?.map((option, idx) => {
               const isSelected = selectedDecision === option.decision;
+              const optionLetter = String.fromCharCode(65 + idx); // A, B, C, D
               return (
                 <button
                   key={option.decision}
                   onClick={() => handleDecision(option.decision)}
                   disabled={isLoading}
-                  className={`w-full rounded-xl p-4 text-left transition-all border text-xs sm:text-sm ${
+                  className={`w-full rounded-xl p-4 text-left transition-all border text-xs sm:text-sm flex items-start gap-3.5 group ${
                     isSelected
-                      ? "bg-brand-primary/15 border-brand-primary text-text-primary shadow-sm ring-1 ring-brand-primary"
-                      : "bg-surface-2/60 text-text-primary hover:bg-surface-2 hover:border-border-strong border-border"
+                      ? "bg-brand-primary/10 border-brand-primary text-text-primary shadow-sm ring-1 ring-brand-primary"
+                      : "bg-surface-2/60 text-text-primary hover:bg-surface-2 hover:border-border-strong border-border hover:translate-x-0.5"
                   } ${isLoading ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
                 >
-                  <div className="flex items-start justify-between gap-3">
-                    <span className="font-semibold text-text-primary">{option.label}</span>
-                    {option.hint && (
-                      <span className="font-mono text-[11px] text-text-muted whitespace-nowrap px-1.5 py-0.5 rounded bg-surface-3">
-                        {option.hint}
-                      </span>
+                  <div
+                    className={`flex h-7 w-7 items-center justify-center rounded-lg font-mono text-xs font-bold flex-shrink-0 transition-colors ${
+                      isSelected
+                        ? "bg-brand-primary text-on-brand shadow-sm"
+                        : "bg-surface-1 text-text-secondary border border-border group-hover:border-brand-primary/50 group-hover:text-brand-primary"
+                    }`}
+                  >
+                    {isSelected && isLoading ? (
+                      <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-on-brand border-t-transparent" />
+                    ) : (
+                      optionLetter
                     )}
+                  </div>
+
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-baseline justify-between gap-2 flex-wrap">
+                      <span className="font-semibold text-text-primary leading-snug">{option.label}</span>
+                      {option.hint && (
+                        <span className="font-mono text-[10px] text-text-muted uppercase tracking-wider px-2 py-0.5 rounded bg-surface-1 border border-border/50 whitespace-nowrap mt-1 sm:mt-0">
+                          {option.hint}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </button>
               );
@@ -526,22 +572,28 @@ function RenderStimulus({ stimulus, type }: RenderStimulusProps) {
     case "message":
       return (
         <div className="rounded-xl bg-surface-2 border border-border p-4 space-y-3 font-sans">
-          <div className="flex items-center justify-between pb-2 border-b border-border/60">
-            <div className="flex items-center gap-2">
-              <MessageSquare className="h-4 w-4 text-brand-primary" />
-              <span className="text-xs font-semibold text-text-primary">
-                {stimulus.channel || "SMS / Push Notice"}
-              </span>
+          <div className="flex items-center justify-between pb-2.5 border-b border-border/60">
+            <div className="flex items-center gap-2.5">
+              <div className="h-7 w-7 rounded-lg bg-brand-primary/10 flex items-center justify-center text-brand-primary border border-brand-primary/20">
+                <MessageSquare className="h-3.5 w-3.5" />
+              </div>
+              <div>
+                <span className="text-xs font-semibold text-text-primary">
+                  {stimulus.channel || "SMS / Push Notice"}
+                </span>
+                {stimulus.sender && (
+                  <p className="text-[11px] text-text-muted font-mono">{stimulus.sender}</p>
+                )}
+              </div>
             </div>
             {stimulus.timestamp && (
-              <span className="text-[11px] font-mono text-text-muted">{stimulus.timestamp}</span>
+              <span className="text-[11px] font-mono text-text-muted px-2 py-0.5 rounded bg-surface-1 border border-border">
+                {stimulus.timestamp}
+              </span>
             )}
           </div>
-          {stimulus.sender && (
-            <p className="text-[11px] text-text-muted font-mono">From: {stimulus.sender}</p>
-          )}
-          <div className="rounded-lg bg-surface-1 p-3.5 border-l-4 border-l-amber-500 shadow-inner">
-            <p className="text-xs sm:text-sm text-text-primary leading-relaxed whitespace-pre-line">
+          <div className="rounded-xl bg-surface-1 p-4 border border-border border-l-4 border-l-amber-500 shadow-inner">
+            <p className="text-xs sm:text-sm text-text-primary leading-relaxed whitespace-pre-line font-medium">
               &quot;{stimulus.text}&quot;
             </p>
           </div>
@@ -552,35 +604,41 @@ function RenderStimulus({ stimulus, type }: RenderStimulusProps) {
       return (
         <div className="rounded-xl bg-surface-2 border border-border overflow-hidden shadow-inner">
           {/* Simulated Browser URL Bar */}
-          <div className="p-3 bg-surface-3 border-b border-border flex items-center gap-2">
-            <div className="flex items-center gap-1.5 mr-2">
+          <div className="p-3 bg-surface-1 border-b border-border flex items-center gap-3">
+            <div className="flex items-center gap-1.5">
               <div className="h-2.5 w-2.5 rounded-full bg-rose-500/80" />
               <div className="h-2.5 w-2.5 rounded-full bg-amber-500/80" />
               <div className="h-2.5 w-2.5 rounded-full bg-emerald-500/80" />
             </div>
-            <div className="flex-1 flex items-center gap-2 rounded-lg bg-surface-1 px-3 py-1.5 border border-border text-xs font-mono text-text-secondary">
+            <div className="flex-1 flex items-center gap-2 rounded-lg bg-surface-2 px-3 py-1.5 border border-border text-xs font-mono text-text-secondary">
               <Lock className="h-3.5 w-3.5 text-amber-400 flex-shrink-0" />
-              <span className="text-amber-300">http://</span>
+              <span className="text-amber-400 font-medium">http://</span>
               <span className="text-text-primary font-semibold">{stimulus.domain || "example-pay.test"}</span>
               <span className="text-text-muted">/bill</span>
             </div>
+            <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20 whitespace-nowrap">
+              Insecure
+            </span>
           </div>
 
           <div className="p-5 space-y-4">
-            <h3 className="text-base font-bold text-text-primary">{stimulus.page_title}</h3>
-            {stimulus.page_content?.header && (
-              <p className="text-xs text-text-secondary">{stimulus.page_content.header}</p>
-            )}
+            <div>
+              <h3 className="text-base font-bold text-text-primary">{stimulus.page_title}</h3>
+              {stimulus.page_content?.header && (
+                <p className="text-xs text-text-secondary mt-1">{stimulus.page_content.header}</p>
+              )}
+            </div>
 
             {stimulus.page_content?.notice && (
-              <div className="rounded-lg bg-amber-500/10 p-3 border-l-4 border-l-amber-500 text-xs text-amber-300 font-medium">
-                ⚠️ {stimulus.page_content.notice}
+              <div className="rounded-lg bg-amber-500/10 p-3.5 border-l-4 border-l-amber-500 text-xs text-amber-300 font-medium flex items-start gap-2">
+                <AlertTriangle className="h-4 w-4 text-amber-400 flex-shrink-0 mt-0.5" />
+                <span>{stimulus.page_content.notice}</span>
               </div>
             )}
 
             {/* Web Form Fields */}
             {stimulus.page_content?.form_fields && (
-              <div className="space-y-3 pt-2">
+              <div className="space-y-3 pt-1">
                 {stimulus.page_content.form_fields.map((f: any, i: number) => (
                   <div key={i} className="space-y-1">
                     <label className="text-[11px] font-medium text-text-secondary">{f.label}</label>
@@ -597,11 +655,14 @@ function RenderStimulus({ stimulus, type }: RenderStimulusProps) {
 
             {/* Suspicious Indicators Alert */}
             {stimulus.suspicious_indicators && stimulus.suspicious_indicators.length > 0 && (
-              <div className="rounded-xl bg-rose-500/10 p-3.5 border border-rose-500/30 space-y-2 mt-4">
-                <span className="eyebrow text-rose-400">Heuristic Signals Detected</span>
-                <ul className="space-y-1 text-xs text-rose-300">
+              <div className="rounded-xl bg-rose-500/10 p-4 border border-rose-500/30 space-y-2.5 mt-4">
+                <div className="flex items-center gap-1.5">
+                  <AlertTriangle className="h-4 w-4 text-rose-400" />
+                  <span className="eyebrow text-rose-400">Heuristic Signals Detected</span>
+                </div>
+                <ul className="space-y-1.5 text-xs text-rose-300">
                   {stimulus.suspicious_indicators.map((ind: string, idx: number) => (
-                    <li key={idx} className="flex items-start gap-1.5">
+                    <li key={idx} className="flex items-start gap-2">
                       <span className="text-rose-400 font-bold">•</span>
                       <span>{ind}</span>
                     </li>
@@ -620,48 +681,53 @@ function RenderStimulus({ stimulus, type }: RenderStimulusProps) {
         <div className="rounded-xl bg-surface-2 border border-border p-4 space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-border">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-rose-500/20 text-rose-400 animate-pulse">
+              <div className="p-2.5 rounded-xl bg-rose-500/20 text-rose-400 animate-pulse">
                 <Phone className="h-4 w-4" />
               </div>
               <div>
-                <p className="text-xs font-bold text-text-primary font-mono">
+                <p className="text-xs font-bold text-text-primary font-mono tracking-tight">
                   {stimulus.caller_display || stimulus.caller || "DIRECT DIAL: +91 99999 99999"}
                 </p>
-                <p className="text-[10px] text-text-muted">Live Active Voice Channel</p>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-rose-400 animate-ping" />
+                  <span className="text-[10px] text-text-muted font-mono">01:24 • Live Active Channel</span>
+                </div>
               </div>
             </div>
             <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30">
-              High Pressure Call
+              High Pressure
             </span>
           </div>
 
           {/* Transcript Dialogue */}
-          <div className="space-y-2.5 max-h-72 overflow-y-auto pr-1">
+          <div className="space-y-3 max-h-72 overflow-y-auto pr-1">
             {transcript.map((item: any, idx: number) => {
               const speaker = typeof item === "string" ? "AGENT" : item.speaker;
               const text = typeof item === "string" ? item : item.text;
-              const isOfficer = speaker === "OFFICIAL" || speaker?.includes("City Power Official");
-              const isAgent = speaker === "AGENT" || speaker?.includes("AGENT");
+              const isOfficer = speaker === "OFFICIAL" || speaker?.includes("Official");
+              const isAgent = speaker === "AGENT" || speaker?.includes("AGENT") || speaker?.includes("MEMBER") || speaker?.includes("IVR");
 
               return (
                 <div
                   key={idx}
-                  className={`rounded-lg p-3 text-xs leading-relaxed ${
+                  className={`rounded-xl p-3.5 text-xs leading-relaxed border ${
                     isOfficer
-                      ? "bg-emerald-500/10 border border-emerald-500/20 text-text-primary"
+                      ? "bg-emerald-500/10 border-emerald-500/20 text-text-primary ml-4"
                       : isAgent
-                      ? "bg-rose-500/10 border border-rose-500/20 text-text-primary"
-                      : "bg-surface-1 border border-border text-text-primary"
+                      ? "bg-rose-500/10 border-rose-500/20 text-text-primary mr-4"
+                      : "bg-surface-1 border-border text-text-primary"
                   }`}
                 >
-                  <p
-                    className={`font-mono text-[10px] font-bold uppercase mb-1 ${
-                      isOfficer ? "text-emerald-400" : isAgent ? "text-rose-400" : "text-brand-primary"
-                    }`}
-                  >
-                    {speaker}:
-                  </p>
-                  <p className="text-text-secondary">{text}</p>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span
+                      className={`font-mono text-[10px] font-bold uppercase tracking-wider ${
+                        isOfficer ? "text-emerald-400" : isAgent ? "text-rose-400" : "text-brand-primary"
+                      }`}
+                    >
+                      {speaker}
+                    </span>
+                  </div>
+                  <p className="text-text-secondary leading-relaxed">{text}</p>
                 </div>
               );
             })}
@@ -688,7 +754,7 @@ function RenderStimulus({ stimulus, type }: RenderStimulusProps) {
             ))}
           </div>
 
-          <div className="rounded-lg bg-rose-500/10 p-3 border border-rose-500/30 text-xs text-rose-300 flex items-start gap-2">
+          <div className="rounded-lg bg-rose-500/10 p-3.5 border border-rose-500/30 text-xs text-rose-300 flex items-start gap-2">
             <AlertTriangle className="h-4 w-4 flex-shrink-0 mt-0.5 text-rose-400" />
             <span>
               Sensitive credentials and 6-digit one-time passcode requested on an untrusted domain.
@@ -702,11 +768,16 @@ function RenderStimulus({ stimulus, type }: RenderStimulusProps) {
       return (
         <div className="rounded-xl bg-surface-2 border border-border p-5 space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-border">
-            <div className="flex items-center gap-2">
-              <CreditCard className="h-4 w-4 text-rose-400" />
-              <span className="text-xs font-bold text-text-primary">
-                {stimulus.upi_screen || stimulus.payment_app || "Simulated UPI Payment"}
-              </span>
+            <div className="flex items-center gap-2.5">
+              <div className="h-8 w-8 rounded-lg bg-rose-500/10 flex items-center justify-center text-rose-400 border border-rose-500/20">
+                <CreditCard className="h-4 w-4" />
+              </div>
+              <div>
+                <span className="text-xs font-bold text-text-primary">
+                  {stimulus.upi_screen || stimulus.payment_app || "Simulated UPI Payment"}
+                </span>
+                <p className="text-[10px] text-text-muted">Instant Payment Mandate</p>
+              </div>
             </div>
             <span className="text-[10px] font-mono text-rose-400 bg-rose-500/20 px-2 py-0.5 rounded border border-rose-500/30">
               Debit Approval
@@ -714,17 +785,20 @@ function RenderStimulus({ stimulus, type }: RenderStimulusProps) {
           </div>
 
           <div className="rounded-xl bg-surface-1 p-4 border border-border space-y-2.5">
-            {Object.entries(details).map(([key, val]) => (
-              <div key={key} className="flex items-center justify-between text-xs py-1 border-b border-border/40 last:border-0">
-                <span className="text-text-muted capitalize">{key.replace(/_/g, " ")}:</span>
-                <span className="font-mono font-semibold text-text-primary">{String(val)}</span>
-              </div>
-            ))}
+            {Object.entries(details)
+              .filter(([k]) => k !== "warning")
+              .map(([key, val]) => (
+                <div key={key} className="flex items-center justify-between text-xs py-1.5 border-b border-border/40 last:border-0">
+                  <span className="text-text-muted capitalize">{key.replace(/_/g, " ")}:</span>
+                  <span className="font-mono font-semibold text-text-primary">{String(val)}</span>
+                </div>
+              ))}
           </div>
 
           {(stimulus.transaction_warning || details.warning) && (
-            <div className="rounded-lg bg-rose-500/15 p-3 border border-rose-500/30 text-xs text-rose-300 font-medium">
-              {stimulus.transaction_warning || details.warning}
+            <div className="rounded-lg bg-rose-500/15 p-3.5 border border-rose-500/30 text-xs text-rose-300 font-medium flex items-start gap-2">
+              <AlertTriangle className="h-4 w-4 text-rose-400 flex-shrink-0 mt-0.5" />
+              <span>{stimulus.transaction_warning || details.warning}</span>
             </div>
           )}
         </div>

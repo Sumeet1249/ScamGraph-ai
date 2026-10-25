@@ -14,7 +14,7 @@ import {
   Layers,
   Cpu,
   Brain,
-  LifeBuoy,
+  FlaskConical,
   type LucideIcon,
 } from "lucide-react";
 
@@ -95,10 +95,10 @@ export const navGroups: NavGroup[] = [
         icon: Brain,
       },
       {
-        label: "Citizen Lifeline",
-        href: "/rescue",
-        hint: "Golden hour triage & Section 65B dossier",
-        icon: LifeBuoy,
+        label: "Simulation Lab",
+        href: "/lab",
+        hint: "Interactive scenario workbench & defense simulator",
+        icon: FlaskConical,
       },
     ],
   },
