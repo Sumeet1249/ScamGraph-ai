@@ -9,12 +9,10 @@ import {
   ArrowRight,
   Lock,
   AlertTriangle,
-  HelpCircle,
-  Scale,
   ChevronDown,
-  KeyRound,
-  FileCheck2,
   ExternalLink,
+  CheckCircle2,
+  Zap,
 } from "lucide-react";
 
 export default function HomePage() {
@@ -25,61 +23,60 @@ export default function HomePage() {
   const handleCheckSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputText.trim()) return;
-    // Pass query into check flow
     router.push(`/check?query=${encodeURIComponent(inputText.trim())}`);
   };
 
   const faqItems = [
     {
-      q: "What should I do if I already sent money?",
-      a: "Go directly to Emergency Rescue. Follow the immediate bank freeze and National Cybercrime 1930 reporting steps immediately. The first 120 minutes (Golden Hour) achieve an 84% fund recovery rate on interbank switches.",
+      q: "What should I do if I already sent money to a scammer?",
+      a: "Act immediately: Call the National Cybercrime Helpline at 1930 and contact your bank to freeze the payment. Reporting within the first 2 hours ('Golden Hour') gives the highest chance of freezing and recovering funds across interbank networks.",
     },
     {
       q: "Does checking a message block my payment automatically?",
-      a: "No. ScamGraph provides forensic risk intelligence and verified escalation roadmaps; it does not tamper with banking or UPI rails. You must execute statutory liens through your bank or 1930 CFCFRMS.",
+      a: "No. ScamGraph AI provides safety analysis, scam warnings, and step-by-step guidance. It does not touch your bank account or block transactions automatically. You maintain full control.",
     },
     {
-      q: "Can I check an identifier anonymously?",
-      a: "Yes. Universal Check is 100% open without registration. Identifiers are salted and hashed client-side using SHA-256 before any graph traversal. No personal PII is stored unhashed.",
+      q: "Is it safe and anonymous to check a message or UPI ID?",
+      a: "Yes, 100%. ScamGraph is completely free and requires no account. Your input is encrypted client-side and never shared, sold, or stored with any personal identifying details.",
     },
     {
-      q: "What if ScamGraph shows 'No strong warning signs'?",
-      a: "The absence of strong warning signs is NOT a guarantee of safety. Scammers continually rotate new mobile numbers and domain aliases. Always remain cautious when prompted for payments.",
+      q: "What if ScamGraph shows 'No strong scam indicators'?",
+      a: "Even if no obvious scam patterns are found, always stay alert. Scammers frequently create new phone numbers and fake UPI IDs. Never share OTPs, passwords, or download unknown remote-access apps.",
     },
   ];
 
   return (
     <div className="flex flex-col w-full animate-fade-in-up">
-      {/* ── 1. Hero Section & Universal Omnibox ── */}
-      <section className="w-full bg-ground py-10 md:py-16 border-b border-border-divider">
+      {/* ── 1. Hero Section & Quick Scanner ── */}
+      <section className="w-full py-10 md:py-16 border-b border-blue-100/80">
         <div className="w-full px-6 sm:px-10 lg:px-16 xl:px-20">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             {/* Left Hero Pitch */}
             <div className="lg:col-span-6 flex flex-col justify-center">
-              <div className="inline-flex items-center gap-2 text-viz-primary text-xs font-semibold uppercase tracking-wider mb-3">
-                <span className="w-2 h-2 rounded-full bg-viz-primary animate-pulse" />
-                [M01] Sovereign Fraud Defense Infrastructure
+              <div className="inline-flex items-center gap-2 text-blue-700 bg-blue-50 border border-blue-200/80 rounded-full px-3 py-1 text-xs font-semibold w-fit mb-4 shadow-2xs">
+                <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
+                <span>Next-Gen Scam &amp; UPI Fraud Shield</span>
               </div>
-              <h1 className="text-3xl md:text-5xl font-bold tracking-tight text-on-surface mb-4 leading-tight">
-                Empirical Fraud Verification &amp; National Outbreak Defense
+              <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-slate-900 mb-4 leading-[1.18]">
+                Stop Scams Before You <span className="text-blue-600 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Send Money</span>
               </h1>
-              <p className="text-base text-on-surface-variant mb-6 leading-relaxed">
-                Instant multi-modal threat verification for Indian citizens, banks, and law enforcement. Pre-transaction UPI guard, autonomous mule freezing, and court-ready Section 65B BSA evidence packaging.
+              <p className="text-base text-slate-600 mb-6 leading-relaxed">
+                Paste any suspicious message, UPI ID, phone number, or payment link to check for fraud signals in seconds. Powered by AI journey recognition that detects threats before transactions occur.
               </p>
 
               <div className="flex flex-wrap items-center gap-3">
                 <Link
                   href="/rescue"
-                  className="emergency-btn-beacon inline-flex min-h-[44px] items-center gap-2 rounded-full bg-red-600 px-5 py-2.5 text-xs font-bold text-white shadow-md shadow-red-700/25 transition-all hover:bg-red-700 hover:-translate-y-0.5 active:translate-y-0"
+                  className="inline-flex min-h-[42px] items-center gap-2 rounded-full bg-rose-600 px-5 py-2 text-xs font-bold text-white shadow-md shadow-rose-600/20 transition-all hover:bg-rose-700 hover:shadow-lg active:scale-95"
                 >
                   <AlertTriangle className="h-4 w-4" />
-                  <span>Money Debited in last 2h? Call 1930</span>
+                  <span>Lost Money? Dial 1930 / Quick Recovery</span>
                 </Link>
                 <Link
                   href="/how-it-works"
-                  className="inline-flex min-h-[44px] items-center gap-1.5 rounded-full border border-border-control bg-surface px-5 py-2.5 text-xs font-semibold text-on-surface shadow-sm transition-all hover:bg-surface-subtle hover:-translate-y-0.5 active:translate-y-0"
+                  className="inline-flex min-h-[42px] items-center gap-1.5 rounded-full border border-slate-200 bg-white/90 px-5 py-2 text-xs font-semibold text-slate-700 shadow-2xs transition-all hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50/40 active:scale-95"
                 >
-                  <span>How ScamGraph Works</span>
+                  <span>How It Works</span>
                   <ExternalLink className="h-3.5 w-3.5" />
                 </Link>
               </div>
@@ -87,22 +84,22 @@ export default function HomePage() {
 
             {/* Right Omnibox Card */}
             <div className="lg:col-span-6 w-full">
-              <div className="bg-surface rounded-xl border border-border-divider shadow-sm p-5 md:p-6 card-interactive">
-                <div className="flex items-center justify-between pb-3 mb-4 border-b border-border-divider">
+              <div className="bg-white rounded-2xl border border-blue-100 shadow-xl shadow-blue-500/5 p-5 md:p-7 relative overflow-hidden backdrop-blur-sm">
+                <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
                   <div className="flex items-center gap-2">
-                    <Search className="h-4 w-4 text-viz-primary" />
-                    <span className="text-xs font-bold text-on-surface uppercase tracking-wider">
-                      Universal Threat Omnibox
+                    <Search className="h-4 w-4 text-blue-600" />
+                    <span className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+                      Quick Scam Scanner
                     </span>
                   </div>
-                  <span className="text-[11px] font-semibold text-viz-neutral bg-surface-subtle px-2 py-0.5 rounded border border-border-divider">
-                    Zero-Knowledge Inspection
+                  <span className="text-[11px] font-semibold text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-100">
+                    100% Free &amp; Private
                   </span>
                 </div>
 
                 <form onSubmit={handleCheckSubmit} className="flex flex-col gap-3">
-                  <label htmlFor="scam-intake-text" className="text-xs font-medium text-on-surface">
-                    Paste UPI ID, phone number (+91), suspicious SMS, or APK hash:
+                  <label htmlFor="scam-intake-text" className="text-xs font-medium text-slate-700">
+                    Paste a UPI ID, phone number, SMS message, or website link:
                   </label>
                   <textarea
                     id="scam-intake-text"
@@ -110,40 +107,40 @@ export default function HomePage() {
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
                     placeholder="e.g. 9876543210@paytm, electricity bill threat SMS, or suspicious APK download URL..."
-                    className="w-full p-3.5 rounded-lg border border-border-control bg-surface text-on-surface placeholder:text-viz-neutral text-sm focus:border-viz-primary focus:outline-none focus:ring-2 focus:ring-viz-primary/20 resize-none transition-all"
+                    className="w-full p-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-900 placeholder:text-slate-400 text-sm focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-3 focus:ring-blue-500/15 resize-none transition-all"
                   />
 
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
-                    <div className="flex items-center gap-1.5 text-viz-neutral text-[11px]">
-                      <Lock className="h-3.5 w-3.5 text-viz-primary" />
-                      <span>Client-side SHA-256 hashed. Zero PII stored unhashed.</span>
+                    <div className="flex items-center gap-1.5 text-slate-500 text-[11px]">
+                      <Lock className="h-3.5 w-3.5 text-blue-600" />
+                      <span>Private &amp; Secure. No personal data is ever saved.</span>
                     </div>
 
                     <button
                       type="submit"
                       disabled={!inputText.trim()}
-                      className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full bg-viz-primary px-6 py-2 text-xs font-bold text-on-primary hover:bg-primary transition-all disabled:opacity-50 shadow-sm"
+                      className="inline-flex min-h-[42px] items-center justify-center gap-2 rounded-full bg-blue-600 px-6 py-2 text-xs font-bold text-white hover:bg-blue-700 transition-all disabled:opacity-50 shadow-md shadow-blue-600/20 active:scale-95"
                     >
-                      <span>Check Now</span>
+                      <span>Check for Scams</span>
                       <ArrowRight className="h-4 w-4" />
                     </button>
                   </div>
                 </form>
 
                 {/* Popular sample triggers */}
-                <div className="mt-4 pt-3 border-t border-border-divider flex flex-wrap items-center gap-1.5 text-[11px]">
-                  <span className="text-viz-neutral font-medium">Try sample:</span>
+                <div className="mt-4 pt-3 border-t border-slate-100 flex flex-wrap items-center gap-1.5 text-[11px]">
+                  <span className="text-slate-500 font-medium">Try example:</span>
                   {[
-                    "Electricity bill disconnection SMS",
-                    "Customs courier digital arrest call",
-                    "Telegram part-time hotel rating task",
+                    "Electricity bill disconnection threat",
+                    "Fake courier & digital arrest call",
+                    "Telegram part-time job offer",
                     "fake-sbi-rewards.apk",
                   ].map((sample) => (
                     <button
                       key={sample}
                       type="button"
                       onClick={() => setInputText(sample)}
-                      className="rounded bg-surface-subtle px-2 py-0.5 text-on-surface-variant hover:text-on-surface hover:bg-border-divider transition-colors"
+                      className="rounded-lg bg-slate-100/80 px-2.5 py-1 text-slate-600 hover:text-blue-700 hover:bg-blue-50 border border-slate-200/60 transition-colors"
                     >
                       {sample}
                     </button>
@@ -155,209 +152,204 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── 2. Live Telemetry Strip ── */}
-      <section className="w-full bg-surface-subtle py-8 border-b border-border-divider">
+      {/* ── 2. Live Platform Impact ── */}
+      <section className="w-full bg-white/70 py-8 border-b border-blue-100/80 backdrop-blur-xs">
         <div className="w-full px-6 sm:px-10 lg:px-16 xl:px-20">
-          <div className="mb-4">
-            <span className="text-[11px] text-viz-neutral font-semibold uppercase tracking-wider block">
-              National Defense Telemetry
-            </span>
-            <h2 className="text-xl font-bold text-on-surface">
-              Active Interception &amp; Infrastructure Scale
-            </h2>
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <span className="text-[11px] text-blue-700 font-bold uppercase tracking-wider block">
+                Live Protection Network
+              </span>
+              <h2 className="text-xl font-bold text-slate-900">
+                Community Impact &amp; Threat Detection
+              </h2>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-surface rounded-xl border border-border-divider p-4 card-interactive shadow-sm">
-              <div className="text-xs text-viz-neutral font-medium">Total Loss Intercepted</div>
-              <div className="text-2xl font-bold text-on-surface mt-1">₹482.4 Cr</div>
-              <div className="text-xs text-viz-primary font-semibold mt-1">+₹1.8 Cr today</div>
+            <div className="bg-white rounded-xl border border-blue-100/90 p-4 shadow-sm hover:border-blue-300 transition-colors">
+              <div className="text-xs text-slate-500 font-medium">Scam Money Prevented</div>
+              <div className="text-2xl font-extrabold text-slate-900 mt-1">₹482+ Cr</div>
+              <div className="text-xs text-emerald-600 font-semibold mt-1 flex items-center gap-1">
+                <CheckCircle2 className="w-3.5 h-3.5" /> Across UPI &amp; Net Banking
+              </div>
             </div>
-            <div className="bg-surface rounded-xl border border-border-divider p-4 card-interactive shadow-sm">
-              <div className="text-xs text-viz-neutral font-medium">Active Mule Rings Tracked</div>
-              <div className="text-2xl font-bold text-on-surface mt-1">38 Syndicates</div>
-              <div className="text-xs text-viz-neutral font-medium mt-1">I4C &amp; NPCI correlated</div>
+            <div className="bg-white rounded-xl border border-blue-100/90 p-4 shadow-sm hover:border-blue-300 transition-colors">
+              <div className="text-xs text-slate-500 font-medium">Active Scam Networks Tracked</div>
+              <div className="text-2xl font-extrabold text-slate-900 mt-1">38+ Syndicates</div>
+              <div className="text-xs text-slate-500 font-medium mt-1">Cross-bank linked clusters</div>
             </div>
-            <div className="bg-surface rounded-xl border border-border-divider p-4 card-interactive shadow-sm">
-              <div className="text-xs text-viz-neutral font-medium">Median Golden Hour Freeze</div>
-              <div className="text-2xl font-bold text-on-surface mt-1">38 mins</div>
-              <div className="text-xs text-viz-neutral font-medium mt-1">Industry avg: 4–6 hrs</div>
+            <div className="bg-white rounded-xl border border-blue-100/90 p-4 shadow-sm hover:border-blue-300 transition-colors">
+              <div className="text-xs text-slate-500 font-medium">Average Scan Speed</div>
+              <div className="text-2xl font-extrabold text-slate-900 mt-1">&lt; 1.2 Sec</div>
+              <div className="text-xs text-blue-600 font-semibold mt-1 flex items-center gap-1">
+                <Zap className="w-3.5 h-3.5" /> Real-time threat matching
+              </div>
             </div>
-            <div className="bg-surface rounded-xl border border-border-divider p-4 card-interactive shadow-sm">
-              <div className="text-xs text-viz-neutral font-medium">Integrated Partner Banks</div>
-              <div className="text-2xl font-bold text-on-surface mt-1">28 Banks</div>
-              <div className="text-xs text-viz-neutral font-medium mt-1">Direct Nodal Desks</div>
+            <div className="bg-white rounded-xl border border-blue-100/90 p-4 shadow-sm hover:border-blue-300 transition-colors">
+              <div className="text-xs text-slate-500 font-medium">Supported Payment Systems</div>
+              <div className="text-2xl font-extrabold text-slate-900 mt-1">All UPI &amp; Banks</div>
+              <div className="text-xs text-slate-500 font-medium mt-1">GPay, PhonePe, Paytm &amp; Banks</div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── 3. 3-Step Methodology ── */}
-      <section className="w-full bg-ground py-12 border-b border-border-divider">
+      {/* ── 3. Simple 3-Step Guide ── */}
+      <section className="w-full py-12 border-b border-blue-100/80">
         <div className="w-full px-6 sm:px-10 lg:px-16 xl:px-20">
-          <div className="max-w-[800px] mb-8">
-            <span className="text-xs text-viz-neutral font-semibold uppercase tracking-wider block mb-1">
-              Transparent Methodology
+          <div className="max-w-[700px] mb-8">
+            <span className="text-xs text-blue-700 font-bold uppercase tracking-wider block mb-1">
+              Easy 3-Step Process
             </span>
-            <h2 className="text-2xl md:text-3xl font-bold text-on-surface">
-              Check → Understand → Act
+            <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900">
+              Check → Understand → Protect
             </h2>
-            <p className="text-sm text-on-surface-variant mt-2 leading-relaxed">
-              A disciplined analysis cycle that prioritizes actionable next steps over sensationalist cyber jargon.
+            <p className="text-sm text-slate-600 mt-2 leading-relaxed">
+              Clear, practical advice in plain language without complicated cybersecurity terms.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="flex flex-col bg-surface p-6 rounded-xl border border-border-divider shadow-sm card-interactive">
+            <div className="flex flex-col bg-white p-6 rounded-2xl border border-blue-100/80 shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-center gap-3 mb-4">
-                <span className="font-mono text-viz-primary font-bold text-2xl">01</span>
-                <div className="h-[1px] flex-1 bg-border-divider" />
+                <span className="font-mono text-blue-600 font-extrabold text-2xl">01</span>
+                <div className="h-px flex-1 bg-slate-100" />
               </div>
-              <h3 className="text-base font-bold text-on-surface mb-1">Share what you have</h3>
-              <p className="text-xs text-on-surface-variant leading-relaxed">
-                Paste suspicious message text, an APK link, phone number, or recount call dialogue.
+              <h3 className="text-base font-bold text-slate-900 mb-1">Paste what you received</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Copy and paste the suspicious text message, phone number, UPI ID, or website link into the scanner.
               </p>
             </div>
 
-            <div className="flex flex-col bg-surface p-6 rounded-xl border border-border-divider shadow-sm card-interactive">
+            <div className="flex flex-col bg-white p-6 rounded-2xl border border-blue-100/80 shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-center gap-3 mb-4">
-                <span className="font-mono text-viz-primary font-bold text-2xl">02</span>
-                <div className="h-[1px] flex-1 bg-border-divider" />
+                <span className="font-mono text-blue-600 font-extrabold text-2xl">02</span>
+                <div className="h-px flex-1 bg-slate-100" />
               </div>
-              <h3 className="text-base font-bold text-on-surface mb-1">Understand warning signs</h3>
-              <p className="text-xs text-on-surface-variant leading-relaxed">
-                Review verified threat evidence, psychological coercion indicators, and how this campaign progresses.
+              <h3 className="text-base font-bold text-slate-900 mb-1">See the warning signs</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Our AI highlights high-risk urgency tactics, impersonation flags, and known scam patterns.
               </p>
             </div>
 
-            <div className="flex flex-col bg-surface p-6 rounded-xl border border-border-divider shadow-sm">
+            <div className="flex flex-col bg-white p-6 rounded-2xl border border-blue-100/80 shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-center gap-3 mb-4">
-                <span className="font-mono text-viz-primary font-bold text-2xl">03</span>
-                <div className="h-[1px] flex-1 bg-border-divider" />
+                <span className="font-mono text-blue-600 font-extrabold text-2xl">03</span>
+                <div className="h-px flex-1 bg-slate-100" />
               </div>
-              <h3 className="text-base font-bold text-on-surface mb-1">Know what to do next</h3>
-              <p className="text-xs text-on-surface-variant leading-relaxed">
-                Receive instant statutory next steps, bank freeze letters, and court-ready Section 65B BSA packages.
+              <h3 className="text-base font-bold text-slate-900 mb-1">Take safe action</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Get immediate instructions on how to block, report, or freeze your payment before financial loss occurs.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── 4. Topological Journey Pipeline ── */}
-      <section className="w-full bg-surface py-12 border-b border-border-divider">
+      {/* ── 4. Visual Scam Stages ── */}
+      <section className="w-full bg-white/70 py-12 border-b border-blue-100/80">
         <div className="w-full px-6 sm:px-10 lg:px-16 xl:px-20">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-xl font-bold text-on-surface">Topological Scam Path</h2>
-                <span className="text-[11px] text-viz-neutral bg-surface-subtle px-2 py-0.5 rounded border border-border-divider">
-                  Illustrative Progression
+                <h2 className="text-xl font-bold text-slate-900">How Scammers Trick Victims (4 Stages)</h2>
+                <span className="text-[11px] text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200/80 font-semibold">
+                  Recognize The Tactics
                 </span>
               </div>
-              <p className="text-xs text-on-surface-variant mt-1">
-                ScamGraph maps sequential coercion stages so victims recognize where they stand before paying.
+              <p className="text-xs text-slate-600 mt-1">
+                Scams follow predictable psychological steps. Spotting them early keeps your money safe.
               </p>
             </div>
           </div>
 
-          <div className="w-full bg-ground rounded-xl border border-border-divider p-6 overflow-x-auto">
+          <div className="w-full bg-white rounded-2xl border border-blue-100 p-6 shadow-sm overflow-x-auto">
             <div className="min-w-[760px] flex items-center justify-between relative py-4">
-              {/* Node 1 */}
+              {/* Stage 1 */}
               <div className="flex flex-col items-center text-center z-10 w-36">
-                <div className="w-8 h-8 rounded-full bg-viz-primary text-on-primary flex items-center justify-center font-bold text-xs mb-1.5 shadow-sm">
-                  ●
+                <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xs mb-1.5 shadow-sm">
+                  1
                 </div>
-                <span className="text-xs font-bold text-on-surface">Initial Contact</span>
-                <span className="text-[10px] text-viz-neutral">Observed SMS</span>
+                <span className="text-xs font-bold text-slate-900">First Contact</span>
+                <span className="text-[10px] text-slate-500">SMS / WhatsApp / Call</span>
               </div>
-              <div className="flex-1 h-[2px] bg-border-control" />
+              <div className="flex-1 h-[2px] bg-blue-200" />
 
-              {/* Node 2 */}
+              {/* Stage 2 */}
               <div className="flex flex-col items-center text-center z-10 w-36">
-                <div className="w-8 h-8 rounded-full bg-viz-primary text-on-primary flex items-center justify-center font-bold text-xs mb-1.5 shadow-sm">
-                  ●
+                <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xs mb-1.5 shadow-sm">
+                  2
                 </div>
-                <span className="text-xs font-bold text-on-surface">Impersonation</span>
-                <span className="text-[10px] text-viz-neutral">Power Officer / Police</span>
+                <span className="text-xs font-bold text-slate-900">Fake Identity</span>
+                <span className="text-[10px] text-slate-500">Posing as Bank / Police</span>
               </div>
-              <div className="flex-1 h-[2px] bg-border-control" />
+              <div className="flex-1 h-[2px] bg-blue-200" />
 
-              {/* Node 3 */}
+              {/* Stage 3 */}
               <div className="flex flex-col items-center text-center z-10 w-36">
-                <div className="w-8 h-8 rounded-full border-2 border-viz-primary bg-surface text-viz-primary flex items-center justify-center font-bold text-xs mb-1.5 shadow-sm">
-                  ◉
+                <div className="w-8 h-8 rounded-full border-2 border-amber-500 bg-amber-50 text-amber-700 flex items-center justify-center font-bold text-xs mb-1.5 shadow-sm">
+                  3
                 </div>
-                <span className="text-xs font-bold text-viz-primary">Urgency Pressure</span>
-                <span className="text-[10px] text-viz-primary font-semibold">You Reported</span>
+                <span className="text-xs font-bold text-amber-700">Panic &amp; Urgency</span>
+                <span className="text-[10px] text-amber-600 font-semibold">&ldquo;Act in 2 Hours!&rdquo;</span>
               </div>
 
-              {/* Payment Boundary */}
+              {/* Protection Boundary */}
               <div className="flex flex-col items-center px-2 z-10">
-                <div className="h-10 w-[2px] bg-tone-danger-text mb-1" />
-                <span className="text-[10px] font-bold text-tone-danger-text bg-tone-danger-bg px-2 py-0.5 rounded border border-tone-danger-strong-bg whitespace-nowrap">
-                  Payment Boundary
+                <div className="h-10 w-[2px] bg-rose-500 mb-1" />
+                <span className="text-[10px] font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200 whitespace-nowrap">
+                  Stop Here Before Paying
                 </span>
               </div>
 
-              {/* Node 4 */}
+              {/* Stage 4 */}
               <div className="flex flex-col items-center text-center z-10 w-36">
-                <div className="w-8 h-8 rounded-full border-2 border-dashed border-border-control bg-surface text-viz-neutral flex items-center justify-center font-bold text-xs mb-1.5 shadow-sm">
-                  ○
+                <div className="w-8 h-8 rounded-full border-2 border-dashed border-rose-400 bg-rose-50 text-rose-700 flex items-center justify-center font-bold text-xs mb-1.5 shadow-sm">
+                  4
                 </div>
-                <span className="text-xs font-semibold text-on-surface-variant">Payment Request</span>
-                <span className="text-[10px] text-viz-neutral">Inferred VPA</span>
-              </div>
-              <div className="flex-1 h-[2px] border-t-2 border-dotted border-border-divider" />
-
-              {/* Node 5 */}
-              <div className="flex flex-col items-center text-center z-10 w-36">
-                <div className="w-8 h-8 rounded-full border-2 border-dotted border-border-control bg-surface text-viz-neutral flex items-center justify-center font-bold text-xs mb-1.5 shadow-sm">
-                  ◌
-                </div>
-                <span className="text-xs font-semibold text-on-surface-variant">Fee Unlock Trap</span>
-                <span className="text-[10px] text-viz-neutral">Projected Next</span>
+                <span className="text-xs font-semibold text-rose-800">Payment Request</span>
+                <span className="text-[10px] text-rose-600">UPI / QR / Phishing Link</span>
               </div>
             </div>
 
-            <div className="mt-4 pt-3 border-t border-border-divider flex flex-wrap items-center justify-between text-[11px] text-viz-neutral gap-4">
-              <div className="flex items-center gap-4">
-                <span className="inline-flex items-center gap-1 font-medium"><span className="text-viz-primary font-bold">●</span> Observed Stage</span>
-                <span className="inline-flex items-center gap-1 font-medium"><span className="text-viz-primary font-bold">◉</span> User Reported</span>
-                <span className="inline-flex items-center gap-1 font-medium"><span className="text-viz-neutral font-bold">○</span> Inferred AI Link</span>
-                <span className="inline-flex items-center gap-1 font-medium"><span className="text-viz-neutral font-bold">◌</span> Projected Escalation</span>
+            <div className="mt-4 pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between text-[11px] text-slate-500 gap-4">
+              <div className="flex items-center gap-3">
+                <span className="inline-flex items-center gap-1 font-medium"><span className="w-2 h-2 rounded-full bg-blue-600"></span> Observed Stage</span>
+                <span className="inline-flex items-center gap-1 font-medium"><span className="w-2 h-2 rounded-full bg-amber-500"></span> Coercion Point</span>
+                <span className="inline-flex items-center gap-1 font-medium"><span className="w-2 h-2 rounded-full bg-rose-500"></span> Fraud Intent</span>
               </div>
-              <span className="italic text-[11px]">Interception here halts multi-hop laundering</span>
+              <span className="text-blue-700 font-medium">Scanning early stops the scam before any money leaves your account.</span>
             </div>
           </div>
         </div>
       </section>
 
       {/* ── 5. FAQs Section ── */}
-      <section className="w-full bg-ground py-12 border-b border-border-divider">
-        <div className="w-full max-w-5xl mx-auto px-6 sm:px-10">
+      <section className="w-full py-12 border-b border-blue-100/80">
+        <div className="w-full max-w-4xl mx-auto px-6 sm:px-10">
           <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-on-surface">Frequently Asked Questions</h2>
-            <p className="text-xs text-on-surface-variant mt-1">
-              Direct guidance for high-stress fraud situations.
+            <h2 className="text-2xl font-extrabold text-slate-900">Frequently Asked Questions</h2>
+            <p className="text-xs text-slate-600 mt-1">
+              Direct guidance for common scam situations and fraud concerns.
             </p>
           </div>
 
-          <div className="divide-y divide-border-divider border border-border-divider rounded-xl bg-surface overflow-hidden shadow-sm">
+          <div className="divide-y divide-slate-100 border border-blue-100 rounded-2xl bg-white overflow-hidden shadow-sm">
             {faqItems.map((item, idx) => {
               const isOpen = selectedFaq === idx;
               return (
-                <div key={idx} className="p-4 transition-colors hover:bg-surface-subtle">
+                <div key={idx} className="p-4 transition-colors hover:bg-slate-50/60">
                   <button
                     type="button"
                     onClick={() => setSelectedFaq(isOpen ? null : idx)}
-                    className="flex w-full items-center justify-between text-left text-xs md:text-sm font-bold text-on-surface focus:outline-none"
+                    className="flex w-full items-center justify-between text-left text-xs md:text-sm font-bold text-slate-900 focus:outline-none"
                   >
                     <span>{item.q}</span>
-                    <ChevronDown className={`h-4 w-4 text-viz-neutral transition-transform ${isOpen ? "rotate-180" : ""}`} />
+                    <ChevronDown className={`h-4 w-4 text-slate-400 transition-transform ${isOpen ? "rotate-180" : ""}`} />
                   </button>
                   {isOpen && (
-                    <div className="pt-2 text-xs text-on-surface-variant leading-relaxed">
+                    <div className="pt-2.5 text-xs text-slate-600 leading-relaxed">
                       {item.a}
                     </div>
                   )}
@@ -368,20 +360,20 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── 6. Emergency Bottom Callout ── */}
-      <section className="w-full bg-surface-subtle py-12 text-center">
-        <div className="w-full max-w-4xl mx-auto px-6 sm:px-10">
-          <h2 className="text-xl md:text-2xl font-bold text-on-surface mb-2">
-            Victim of an active financial fraud within the last 4 hours?
+      {/* ── 6. Compact Emergency Assistance Bar ── */}
+      <section className="w-full py-8 text-center bg-gradient-to-r from-blue-50/60 via-indigo-50/40 to-blue-50/60">
+        <div className="w-full max-w-3xl mx-auto px-6 sm:px-10">
+          <h2 className="text-lg md:text-xl font-bold text-slate-900 mb-1.5">
+            Lost money in a scam recently?
           </h2>
-          <p className="text-xs text-on-surface-variant mb-6">
-            Enter Golden Hour Rescue Triage immediately to initiate interbank transaction freezes and generate statutory Section 65B BSA complaint dossiers.
+          <p className="text-xs text-slate-600 mb-4">
+            Call the Cybercrime Helpline at <strong>1930</strong> immediately, or follow our step-by-step recovery guide to freeze unauthorized transfers.
           </p>
           <Link
             href="/rescue"
-            className="inline-flex min-h-[44px] items-center gap-2 rounded-full bg-viz-primary hover:bg-primary text-on-primary px-6 py-2.5 text-xs font-bold transition-all shadow-sm"
+            className="inline-flex min-h-[40px] items-center gap-2 rounded-full bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 text-xs font-bold transition-all shadow-md shadow-blue-600/20 active:scale-95"
           >
-            <span>Access Golden Hour Rescue Triage</span>
+            <span>Start Quick Recovery Guide</span>
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>

@@ -14,6 +14,7 @@ import {
   Layers,
   Cpu,
   Brain,
+  FlaskConical,
   LifeBuoy,
   type LucideIcon,
 } from "lucide-react";
@@ -83,16 +84,15 @@ export const navGroups: NavGroup[] = [
         ],
       },
       {
-        label: "AI Model Arena",
-        href: "/arena",
-        hint: "Benchmark gates & shadow models",
-        icon: Cpu,
-      },
-      {
-        label: "Tactics Matrix",
-        href: "/tactics",
-        hint: "20 Canonical persuasion vectors",
-        icon: Brain,
+        label: "Simulation & AI Lab",
+        href: "/lab",
+        hint: "Scenarios, Model Arena & Tactics Matrix",
+        icon: FlaskConical,
+        subItems: [
+          { label: "Attack Simulator", href: "/lab", hint: "Interactive scenario simulations", icon: FlaskConical },
+          { label: "Model Arena", href: "/lab/arena", hint: "Benchmark gates & shadow models", icon: Cpu },
+          { label: "Tactics Matrix", href: "/lab/tactics", hint: "Canonical coercion vectors", icon: Brain },
+        ],
       },
       {
         label: "Citizen Lifeline",

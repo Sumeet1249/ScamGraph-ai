@@ -12,68 +12,68 @@
 :root {
   color-scheme: light;
 
-  /* SOVEREIGN TRUST LIGHT DESIGN TOKENS (Audited from Stitch MCP) */
-  --sg-ground: #FBFBFB;
-  --sg-on-surface: #1A1C1E;
-  --sg-on-surface-variant: #3F4946;
+  /* SOVEREIGN TRUST LIGHT DESIGN TOKENS (Modern Startup White & Light Blue) */
+  --sg-ground: #F6F9FD;
+  --sg-on-surface: #0F172A;
+  --sg-on-surface-variant: #334155;
   --sg-surface: #FFFFFF;
   --sg-surface-raised: #FFFFFF;
-  --sg-surface-subtle: #F3F4F5;
-  --sg-surface-hover: #F3F4F5;
-  --sg-surface-pressed: #E8E8EA;
-  --sg-surface-inset: #F3F4F5;
+  --sg-surface-subtle: #EEF4FA;
+  --sg-surface-hover: #E4EFF9;
+  --sg-surface-pressed: #D8E7F5;
+  --sg-surface-inset: #F1F6FB;
 
-  --sg-border-divider: #E1E4E8;
-  --sg-border-control: #80858C;
-  --sg-border: #E1E4E8;
-  --sg-border-strong: #80858C;
-  --sg-input-border: #80858C;
+  --sg-border-divider: #E2EBF5;
+  --sg-border-control: #94A3B8;
+  --sg-border: #E2EBF5;
+  --sg-border-strong: #64748B;
+  --sg-input-border: #CBD5E1;
 
-  --sg-viz-primary: #0B6256;      /* Botanical Teal */
-  --sg-primary: #00483F;          /* High authority teal */
-  --sg-secondary: #006B5D;
-  --sg-primary-container: #0B6256;
-  --sg-on-primary-container: #91DBCB;
+  --sg-viz-primary: #1D68BD;      /* Modern Trust Blue */
+  --sg-primary: #134E96;          /* Deep authority navy blue */
+  --sg-secondary: #0284C7;        /* Tech sky blue */
+  --sg-primary-container: #1D68BD;
+  --sg-on-primary-container: #BFDBFE;
   --sg-on-primary: #FFFFFF;
-  --sg-secondary-container: #96F0DE;
-  --sg-selected-tint: rgba(15, 123, 108, 0.08);
+  --sg-secondary-container: #BAE6FD;
+  --sg-selected-tint: rgba(29, 104, 189, 0.08);
 
-  --sg-viz-text: #1B1D1F;
-  --sg-viz-neutral: #565C65;
-  --sg-viz-warning: #B86200;
-  --sg-viz-info: #205493;
+  --sg-viz-text: #0F172A;
+  --sg-viz-neutral: #64748B;
+  --sg-viz-warning: #D97706;
+  --sg-viz-info: #2563EB;
 
   /* 7-State Semantic Risk Status Tones */
-  --sg-tone-info-bg: #E7EDF4;
-  --sg-tone-info-text: #1A446C;
-  --sg-tone-warning-bg: #F1ECE3;
-  --sg-tone-warning-text: #614714;
-  --sg-tone-warning-strong-bg: #E8DFCF;
-  --sg-tone-warning-strong-text: #4A3306;
-  --sg-tone-danger-bg: #F6E7E5;
-  --sg-tone-danger-text: #781C18;
-  --sg-tone-danger-strong-bg: #F0D6D3;
-  --sg-tone-danger-strong-text: #541210;
+  --sg-tone-info-bg: #E0F2FE;
+  --sg-tone-info-text: #0369A1;
+  --sg-tone-warning-bg: #FEF3C7;
+  --sg-tone-warning-text: #92400E;
+  --sg-tone-warning-strong-bg: #FDE68A;
+  --sg-tone-warning-strong-text: #78350F;
+  --sg-tone-danger-bg: #FEE2E2;
+  --sg-tone-danger-text: #991B1B;
+  --sg-tone-danger-strong-bg: #FECACA;
+  --sg-tone-danger-strong-text: #7F1D1D;
 
-  --sg-bg: #FBFBFB;
-  --sg-bg-subtle: #F3F4F5;
-  --sg-text: #1A1C1E;
-  --sg-text-muted: #565C65;
-  --sg-text-subtle: #80858C;
-  --sg-surface-hover: #F3F4F5;
-  --sg-surface-pressed: #E8E8EA;
-  --sg-surface-inset: #F3F4F5;
+  --sg-bg: #F6F9FD;
+  --sg-bg-subtle: #EEF4FA;
+  --sg-text: #0F172A;
+  --sg-text-muted: #64748B;
+  --sg-text-subtle: #94A3B8;
+  --sg-surface-hover: #E4EFF9;
+  --sg-surface-pressed: #D8E7F5;
+  --sg-surface-inset: #F1F6FB;
 
-  --sg-accent: #0B6256;
-  --sg-accent-hover: #0F7B6C;
-  --sg-accent-pressed: #00483F;
-  --sg-accent-soft: rgba(11, 98, 86, 0.08);
-  --sg-accent-line: rgba(11, 98, 86, 0.35);
+  --sg-accent: #1D68BD;
+  --sg-accent-hover: #134E96;
+  --sg-accent-pressed: #0F3B73;
+  --sg-accent-soft: rgba(29, 104, 189, 0.08);
+  --sg-accent-line: rgba(29, 104, 189, 0.35);
   --sg-on-accent: #FFFFFF;
-  --sg-ring: #0B6256;
+  --sg-ring: #2563EB;
 
-  --sg-structure: #E1E4E8;
-  --sg-structure-soft: rgba(225, 228, 232, 0.5);
+  --sg-structure: #E2EBF5;
+  --sg-structure-soft: rgba(226, 235, 245, 0.7);
 
   --sg-critical:        #ec6b65;
   --sg-high:            #e8924f;
@@ -168,7 +168,12 @@
   }
 
   body {
-    background-color: var(--sg-bg);
+    background-color: #F6F9FD;
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(224, 242, 254, 0.7) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(219, 234, 254, 0.6) 0px, transparent 50%),
+      radial-gradient(at 50% 100%, rgba(238, 242, 255, 0.5) 0px, transparent 50%);
+    background-attachment: fixed;
     color: var(--sg-text);
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;

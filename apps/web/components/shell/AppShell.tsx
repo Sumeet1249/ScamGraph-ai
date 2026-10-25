@@ -7,6 +7,7 @@ import { TopNav } from "./TopNav";
 import { MobileNav } from "./MobileNav";
 import { CitizenNav } from "./CitizenNav";
 import { CitizenFooter } from "./CitizenFooter";
+import { NavigationControls } from "./NavigationControls";
 
 /**
  * Application shell:
@@ -48,16 +49,17 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   if (!isAnalystRoute) {
     return (
-      <div className="flex min-h-screen flex-col bg-ground text-on-surface">
+      <div className="flex min-h-screen flex-col bg-ground text-on-surface relative">
         <CitizenNav />
         <main className="flex-1 w-full bg-ground">{children}</main>
         <CitizenFooter />
+        <NavigationControls />
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen bg-ground text-on-surface">
+    <div className="flex min-h-screen bg-ground text-on-surface relative">
       <AppSidebar />
       <div className="flex min-w-0 flex-1 flex-col transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]">
         <TopNav onMenuToggle={() => setMenuOpen(true)} />
@@ -66,16 +68,17 @@ export function AppShell({ children }: { children: ReactNode }) {
             {children}
           </div>
         </main>
-        <footer className="border-t border-border-divider px-4 py-4 text-xs text-viz-neutral lg:px-8 bg-surface-subtle">
+        <footer className="border-t border-border-divider px-4 py-3 text-xs text-viz-neutral lg:px-8 bg-surface-subtle">
           <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-2 sm:flex-row">
             <span>
-              ScamGraph AI · Law Enforcement &amp; Bank Analyst Console · §65B BSA Compliant
+              ScamGraph AI · Law Enforcement &amp; Bank Analyst Console
             </span>
-            <span className="font-mono text-[11px] text-viz-neutral">Dual-axis risk · GNN Mule Traversal</span>
+            <span className="font-mono text-[11px] text-viz-neutral">Secured Analytics Engine</span>
           </div>
         </footer>
       </div>
       <MobileNav open={menuOpen} onClose={() => setMenuOpen(false)} />
+      <NavigationControls />
     </div>
   );
 }

@@ -6,7 +6,8 @@ import { DemoDataBadge } from "@/components/shared/DemoDataBadge";
 import { ScenarioCard } from "@/components/lab/ScenarioCard";
 import { SimulationSession } from "@/components/lab/SimulationSession";
 import { Card, Button } from "@/components/ui";
-import { RotateCcw } from "lucide-react";
+import Link from "next/link";
+import { RotateCcw, FlaskConical, Cpu, Brain } from "lucide-react";
 
 interface Scenario {
   scenario_id: string;
@@ -57,10 +58,35 @@ export default function LabPage() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
+      {/* Unified Lab Sub-Navigation Bar */}
+      <div className="flex items-center gap-2 border-b border-blue-100 pb-3">
+        <Link
+          href="/lab"
+          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold text-blue-700 bg-blue-50 border border-blue-200/80 shadow-2xs"
+        >
+          <FlaskConical className="h-3.5 w-3.5 text-blue-600" />
+          <span>Attack Simulator</span>
+        </Link>
+        <Link
+          href="/lab/arena"
+          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+        >
+          <Cpu className="h-3.5 w-3.5 text-slate-500" />
+          <span>AI Model Arena</span>
+        </Link>
+        <Link
+          href="/lab/tactics"
+          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+        >
+          <Brain className="h-3.5 w-3.5 text-slate-500" />
+          <span>Tactics Matrix</span>
+        </Link>
+      </div>
+
       <PageHeader
-        eyebrow="Simulation & Defense"
-        title="ScamGraph Lab"
+        eyebrow="Simulation & Defense Lab"
+        title="ScamGraph Simulation Lab"
         description="Interactive training scenarios. Make decisions at each step, see how scams unfold, and learn safer alternatives. Every choice matters."
         actions={
           <div className="flex items-center gap-3">
