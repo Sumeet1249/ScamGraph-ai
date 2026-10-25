@@ -235,8 +235,8 @@ async def process_decision(req: SimulationDecisionRequest):
             )
     
     # Check if session is complete
-    session_completed = next_step_id is None
-    if session_completed:
+    session_completed = next_step_id is None or next_step_response is None
+    if session_completed and not session.get("completed_at"):
         session["completed_at"] = datetime.now(timezone.utc).isoformat()
     
     # Determine intervention recommendation
@@ -388,7 +388,7 @@ async def get_debrief(session_id: str):
         raise HTTPException(status_code=404, detail=f"Session {session_id} not found")
     
     if not session.get("completed_at"):
-        raise HTTPException(status_code=400, detail="Scenario not yet completed")
+        session["completed_at"] = datetime.now(timezone.utc).isoformat()
     
     scenario_def = session["scenario_def"]
     
@@ -400,7 +400,7 @@ async def get_debrief(session_id: str):
     # Duration
     started = datetime.fromisoformat(session["started_at"])
     completed = datetime.fromisoformat(session["completed_at"])
-    duration_seconds = int((completed - started).total_seconds())
+    duration_seconds = max(1, int((completed - started).total_seconds()))
     
     # Generate learning points
     learning_points = []
@@ -408,16 +408,31 @@ async def get_debrief(session_id: str):
         step_id = decision_record["step_id"]
         decision = SimulationDecisionEnum(decision_record["decision"])
         if decision == SimulationDecisionEnum.VERIFY_INDEPENDENTLY:
-            learning_points.append("✓ You correctly verified independently—this is the safest approach.")
+            learning_points.append("✓ You correctly verified independently—this is the single most effective defense.")
+        elif decision == SimulationDecisionEnum.IGNORE_OR_REPORT:
+            learning_points.append("✓ Reporting the incident helps financial intelligence units map and freeze scam infrastructure.")
+        elif decision == SimulationDecisionEnum.CANCEL_PAYMENT:
+            learning_points.append("✓ Canceling the payment prevented imminent irreversible financial loss.")
         elif decision == SimulationDecisionEnum.OPEN_LINK:
-            learning_points.append("✗ Opening unverified links exposed you to credential theft.")
+            learning_points.append("✗ Opening unverified links exposes you to credential harvesting and drive-by malware.")
         elif decision == SimulationDecisionEnum.APPROVE_PAYMENT:
-            learning_points.append("✗ Approving the payment transferred money to the attacker.")
+            learning_points.append("✗ Approving the payment transferred money to an untrusted mule VPA.")
+        elif decision == SimulationDecisionEnum.ENTER_OTP:
+            learning_points.append("✗ Sharing OTPs empowers attackers to authenticate fraudulent debit mandates.")
+        elif decision == SimulationDecisionEnum.ENTER_CREDENTIALS:
+            learning_points.append("✗ Entering credentials on unverified domains leads to account takeover.")
+
+    if not learning_points:
+        learning_points = scenario_def.get("learning_objectives", [
+            "Always verify urgent claims via trusted official channels.",
+            "Never approve payments or enter OTPs prompted by unverified parties.",
+            "Report suspicious numbers and links to 1930 / cybercrime.gov.in immediately."
+        ])
     
     # Recommend next scenario
     recommended_next = None
     if performance_score >= 80:
-        recommended_next = "advanced_scenario_id"  # Recommend harder scenario
+        recommended_next = "digital_arrest_cbi"
     
     return SimulationDebrief(
         session_id=session_id,
@@ -431,6 +446,13 @@ async def get_debrief(session_id: str):
         decisions_timeline=session["decisions_history"],
         learning_points=learning_points,
         performance_score=performance_score,
+        earliest_intervention_point=None,
+        comparison_scenarios=[],
+        recovery_checklist=[
+            "Call 1930 immediately to register a complaint with the National Cyber Crime Reporting Portal.",
+            "Contact your home bank branch manager to initiate a fraud freeze on the receiving account.",
+            "File an e-FIR with transaction UTR numbers and screenshots on cybercrime.gov.in."
+        ],
         recommended_next_scenario=recommended_next,
     )
 
@@ -480,26 +502,21 @@ def _risk_int_to_level(risk_score: int) -> str:
 
 
 def _is_safer_decision(step_id: str, decision: SimulationDecisionEnum) -> bool:
-    """Determine if decision was safer than alternatives."""
-    safer_by_step = {
-        "step_1_message_arrival": [
-            SimulationDecisionEnum.VERIFY_INDEPENDENTLY,
-            SimulationDecisionEnum.IGNORE_OR_REPORT,
-        ],
-        "step_2_suspicious_website": [
-            SimulationDecisionEnum.CLOSE_PAGE,
-            SimulationDecisionEnum.VERIFY_INDEPENDENTLY,
-        ],
-        "step_3_credential_harvesting": [
-            SimulationDecisionEnum.CANCEL_PAYMENT,
-            SimulationDecisionEnum.QUESTION_SENDER,
-        ],
-        "step_4_payment_request": [
-            SimulationDecisionEnum.CANCEL_PAYMENT,
-            SimulationDecisionEnum.QUESTION_SENDER,
-        ],
+    """Determine if decision was safer than alternatives across all scenarios."""
+    safer_decisions = {
+        SimulationDecisionEnum.VERIFY_INDEPENDENTLY,
+        SimulationDecisionEnum.IGNORE_OR_REPORT,
+        SimulationDecisionEnum.CLOSE_PAGE,
+        SimulationDecisionEnum.CANCEL_PAYMENT,
     }
-    return decision in safer_by_step.get(step_id, [])
+    if decision in safer_decisions:
+        return True
+
+    # Questioning the sender can be moderately defensive when credentials/payments are asked
+    if decision == SimulationDecisionEnum.QUESTION_SENDER:
+        return "payment" in step_id or "credential" in step_id or "call" in step_id or "officer" in step_id
+
+    return False
 
 
 def _generate_signals_for_decision(
@@ -520,7 +537,7 @@ def _generate_signals_for_decision(
         signals.append(
             EvidenceSignal(
                 incident_id="",
-                dimension=SignalDimension.BEHAVIORAL,
+                dimension=SignalDimension.URL,
                 signal_type="SUSPICIOUS_LINK_OPENED",
                 severity=SignalSeverity.HIGH,
                 confidence=0.95,
@@ -537,7 +554,7 @@ def _generate_signals_for_decision(
         signals.append(
             EvidenceSignal(
                 incident_id="",
-                dimension=SignalDimension.BEHAVIORAL,
+                dimension=SignalDimension.SEMANTIC,
                 signal_type="CREDENTIALS_ENTERED_ON_PHISHING_PAGE",
                 severity=SignalSeverity.CRITICAL,
                 confidence=0.99,

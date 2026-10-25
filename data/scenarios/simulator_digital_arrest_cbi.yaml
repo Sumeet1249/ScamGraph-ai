@@ -1,0 +1,233 @@
+scenario_id: "digital_arrest_cbi"
+title: "Digital Arrest & Fake Police Warrant Scam"
+category: "digital_arrest"
+difficulty: "advanced"
+estimated_duration_minutes: 10
+description: "Impersonation of Telecom Regulatory Authority and CBI officers threatening digital arrest over illegal SIM cards. Learn to detect legal coercion and break isolation."
+
+languages_supported:
+  - en
+  - hi
+  - hinglish
+
+learning_objectives:
+  - "Understand that 'Digital Arrest' is a fabricated concept with zero legal standing"
+  - "Recognize extreme psychological coercion, false legal summons, and isolation tactics"
+  - "Verify police or legal notices by dialing official national helpline 1930"
+  - "Never transfer security deposits or verify funds to supposedly unfreeze bank accounts"
+
+expected_risk_level: "HIGH"
+first_step_id: "step_1_trai_call"
+
+steps:
+  step_1_trai_call:
+    step_id: "step_1_trai_call"
+    title: "Urgent Telecom Disconnection Notice"
+    description: "An automated IVR call informs you that all mobile numbers registered in your name will be deactivated within 2 hours."
+    stimulus_type: "phone_call"
+    stimulus_content:
+      caller_display: "TRAI EMERGENCY DISPATCH (+91 11 2345 6789)"
+      caller: "Telecom Regulatory Authority Automated Dispatch"
+      timestamp: "11:15 AM"
+      call_transcript:
+        - speaker: "IVR SYSTEM"
+          text: "Attention subscriber: A SIM registered under your Aadhaar number is involved in illegal money laundering. Press 9 to speak with an investigating cyber officer immediately to prevent nationwide arrest warrant dispatch."
+    decision_prompt: "The recorded IVR claims an arrest warrant and deactivation are pending. What do you do?"
+    decision_options:
+      - decision: "ignore_or_report"
+        label: "Disconnect call and report number to DoT Chakshu portal"
+        hint: "Safest action"
+      - decision: "trust_and_continue"
+        label: "Press 9 to speak to the officer and clear your name"
+        hint: "Risky - connects to attacker"
+      - decision: "verify_independently"
+        label: "Disconnect and call your mobile network operator's official customer care"
+        hint: "Safe verification"
+    branches:
+      - decision: "ignore_or_report"
+        next_step_id: null
+        outcome_description: "You disconnected and reported the scam. Scenario ends safely."
+        risk_multiplier: 0.1
+      - decision: "verify_independently"
+        next_step_id: "step_2_telecom_confirmation"
+        outcome_description: "You verify with your operator and discover no deactivation notices exist."
+        risk_multiplier: 0.2
+      - decision: "trust_and_continue"
+        next_step_id: "step_2_fake_cbi_officer"
+        outcome_description: "You are connected to an aggressive scammer posing as a CBI Inspector."
+        risk_multiplier: 2.8
+    teaching_points:
+      - "TRAI or telecom operators never issue deactivation notices via automated threats"
+      - "Chakshu portal (sancharsaathi.gov.in) is the official reporting mechanism for unsolicited calls"
+    evidence_present_at_step:
+      - signal_type: "AUTHORITY_IMPERSONATION"
+        severity: "high"
+        description: "Caller fakes official regulatory dispatch"
+      - signal_type: "EXTREME_URGENCY"
+        severity: "high"
+        description: "Threatens 2-hour disconnection and arrest warrant"
+
+  step_2_telecom_confirmation:
+    step_id: "step_2_telecom_confirmation"
+    title: "Official Carrier Verification"
+    description: "You dialed 198 (official customer care) from your phone."
+    stimulus_type: "agent_conversation"
+    stimulus_content:
+      caller_display: "Telecom Operator Care (198)"
+      transcript:
+        - speaker: "OFFICIAL"
+          text: "Thank you for checking with us. Your SIM and KYC are completely in order. TRAI never makes automated calls threatening arrest. This is a known fraud campaign."
+    decision_prompt: "The official operator confirms your account is healthy. What next?"
+    decision_options:
+      - decision: "ignore_or_report"
+        label: "Block number and report on Sanchar Saathi"
+        hint: "Concludes safely"
+    branches:
+      - decision: "ignore_or_report"
+        next_step_id: null
+        outcome_description: "You documented and reported the scam safely."
+        risk_multiplier: 0.0
+    teaching_points:
+      - "Direct operator contact disproves spoofed regulatory threats"
+
+  step_2_fake_cbi_officer:
+    step_id: "step_2_fake_cbi_officer"
+    title: "CBI Investigation & Fake Arrest Warrant"
+    description: "A man claiming to be Inspector Rathore from the Crime Branch speaks aggressively with background police sirens and radio noise."
+    stimulus_type: "agent_conversation"
+    stimulus_content:
+      caller_display: "CBI CYBER CRIME CELL"
+      transcript:
+        - speaker: "AGENT"
+          text: "I am Inspector Rathore. A bank account under your Aadhaar in Mumbai was used to funnel 2.4 Crore Rupees in contraband proceeds. We have an active arrest warrant under non-bailable PMLA sections."
+        - speaker: "AGENT"
+          text: "You are under DIGITAL ARREST right now. Turn on your video camera, isolate yourself in a locked room, and do not tell anyone including family members, or our tactical team will raid your residence."
+    decision_prompt: "The caller claims you are under 'Digital Arrest' and demands total isolation on video call. What do you do?"
+    decision_options:
+      - decision: "verify_independently"
+        label: "Disconnect call and consult a local police station or dial 1930"
+        hint: "Breaks isolation"
+      - decision: "trust_and_continue"
+        label: "Obey instructions to avoid police coming to your home"
+        hint: "Extremely dangerous"
+      - decision: "question_sender"
+        label: "Ask for their official police station badge number and warrant copy"
+        hint: "Intermediate challenge"
+    branches:
+      - decision: "verify_independently"
+        next_step_id: null
+        outcome_description: "You disconnected and called 1930. The cyber police confirmed digital arrest is 100% fraudulent."
+        risk_multiplier: 0.1
+      - decision: "question_sender"
+        next_step_id: "step_3_forged_supreme_court_notice"
+        outcome_description: "The fraudster sends a forged Supreme Court warrant to intimidate you."
+        risk_multiplier: 2.2
+      - decision: "trust_and_continue"
+        next_step_id: "step_4_demand_security_deposit"
+        outcome_description: "Under severe duress and isolation, you prepare to comply with their financial demands."
+        risk_multiplier: 4.5
+    teaching_points:
+      - "Indian law and criminal procedure have NO provision for 'digital arrest' or video trial"
+      - "Law enforcement will never instruct a citizen to isolate or hide from family members"
+    evidence_present_at_step:
+      - signal_type: "COERCIVE_ISOLATION"
+        severity: "critical"
+        description: "Demands locked room and forbidding contact with relatives"
+      - signal_type: "FABRICATED_LEGAL_PROCEDURE"
+        severity: "critical"
+        description: "Claims digital arrest under PMLA"
+
+  step_3_forged_supreme_court_notice:
+    step_id: "step_3_forged_supreme_court_notice"
+    title: "Forged Judicial Warrant Document"
+    description: "The caller sends a fake Supreme Court document on WhatsApp with official government logos and forged signatures."
+    stimulus_type: "message"
+    stimulus_content:
+      channel: "WhatsApp Document Attachment"
+      sender: "CBI Investigation Unit (+91 98765 43210)"
+      timestamp: "11:22 AM"
+      text: "NATIONAL INVESTIGATION AGENCY & SUPREME COURT ARREST MANDATE\nCase No: CBI/MUM/2026/8941\nOffense: Section 3/4 PMLA - High Treason\nORDER: Immediate freezing of all assets. Subject to deposit Rs 1,50,000 in RBI Secret Clearance Escrow for verification, refundable in 30 minutes after biometric clearance."
+    decision_prompt: "You receive a document with Supreme Court seals demanding ₹1,50,000 security deposit. What do you do?"
+    decision_options:
+      - decision: "cancel_payment"
+        label: "Recognize the document is forged and end the call immediately"
+        hint: "Safe response"
+      - decision: "verify_independently"
+        label: "Call the National Cybercrime Helpline at 1930"
+        hint: "Official government hotline"
+      - decision: "open_link"
+        label: "Open their payment gateway link to transfer the verification deposit"
+        hint: "Critical loss"
+    branches:
+      - decision: "cancel_payment"
+        next_step_id: null
+        outcome_description: "You refused to pay and ended the call. You successfully defended your money."
+        risk_multiplier: 0.1
+      - decision: "verify_independently"
+        next_step_id: null
+        outcome_description: "1930 helpline confirmed this is a criminal syndicate. Case registered with no financial loss."
+        risk_multiplier: 0.0
+      - decision: "open_link"
+        next_step_id: "step_4_demand_security_deposit"
+        outcome_description: "You follow the link and prepare to transfer the security deposit."
+        risk_multiplier: 4.8
+    teaching_points:
+      - "The Supreme Court and CBI NEVER demand money via UPI or RTGS to clear criminal investigations"
+      - "Look closely at forged stamps: grammatical errors and mixed agency logos are telltale signs"
+
+  step_4_demand_security_deposit:
+    step_id: "step_4_demand_security_deposit"
+    title: "Fake RBI Escrow Transfer Request"
+    description: "The fraudster dictates a beneficiary bank account claiming it is a 'Secret RBI Security Verification Escrow'."
+    stimulus_type: "payment_request"
+    stimulus_content:
+      payment_app: "Real-Time Fund Transfer"
+      transaction_details:
+        beneficiary_name: "RBI Escrow Clearing - Unit 4"
+        account_vpa: "rbi.gov.clearing98@icici"
+        amount: "₹1,50,000"
+        purpose: "Supervised Judicial Clearance Deposit"
+        transaction_warning: "⚠️ Official banking systems never maintain personal VPA accounts for investigations"
+    decision_prompt: "You are one tap away from sending ₹1,50,000 to an unverified private VPA. What is your final decision?"
+    decision_options:
+      - decision: "cancel_payment"
+        label: "Refuse and cancel transaction immediately"
+        hint: "Stops financial loss"
+      - decision: "approve_payment"
+        label: "Send ₹1,50,000 to clear the warrant"
+        hint: "Catastrophic loss"
+    branches:
+      - decision: "cancel_payment"
+        next_step_id: null
+        outcome_description: "You canceled the transfer at the final checkpoint. ₹1,50,000 saved."
+        risk_multiplier: 0.2
+      - decision: "approve_payment"
+        next_step_id: "step_5_loss_and_recovery"
+        outcome_description: "Funds transferred to a cybercrime mule syndicate. ₹1,50,000 lost."
+        risk_multiplier: 5.0
+    teaching_points:
+      - "RBI or Government of India never uses UPI handles or private bank accounts for escrow"
+      - "Immediate freeze request to your bank within 15 minutes is crucial if money is sent"
+
+  step_5_loss_and_recovery:
+    step_id: "step_5_loss_and_recovery"
+    title: "Incident Response & Immediate Recovery"
+    description: "Simulated financial loss recorded. Act swiftly to report to the Golden Hour helpline (1930)."
+    stimulus_type: "message"
+    stimulus_content:
+      channel: "Incident Notification"
+      sender: "Cyber Safety Advisory"
+      timestamp: "11:35 AM"
+      text: "Simulated Loss: ₹1,50,000 sent to mule account.\nGolden Hour Protocol:\n1. Call 1930 immediately to freeze the recipient bank account in the CFCFRMS portal.\n2. Submit transaction UTR number to cybercrime.gov.in.\n3. Inform your home branch manager to trigger a fraud recall request."
+    decision_prompt: "Acknowledge the Golden Hour recovery protocol:"
+    decision_options:
+      - decision: "ignore_or_report"
+        label: "I will immediately dial 1930 and contact my bank"
+        hint: "Acknowledge"
+    branches:
+      - decision: "ignore_or_report"
+        next_step_id: null
+        outcome_description: "Scenario concluded. Recovery checklist documented."
+        risk_multiplier: 0.0
+    teaching_points:
+      - "CFCFRMS allows cyber cells to freeze funds across multiple bank hops if reported within 2 to 4 hours"

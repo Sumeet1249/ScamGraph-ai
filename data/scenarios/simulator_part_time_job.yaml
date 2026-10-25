@@ -1,0 +1,192 @@
+scenario_id: "part_time_job_task"
+title: "Part-Time Job & Telegram Task Scam"
+category: "investment_scam"
+difficulty: "beginner"
+estimated_duration_minutes: 6
+description: "Work-from-home lure paying ₹150 for liking YouTube videos, followed by demands to deposit money into a VIP trading pool. Learn the bait-and-switch anatomy."
+
+languages_supported:
+  - en
+  - hi
+  - hinglish
+
+learning_objectives:
+  - "Understand the classic micro-payout bait used by task scam syndicates"
+  - "Identify why initial small gains (₹150 to ₹500) are engineered to build false trust"
+  - "Never deposit your own money in order to withdraw 'frozen earnings'"
+  - "Detect bogus crypto merchant portals and prepaid task schemes"
+
+expected_risk_level: "HIGH"
+first_step_id: "step_1_job_offer_whatsapp"
+
+steps:
+  step_1_job_offer_whatsapp:
+    step_id: "step_1_job_offer_whatsapp"
+    title: "Unsolicited Job Offer via WhatsApp"
+    description: "You receive an unprompted WhatsApp message offering ₹3,000 to ₹8,000 per day for liking videos from home."
+    stimulus_type: "message"
+    stimulus_content:
+      channel: "WhatsApp"
+      sender: "HR Global Media Recruit (+62 882 1234 5678)"
+      timestamp: "02:10 PM"
+      text: "Hello! We are hiring part-time digital review assistants for top media brands. Earn ₹150 instantly just by screenshotting 3 YouTube likes. No experience needed. Payout sent directly to your UPI."
+    decision_prompt: "A foreign international number offers instant money for liking videos. What do you do?"
+    decision_options:
+      - decision: "ignore_or_report"
+        label: "Block and report the contact as spam"
+        hint: "Safest action"
+      - decision: "reply_to_sender"
+        label: "Send 3 screenshots to claim the initial ₹150 payout"
+        hint: "Bait trap"
+      - decision: "verify_independently"
+        label: "Search the company name online to verify if this is an authentic recruitment drive"
+        hint: "Defensive verification"
+    branches:
+      - decision: "ignore_or_report"
+        next_step_id: null
+        outcome_description: "You blocked the scammer and ended the scenario safely."
+        risk_multiplier: 0.1
+      - decision: "verify_independently"
+        next_step_id: null
+        outcome_description: "You search and find hundreds of scam warnings about this exact script. You block the contact."
+        risk_multiplier: 0.1
+      - decision: "reply_to_sender"
+        next_step_id: "step_2_initial_bait_payout"
+        outcome_description: "The syndicate sends you ₹150 via UPI to build trust before the larger fraud."
+        risk_multiplier: 2.0
+    teaching_points:
+      - "Legitimate corporations never recruit via unsolicited WhatsApp messages from personal foreign numbers"
+      - "The initial payout is deliberate syndicate bait designed to lower your skepticism"
+    evidence_present_at_step:
+      - signal_type: "UNSOLICITED_RECRUITMENT"
+        severity: "high"
+        description: "Foreign number offering unrealistic compensation for menial tasks"
+
+  step_2_initial_bait_payout:
+    step_id: "step_2_initial_bait_payout"
+    title: "Small Bait Payout Received"
+    description: "You completed the task and received ₹150 in your UPI account. Now the recruiter adds you to a Telegram group for 'Prepaid VIP Tasks'."
+    stimulus_type: "message"
+    stimulus_content:
+      channel: "Telegram Receptionist"
+      sender: "@VIP_Task_Dispatch_Manager"
+      timestamp: "02:25 PM"
+      text: "Congratulations! ₹150 credited to your account. To unlock Tier-2 earning (₹5,000/hour), you must participate in our Merchant Liquidity Task. Deposit ₹2,000, and receive ₹2,800 back in 15 minutes."
+    decision_prompt: "Having received ₹150, the admin asks you to deposit ₹2,000 to earn ₹2,800. What is your choice?"
+    decision_options:
+      - decision: "cancel_payment"
+        label: "Take the ₹150 and exit the group without depositing any money"
+        hint: "Safe exit"
+      - decision: "trust_and_continue"
+        label: "Deposit ₹2,000 to earn the guaranteed profit"
+        hint: "Risky advance fee trap"
+      - decision: "question_sender"
+        label: "Ask why a job requires an employee to pay upfront funds"
+        hint: "Critical inquiry"
+    branches:
+      - decision: "cancel_payment"
+        next_step_id: null
+        outcome_description: "You walked away before financial loss. Scenario ends safely."
+        risk_multiplier: 0.3
+      - decision: "question_sender"
+        next_step_id: "step_3_manipulation_chat"
+        outcome_description: "Group members (who are sockpuppet accounts) post fake profit screenshots to pressure you."
+        risk_multiplier: 1.8
+      - decision: "trust_and_continue"
+        next_step_id: "step_4_deposit_payment"
+        outcome_description: "You proceed to transfer ₹2,000 to the scammer's mule UPI ID."
+        risk_multiplier: 4.2
+    teaching_points:
+      - "Rule of thumb: A real job PAYS you; it never asks you to PAY them to work"
+      - "Telegram groups for tasks are filled with bot accounts celebrating fabricated profits"
+
+  step_3_manipulation_chat:
+    step_id: "step_3_manipulation_chat"
+    title: "Social Proof & Group Coercion"
+    description: "The Telegram group admins and plant accounts flood the chat with screenshots of fake bank credits."
+    stimulus_type: "agent_conversation"
+    stimulus_content:
+      caller_display: "VIP Task Group (8,410 members)"
+      transcript:
+        - speaker: "MEMBER_PRIYA"
+          text: "Just completed the ₹2,000 task and got ₹2,840 instantly back to HDFC! Thank you admin!"
+        - speaker: "MEMBER_AMIT"
+          text: "I did the ₹10,000 tier yesterday, earned ₹14,200. Very genuine company."
+        - speaker: "ADMIN_RECEPTIONIST"
+          text: "Only 2 slots remaining for today's high-yield commission. Pay now or slot is allocated to next user."
+    decision_prompt: "The chat creates artificial FOMO and social validation. What is your reaction?"
+    decision_options:
+      - decision: "ignore_or_report"
+        label: "Leave the group and report the channel for financial fraud"
+        hint: "Safe response"
+      - decision: "trust_and_continue"
+        label: "Believe the group members and ask for payment instructions"
+        hint: "Drawn into syndicate"
+    branches:
+      - decision: "ignore_or_report"
+        next_step_id: null
+        outcome_description: "You recognized orchestrated social engineering and protected your savings."
+        risk_multiplier: 0.1
+      - decision: "trust_and_continue"
+        next_step_id: "step_4_deposit_payment"
+        outcome_description: "You fall victim to herd manipulation and prepare to send funds."
+        risk_multiplier: 4.5
+    teaching_points:
+      - "Fake testimonies in chat groups are the primary conversion weapon for task fraud networks"
+
+  step_4_deposit_payment:
+    step_id: "step_4_deposit_payment"
+    title: "Mule Account Fund Transfer"
+    description: "The admin gives you a personal UPI ID belonging to an unrelated individual to transfer the ₹2,000 deposit."
+    stimulus_type: "payment_request"
+    stimulus_content:
+      payment_app: "UPI Payment Interface"
+      transaction_details:
+        payee_vpa: "rohit.enterprises91@ybl"
+        payee_name: "Rohit Merchant Services"
+        amount: "₹2,000"
+        purpose: "Merchant Liquidity Deposit"
+        transaction_warning: "⚠️ Payment recipient has no verified corporate registration"
+    decision_prompt: "You are prompted to send ₹2,000 to an unverified private individual. Do you confirm?"
+    decision_options:
+      - decision: "cancel_payment"
+        label: "Cancel payment and block the coordinator"
+        hint: "Prevents loss"
+      - decision: "approve_payment"
+        label: "Authorize payment of ₹2,000"
+        hint: "Irreversible loss"
+    branches:
+      - decision: "cancel_payment"
+        next_step_id: null
+        outcome_description: "You stopped before sending funds. No money lost."
+        risk_multiplier: 0.2
+      - decision: "approve_payment"
+        next_step_id: "step_5_sunk_cost_trap"
+        outcome_description: "₹2,000 sent. The portal reflects a virtual balance but blocks withdrawal demanding another ₹10,000."
+        risk_multiplier: 5.0
+    teaching_points:
+      - "Once you deposit money, the scammers freeze it and demand exponentially larger deposits under the guise of 'tax clearance'"
+
+  step_5_sunk_cost_trap:
+    step_id: "step_5_sunk_cost_trap"
+    title: "Sunk Cost Escalation & Debrief"
+    description: "The scam website shows you have 'earned ₹3,400', but displays: 'Account frozen. Deposit ₹10,000 to release all funds'."
+    stimulus_type: "message"
+    stimulus_content:
+      channel: "Scam Portal Error"
+      sender: "System Alert"
+      timestamp: "02:40 PM"
+      text: "Warning: Your credit score is 80%. System requires a ₹10,000 security recharge to unfreeze your ₹3,400 balance. If not paid in 30 minutes, your principal is forfeited."
+    decision_prompt: "They demand ₹10,000 more to unlock your earlier ₹2,000. How do you respond?"
+    decision_options:
+      - decision: "ignore_or_report"
+        label: "Stop immediately. Do not send another rupee and report to 1930"
+        hint: "Correct recovery action"
+    branches:
+      - decision: "ignore_or_report"
+        next_step_id: null
+        outcome_description: "You broke the sunk cost fallacy. You prevented escalating losses and reported the crime."
+        risk_multiplier: 0.0
+    teaching_points:
+      - "Never pay more money to retrieve frozen scam funds. Every additional deposit is lost permanently."
+      - "Report the UTR and recipient UPI ID immediately on cybercrime.gov.in"

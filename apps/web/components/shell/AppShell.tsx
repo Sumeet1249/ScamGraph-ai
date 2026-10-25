@@ -39,7 +39,9 @@ export function AppShell({ children }: { children: ReactNode }) {
     pathname.startsWith("/search") ||
     pathname.startsWith("/saved") ||
     pathname.startsWith("/access") ||
-    pathname.startsWith("/audit");
+    pathname.startsWith("/audit") ||
+    pathname.startsWith("/tactics") ||
+    pathname.startsWith("/arena");
 
   const isDevRoute = pathname.startsWith("/developers");
 

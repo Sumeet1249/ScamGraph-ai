@@ -32,7 +32,7 @@ steps:
       text: "Your electricity connection may be disconnected today due to an unpaid bill. Verify your payment immediately using the link below: http://city-power-verify.example.test/bill"
     decision_prompt: "What would you do?"
     decision_options:
-      - decision: "trust_and_continue"
+      - decision: "open_link"
         label: "Open the link and follow instructions"
         hint: "Quick action"
       - decision: "verify_independently"
@@ -57,7 +57,7 @@ steps:
         risk_multiplier: 2.5
       
       - decision: "reply_to_sender"
-        next_step_id: "step_2_sender_response"
+        next_step_id: "step_3_social_engineering_call"
         outcome_description: "The attacker responds with more pressure and fake credentials"
         risk_multiplier: 1.8
       
@@ -139,7 +139,7 @@ steps:
         risk_multiplier: 3.0
       
       - decision: "question_sender"
-        next_step_id: "step_2_sender_response"
+        next_step_id: "step_3_social_engineering_call"
         outcome_description: "Attacker sends another message with more pressure"
         risk_multiplier: 1.5
     

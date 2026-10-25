@@ -215,6 +215,20 @@ export default function RescuePage() {
     }
   };
 
+  const handleCopySummary = async () => {
+    try {
+      const res = await fetch(`/api/v1/rescue/${incidentId}/case-package`);
+      if (res.ok) {
+        const pkg = await res.json();
+        navigator.clipboard.writeText(pkg.copyable_incident_summary || "");
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2500);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const [downloadingDossier, setDownloadingDossier] = useState(false);
 
   const handleDownloadDossier = async () => {
