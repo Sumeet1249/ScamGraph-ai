@@ -130,7 +130,11 @@ export default function LabPage() {
               )}
 
               {debrief && (
-                <SimulationDebrief debrief={debrief} onRestart={handleRestart} />
+                <SimulationDebrief
+                  debrief={debrief}
+                  onRestart={handleRestart}
+                  onSelectScenario={handleRunScenario}
+                />
               )}
             </div>
           ) : (
@@ -161,59 +165,81 @@ export default function LabPage() {
 interface DebriefProps {
   debrief: any;
   onRestart: () => void;
+  onSelectScenario: (scenarioId: string) => void;
 }
 
-function SimulationDebrief({ debrief, onRestart }: DebriefProps) {
+function SimulationDebrief({ debrief, onRestart, onSelectScenario }: DebriefProps) {
+  const riskScore = debrief.final_risk_score ?? 50;
+  const isDanger = riskScore >= 60;
+  const isCaution = riskScore >= 30 && riskScore < 60;
+  const riskColor = isDanger ? "text-rose-400" : isCaution ? "text-amber-400" : "text-emerald-400";
+
+  const durationText =
+    debrief.duration_seconds < 60
+      ? `${debrief.duration_seconds || 1}s`
+      : `${Math.round(debrief.duration_seconds / 60)}m`;
+
   return (
-    <div className="space-y-8">
-      <Card pad="lg" className="bg-gradient-to-r from-surface-2 to-surface-1 border-2 border-brand-primary">
+    <div className="space-y-6 animate-fadeIn">
+      <Card pad="lg" className="bg-gradient-to-r from-surface-2 via-surface-1 to-surface-2 border border-brand-primary/40 shadow-sm">
         <div className="flex items-start justify-between">
           <div>
-            <h2 className="text-h2 font-bold mb-2">Scenario Complete</h2>
-            <p className="text-body text-text-secondary">{debrief.scenario_title}</p>
+            <span className="eyebrow text-brand-primary">Scenario Debrief & Scoring</span>
+            <h2 className="text-xl font-bold mt-1 text-text-primary">{debrief.scenario_title || "Simulation Debrief"}</h2>
+            <p className="text-xs text-text-secondary mt-1">Post-incident behavioral and security posture review</p>
           </div>
           <div className="text-right">
-            <p className="text-h1 font-bold text-brand-primary">{debrief.performance_score}%</p>
-            <p className="text-caption text-text-muted">Performance Score</p>
+            <p className="text-3xl font-bold font-mono text-brand-primary">{debrief.performance_score ?? 85}%</p>
+            <p className="text-[11px] font-mono uppercase text-text-muted">Defense Score</p>
           </div>
         </div>
       </Card>
 
       <div className="grid grid-cols-3 gap-4">
-        <Card pad="md">
-          <p className="text-label text-text-muted uppercase mb-2">Final Risk</p>
-          <p className="text-h2 font-bold text-danger">{debrief.final_risk_score}/100</p>
-          <p className="text-caption text-text-muted mt-1">{debrief.final_risk_level}</p>
+        <Card pad="md" className="border border-border bg-surface-1">
+          <span className="eyebrow text-text-muted">Final Risk</span>
+          <p className={`text-2xl font-bold font-mono mt-1 ${riskColor}`}>{riskScore}/100</p>
+          <p className="text-[11px] font-mono uppercase text-text-muted mt-0.5">{debrief.final_risk_level || "EVALUATED"}</p>
         </Card>
-        <Card pad="md">
-          <p className="text-label text-text-muted uppercase mb-2">Decisions Made</p>
-          <p className="text-h2 font-bold">{debrief.decision_count}</p>
+        <Card pad="md" className="border border-border bg-surface-1">
+          <span className="eyebrow text-text-muted">Decisions Taken</span>
+          <p className="text-2xl font-bold font-mono text-text-primary mt-1">{debrief.decision_count || 1}</p>
+          <p className="text-[11px] font-mono text-text-muted mt-0.5">Interaction checkpoints</p>
         </Card>
-        <Card pad="md">
-          <p className="text-label text-text-muted uppercase mb-2">Duration</p>
-          <p className="text-h2 font-bold">{Math.round(debrief.duration_seconds / 60)}m</p>
+        <Card pad="md" className="border border-border bg-surface-1">
+          <span className="eyebrow text-text-muted">Duration</span>
+          <p className="text-2xl font-bold font-mono text-text-primary mt-1">{durationText}</p>
+          <p className="text-[11px] font-mono text-text-muted mt-0.5">Time in scenario</p>
         </Card>
       </div>
 
-      <Card pad="lg">
-        <p className="text-label text-text-muted uppercase mb-4">Learning Points</p>
-        <div className="space-y-3">
+      <Card pad="lg" className="border border-border bg-surface-1">
+        <div className="flex items-center justify-between mb-4 pb-2 border-b border-border">
+          <span className="eyebrow text-text-muted">Key Learning Points & Defensive Habits</span>
+          <span className="text-[11px] font-mono text-text-muted">Actionable Takeaways</span>
+        </div>
+        <div className="space-y-2.5">
           {debrief.learning_points?.map((point: string, idx: number) => (
-            <div key={idx} className="flex items-start gap-3 p-3 rounded-lg bg-surface-2">
-              <span className="text-body font-bold text-brand-primary mt-0.5">•</span>
-              <p className="text-body-sm text-text-secondary">{point}</p>
+            <div key={idx} className="flex items-start gap-3 p-3 rounded-xl bg-surface-2/60 border border-border/50 text-xs">
+              <span className="text-brand-primary font-bold mt-0.5">•</span>
+              <p className="text-text-secondary leading-relaxed">{point}</p>
             </div>
           ))}
         </div>
       </Card>
 
-      <div className="flex gap-4">
-        <Button variant="primary" className="flex-1" onClick={onRestart}>
-          Try Another Scenario
+      <div className="flex flex-col sm:flex-row gap-3">
+        <Button variant="secondary" className="flex-1" onClick={onRestart}>
+          <RotateCcw className="h-3.5 w-3.5 mr-1.5" />
+          Choose Another Scenario
         </Button>
         {debrief.recommended_next_scenario && (
-          <Button variant="secondary" className="flex-1">
-            Recommended: Harder Challenge
+          <Button
+            variant="primary"
+            className="flex-1"
+            onClick={() => onSelectScenario(debrief.recommended_next_scenario)}
+          >
+            Recommended Next Challenge
           </Button>
         )}
       </div>

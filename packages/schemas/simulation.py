@@ -145,17 +145,21 @@ class SimulationDebrief(BaseModel):
     duration_seconds: int
     decisions_timeline: List[Dict[str, Any]]
     earliest_intervention_point: Optional[Dict[str, Any]] = Field(
+        default=None,
         description="First step where system recommended intervention"
     )
     learning_points: List[str]
     performance_score: int = Field(description="0-100, where 100 = all safe decisions")
     comparison_scenarios: Optional[List[Dict[str, Any]]] = Field(
+        default=None,
         description="What-if alternatives with different decision paths"
     )
     recovery_checklist: Optional[List[str]] = Field(
+        default=None,
         description="If money was lost in scenario, steps to report or recover"
     )
     recommended_next_scenario: Optional[str] = Field(
+        default=None,
         description="Suggest harder scenario if user scored well"
     )
 
