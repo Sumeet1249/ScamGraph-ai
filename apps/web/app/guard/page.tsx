@@ -3,6 +3,12 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
+
+const ThreeGuardShield = dynamic(
+  () => import('@/components/guard/ThreeGuardShield').then((mod) => mod.ThreeGuardShield),
+  { ssr: false }
+);
 
 export default function GuardCheckpointPage() {
   const router = useRouter();
@@ -230,6 +236,9 @@ export default function GuardCheckpointPage() {
 
           {/* Right: Case Evidence Context Rail (4 cols) */}
           <aside className="lg:col-span-4 flex flex-col gap-4">
+            {/* 3D Autonomous Interceptor HUD */}
+            <ThreeGuardShield actionId={selectedAction} />
+
             {/* Context Carried Over Card */}
             <div className="bg-surface rounded-xl p-5 border border-border-divider shadow-sm">
               <div className="flex items-center justify-between pb-3 mb-3 border-b border-border-divider">

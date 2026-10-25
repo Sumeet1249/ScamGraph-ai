@@ -17,7 +17,24 @@ import {
   Clock,
   Eye,
   CheckCircle,
+  Box,
 } from "lucide-react";
+import dynamic from "next/dynamic";
+
+const ThreeCorrelationGraph = dynamic(
+  () => import("./ThreeCorrelationGraph").then((mod) => mod.ThreeCorrelationGraph),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-full h-full flex items-center justify-center bg-[#080d1a] text-xs font-mono text-cyan-400">
+        <div className="flex items-center gap-2">
+          <div className="h-4 w-4 rounded-full border-2 border-cyan-500/30 border-t-cyan-400 animate-spin" />
+          <span>Initializing 3D Spatial Network...</span>
+        </div>
+      </div>
+    ),
+  }
+);
 
 export interface VisualNode {
   id: string;
@@ -70,7 +87,7 @@ export function InteractiveCorrelationGraph({
   const [panOffset, setPanOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
-  const [layoutMode, setLayoutMode] = useState<"flow" | "circular" | "grid">("flow");
+  const [layoutMode, setLayoutMode] = useState<"3d" | "flow" | "circular" | "grid">("3d");
 
   const svgRef = useRef<SVGSVGElement>(null);
 
@@ -263,6 +280,17 @@ export function InteractiveCorrelationGraph({
           {/* Layout Mode Buttons */}
           <div className="flex items-center bg-slate-950 p-1 rounded-lg border border-slate-800 text-xs font-mono">
             <button
+              onClick={() => setLayoutMode("3d")}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded text-[11px] transition ${
+                layoutMode === "3d"
+                  ? "bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-bold shadow-md shadow-cyan-500/20"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              <Box className="h-3 w-3 text-cyan-300" />
+              <span>3D Spatial</span>
+            </button>
+            <button
               onClick={() => setLayoutMode("flow")}
               className={`px-2.5 py-1 rounded text-[11px] transition ${
                 layoutMode === "flow" ? "bg-cyan-600 text-white font-bold" : "text-slate-400 hover:text-white"
@@ -315,23 +343,37 @@ export function InteractiveCorrelationGraph({
         </div>
       </div>
 
-      {/* SVG Canvas Area */}
-      <div
-        className="relative h-[480px] w-full overflow-hidden bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px] cursor-grab active:cursor-grabbing select-none"
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-      >
-        <svg
-          ref={svgRef}
-          viewBox="0 0 850 480"
-          className="w-full h-full"
-          style={{
-            transform: `translate(${panOffset.x}px, ${panOffset.y}px) scale(${zoomLevel})`,
-            transformOrigin: "center center",
-            transition: isDragging ? "none" : "transform 0.15s ease-out",
-          }}
-        >
+      {/* Canvas Area: 3D Spatial Scene or 2D SVG Layout */}
+      <div className="relative h-[520px] w-full overflow-hidden bg-[#080d1a] select-none">
+        {layoutMode === "3d" ? (
+          <ThreeCorrelationGraph
+            nodes={nodes}
+            edges={edges}
+            highlightedPath={highlightedPath}
+            isCircularDetected={isCircularDetected}
+            selectedNodeId={selectedNodeId}
+            onSelectNode={(node) => {
+              setSelectedNodeId(node ? node.id : null);
+              if (onSelectNode) onSelectNode(node);
+            }}
+          />
+        ) : (
+          <div
+            className="relative h-full w-full overflow-hidden bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px] cursor-grab active:cursor-grabbing select-none"
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+          >
+            <svg
+              ref={svgRef}
+              viewBox="0 0 850 480"
+              className="w-full h-full"
+              style={{
+                transform: `translate(${panOffset.x}px, ${panOffset.y}px) scale(${zoomLevel})`,
+                transformOrigin: "center center",
+                transition: isDragging ? "none" : "transform 0.15s ease-out",
+              }}
+            >
           <defs>
             {/* Arrowheads */}
             <marker
@@ -631,7 +673,9 @@ export function InteractiveCorrelationGraph({
               </g>
             );
           })}
-        </svg>
+            </svg>
+          </div>
+        )}
 
         {/* Selected Node Inspector Flyout */}
         {selectedNode && (

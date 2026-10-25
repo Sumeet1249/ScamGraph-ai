@@ -15,6 +15,12 @@ import {
   Zap,
 } from "lucide-react";
 import { ScamJourneyMotion } from "@/components/home/ScamJourneyMotion";
+import dynamic from "next/dynamic";
+
+const ThreeHeroSentinel = dynamic(
+  () => import("@/components/home/ThreeHeroSentinel").then((mod) => mod.ThreeHeroSentinel),
+  { ssr: false }
+);
 
 export default function HomePage() {
   const router = useRouter();
@@ -61,9 +67,20 @@ export default function HomePage() {
               <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-slate-900 mb-4 leading-[1.18]">
                 Stop Scams Before You <span className="text-blue-600 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Send Money</span>
               </h1>
-              <p className="text-base text-slate-600 mb-6 leading-relaxed">
+              <p className="text-base text-slate-600 mb-4 leading-relaxed">
                 Paste any suspicious message, UPI ID, phone number, or payment link to check for fraud signals in seconds. Powered by AI journey recognition that detects threats before transactions occur.
               </p>
+
+              {/* 3D Autonomous Sentinel Widget */}
+              <div className="mb-5 rounded-2xl bg-gradient-to-r from-blue-50/80 via-indigo-50/50 to-cyan-50/80 border border-blue-100 p-2 overflow-hidden shadow-xs relative">
+                <div className="absolute top-2 left-3 z-10 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-ping" />
+                  <span className="text-[10px] font-mono font-bold tracking-wider uppercase text-blue-700">
+                    Active Sovereign Sentinel • Move cursor to interact
+                  </span>
+                </div>
+                <ThreeHeroSentinel />
+              </div>
 
               <div className="flex flex-wrap items-center gap-3">
                 <Link

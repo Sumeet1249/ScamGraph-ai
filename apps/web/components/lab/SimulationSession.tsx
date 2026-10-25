@@ -21,6 +21,12 @@ import {
   Lock,
   GitBranch,
 } from "lucide-react";
+import dynamic from "next/dynamic";
+
+const ThreeAttackVectorChamber = dynamic(
+  () => import("./ThreeAttackVectorChamber").then((mod) => mod.ThreeAttackVectorChamber),
+  { ssr: false }
+);
 
 interface StepStimulus {
   channel?: string;
@@ -313,6 +319,13 @@ export function SimulationSession({ sessionId, scenarioId, onComplete }: Props) 
             </div>
           </div>
         </div>
+
+        {/* 3D Interactive Attack Vector Chamber */}
+        <ThreeAttackVectorChamber
+          isSafer={result.is_safer_decision}
+          riskScore={result.risk_score ?? 50}
+          riskLevel={result.risk_level ?? "MEDIUM"}
+        />
 
         {/* Risk & Impact Metrics */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

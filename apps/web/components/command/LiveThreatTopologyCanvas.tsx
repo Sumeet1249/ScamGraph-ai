@@ -1,7 +1,24 @@
 "use client";
 
 import React, { useRef, useEffect, useState, useMemo } from "react";
-import { Shield, Zap, AlertTriangle, Layers, Database, RefreshCw, ZoomIn, ZoomOut, Play, Pause } from "lucide-react";
+import dynamic from "next/dynamic";
+import { Shield, Zap, AlertTriangle, Layers, Database, RefreshCw, ZoomIn, ZoomOut, Play, Pause, Box } from "lucide-react";
+import type { ThreatNode3D } from "./ThreeThreatMatrix";
+
+const ThreeThreatMatrix = dynamic(
+  () => import("./ThreeThreatMatrix").then((mod) => mod.ThreeThreatMatrix),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-full h-full flex items-center justify-center bg-[#0a0f1d] text-xs font-mono text-cyan-400">
+        <div className="flex items-center gap-2">
+          <div className="h-4 w-4 rounded-full border-2 border-cyan-500/30 border-t-cyan-400 animate-spin" />
+          <span>Loading 3D Threat Matrix...</span>
+        </div>
+      </div>
+    ),
+  }
+);
 
 interface Node {
   id: string;
@@ -33,7 +50,8 @@ interface Props {
 
 export function LiveThreatTopologyCanvas({ campaigns = [], signals = [], blips = [] }: Props) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [selectedNode, setSelectedNode] = useState<Node | null>(null);
+  const [viewMode, setViewMode] = useState<"3d" | "2d">("3d");
+  const [selectedNode, setSelectedNode] = useState<any | null>(null);
   const [hoveredNode, setHoveredNode] = useState<Node | null>(null);
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [filterSeverity, setFilterSeverity] = useState<string>("ALL");
@@ -320,19 +338,45 @@ export function LiveThreatTopologyCanvas({ campaigns = [], signals = [], blips =
   };
 
   return (
-    <div className="relative w-full h-full bg-[#0a0f1d] rounded-2xl overflow-hidden border border-border select-none">
+    <div className="relative w-full h-[520px] bg-[#0a0f1d] rounded-2xl overflow-hidden border border-border select-none">
       {/* Top Floating Controls */}
-      <div className="absolute top-3 left-4 right-4 flex items-center justify-between z-10 pointer-events-auto">
-        <div className="flex items-center gap-2 bg-black/60 backdrop-blur-md border border-white/10 rounded-xl px-3 py-1.5 text-xs text-white">
+      <div className="absolute top-3 left-4 right-4 flex flex-wrap items-center justify-between gap-2 z-10 pointer-events-auto">
+        <div className="flex items-center gap-2 bg-black/65 backdrop-blur-md border border-white/10 rounded-xl px-3 py-1.5 text-xs text-white">
           <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
           <span className="font-bold">Live Syndicate Graph</span>
           <span className="text-white/40">|</span>
-          <span className="text-white/70 font-mono text-[11px]">{nodes.length} nodes • {edges.length} edges</span>
+          <span className="text-white/70 font-mono text-[11px]">{nodes.length} nodes • {edges.length} arcs</span>
         </div>
 
         <div className="flex items-center gap-2">
+          {/* 3D / 2D View Switcher */}
+          <div className="flex items-center bg-black/65 backdrop-blur-md border border-white/15 rounded-xl p-0.5 text-[11px] font-semibold text-white/80 shadow-lg">
+            <button
+              onClick={() => setViewMode("3d")}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg transition-all ${
+                viewMode === "3d"
+                  ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold shadow-md shadow-blue-500/25"
+                  : "hover:text-white text-white/70"
+              }`}
+            >
+              <Box className="h-3 w-3 text-cyan-400" />
+              <span>3D Hologram</span>
+            </button>
+            <button
+              onClick={() => setViewMode("2d")}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg transition-all ${
+                viewMode === "2d"
+                  ? "bg-blue-600 text-white font-bold shadow-md"
+                  : "hover:text-white text-white/70"
+              }`}
+            >
+              <Layers className="h-3 w-3 text-white/60" />
+              <span>2D Tactical</span>
+            </button>
+          </div>
+
           {/* Severity Filter */}
-          <div className="flex items-center bg-black/60 backdrop-blur-md border border-white/10 rounded-xl p-0.5 text-[11px] font-semibold text-white/80">
+          <div className="flex items-center bg-black/65 backdrop-blur-md border border-white/10 rounded-xl p-0.5 text-[11px] font-semibold text-white/80">
             {["ALL", "CRITICAL", "HIGH"].map((f) => (
               <button
                 key={f}
@@ -346,42 +390,58 @@ export function LiveThreatTopologyCanvas({ campaigns = [], signals = [], blips =
             ))}
           </div>
 
-          {/* Controls: Zoom & Pause */}
-          <div className="flex items-center gap-1 bg-black/60 backdrop-blur-md border border-white/10 rounded-xl p-1 text-white">
-            <button
-              onClick={() => setZoom((z) => Math.min(1.6, z + 0.15))}
-              className="p-1 rounded hover:bg-white/10"
-              title="Zoom In"
-            >
-              <ZoomIn className="h-3.5 w-3.5" />
-            </button>
-            <button
-              onClick={() => setZoom((z) => Math.max(0.6, z - 0.15))}
-              className="p-1 rounded hover:bg-white/10"
-              title="Zoom Out"
-            >
-              <ZoomOut className="h-3.5 w-3.5" />
-            </button>
-            <button
-              onClick={() => setIsPlaying((p) => !p)}
-              className="p-1 rounded hover:bg-white/10 text-brand-primary"
-              title={isPlaying ? "Pause Physics" : "Resume Physics"}
-            >
-              {isPlaying ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
-            </button>
-          </div>
+          {/* Controls: Zoom & Pause (2D map) */}
+          {viewMode === "2d" && (
+            <div className="flex items-center gap-1 bg-black/65 backdrop-blur-md border border-white/10 rounded-xl p-1 text-white">
+              <button
+                onClick={() => setZoom((z) => Math.min(1.6, z + 0.15))}
+                className="p-1 rounded hover:bg-white/10"
+                title="Zoom In"
+              >
+                <ZoomIn className="h-3.5 w-3.5" />
+              </button>
+              <button
+                onClick={() => setZoom((z) => Math.max(0.6, z - 0.15))}
+                className="p-1 rounded hover:bg-white/10"
+                title="Zoom Out"
+              >
+                <ZoomOut className="h-3.5 w-3.5" />
+              </button>
+              <button
+                onClick={() => setIsPlaying((p) => !p)}
+                className="p-1 rounded hover:bg-white/10 text-brand-primary"
+                title={isPlaying ? "Pause Physics" : "Resume Physics"}
+              >
+                {isPlaying ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Main Canvas */}
-      <canvas
-        ref={canvasRef}
-        width={800}
-        height={460}
-        onMouseMove={handleMouseMove}
-        onClick={handleMouseClick}
-        className="w-full h-[460px] cursor-crosshair block"
-      />
+      {/* Main View: 3D Holographic Matrix OR 2D Tactical Canvas */}
+      {viewMode === "3d" ? (
+        <div className="w-full h-full relative cursor-grab active:cursor-grabbing">
+          <ThreeThreatMatrix
+            campaigns={campaigns}
+            signals={signals}
+            blips={blips}
+            selectedNode={selectedNode}
+            onSelectNode={setSelectedNode}
+            filterSeverity={filterSeverity}
+            isPlaying={isPlaying}
+          />
+        </div>
+      ) : (
+        <canvas
+          ref={canvasRef}
+          width={800}
+          height={520}
+          onMouseMove={handleMouseMove}
+          onClick={handleMouseClick}
+          className="w-full h-full cursor-crosshair block"
+        />
+      )}
 
       {/* Bottom Floating Node Inspection Drawer */}
       {selectedNode && (
