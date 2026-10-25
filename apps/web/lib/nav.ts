@@ -94,12 +94,6 @@ export const navGroups: NavGroup[] = [
           { label: "Tactics Matrix", href: "/lab/tactics", hint: "Canonical coercion vectors", icon: Brain },
         ],
       },
-      {
-        label: "Citizen Lifeline",
-        href: "/rescue",
-        hint: "Golden hour triage & Section 65B dossier",
-        icon: LifeBuoy,
-      },
     ],
   },
   {
