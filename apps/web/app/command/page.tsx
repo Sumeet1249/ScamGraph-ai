@@ -24,6 +24,7 @@ import {
 import dynamic from "next/dynamic";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Card, Button } from "@/components/ui";
+import { DefenseLifecycleMotion } from "@/components/command/DefenseLifecycleMotion";
 
 const LiveThreatTopologyCanvas = dynamic(
   () => import("@/components/command/LiveThreatTopologyCanvas").then((m) => m.LiveThreatTopologyCanvas),
@@ -269,77 +270,8 @@ export default function CommandPage() {
           </div>
         </div>
 
-        {/* ── 2. How the System Connects (4 Sequential Steps) ────────── */}
-        <div className="mt-6 pt-5 border-t border-slate-100">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block mb-3">
-            Investigation &amp; Defense Lifecycle (4 Connected Stages)
-          </span>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            <Link
-              href="/radar"
-              className="p-3 rounded-xl border border-blue-100 bg-blue-50/40 hover:bg-blue-50 hover:border-blue-300 transition-all group"
-            >
-              <div className="flex items-center justify-between text-xs font-bold text-blue-900 mb-1">
-                <span className="flex items-center gap-1.5">
-                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-white text-[10px]">1</span>
-                  Radar &amp; Alerts
-                </span>
-                <ArrowRight className="h-3.5 w-3.5 text-blue-500 group-hover:translate-x-0.5 transition-transform" />
-              </div>
-              <p className="text-[11px] text-slate-600 leading-snug">
-                Detects early scam velocity spikes and regional surges before victims pay.
-              </p>
-            </Link>
-
-            <Link
-              href="/investigate"
-              className="p-3 rounded-xl border border-blue-100 bg-blue-50/40 hover:bg-blue-50 hover:border-blue-300 transition-all group"
-            >
-              <div className="flex items-center justify-between text-xs font-bold text-blue-900 mb-1">
-                <span className="flex items-center gap-1.5">
-                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-white text-[10px]">2</span>
-                  Multi-Signal Graph
-                </span>
-                <ArrowRight className="h-3.5 w-3.5 text-blue-500 group-hover:translate-x-0.5 transition-transform" />
-              </div>
-              <p className="text-[11px] text-slate-600 leading-snug">
-                Correlates phone numbers, fake URLs, and UPI IDs into a unified threat graph.
-              </p>
-            </Link>
-
-            <Link
-              href="/mulehunter"
-              className="p-3 rounded-xl border border-blue-100 bg-blue-50/40 hover:bg-blue-50 hover:border-blue-300 transition-all group"
-            >
-              <div className="flex items-center justify-between text-xs font-bold text-blue-900 mb-1">
-                <span className="flex items-center gap-1.5">
-                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-white text-[10px]">3</span>
-                  Mule Account AI
-                </span>
-                <ArrowRight className="h-3.5 w-3.5 text-blue-500 group-hover:translate-x-0.5 transition-transform" />
-              </div>
-              <p className="text-[11px] text-slate-600 leading-snug">
-                Catches laundering accounts using 19 behavioral turnover and dwell-time rules.
-              </p>
-            </Link>
-
-            <Link
-              href="/rescue"
-              className="p-3 rounded-xl border border-blue-100 bg-blue-50/40 hover:bg-blue-50 hover:border-blue-300 transition-all group"
-            >
-              <div className="flex items-center justify-between text-xs font-bold text-blue-900 mb-1">
-                <span className="flex items-center gap-1.5">
-                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-white text-[10px]">4</span>
-                  Freeze &amp; Recovery
-                </span>
-                <ArrowRight className="h-3.5 w-3.5 text-blue-500 group-hover:translate-x-0.5 transition-transform" />
-              </div>
-              <p className="text-[11px] text-slate-600 leading-snug">
-                Executes interbank account holds and exports court-admissible Section 65B dossiers.
-              </p>
-            </Link>
-          </div>
-        </div>
+        {/* ── 2. How the System Connects (4 Sequential Steps - Interactive Motion) ── */}
+        <DefenseLifecycleMotion />
       </div>
 
       {/* ── 3. Live KPI Metrics Bar ─────────────────────────────────── */}

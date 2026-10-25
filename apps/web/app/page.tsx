@@ -14,6 +14,7 @@ import {
   CheckCircle2,
   Zap,
 } from "lucide-react";
+import { ScamJourneyMotion } from "@/components/home/ScamJourneyMotion";
 
 export default function HomePage() {
   const router = useRouter();
@@ -264,64 +265,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="w-full bg-white rounded-2xl border border-blue-100 p-6 shadow-sm overflow-x-auto">
-            <div className="min-w-[760px] flex items-center justify-between relative py-4">
-              {/* Stage 1 */}
-              <div className="flex flex-col items-center text-center z-10 w-36">
-                <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xs mb-1.5 shadow-sm">
-                  1
-                </div>
-                <span className="text-xs font-bold text-slate-900">First Contact</span>
-                <span className="text-[10px] text-slate-500">SMS / WhatsApp / Call</span>
-              </div>
-              <div className="flex-1 h-[2px] bg-blue-200" />
-
-              {/* Stage 2 */}
-              <div className="flex flex-col items-center text-center z-10 w-36">
-                <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xs mb-1.5 shadow-sm">
-                  2
-                </div>
-                <span className="text-xs font-bold text-slate-900">Fake Identity</span>
-                <span className="text-[10px] text-slate-500">Posing as Bank / Police</span>
-              </div>
-              <div className="flex-1 h-[2px] bg-blue-200" />
-
-              {/* Stage 3 */}
-              <div className="flex flex-col items-center text-center z-10 w-36">
-                <div className="w-8 h-8 rounded-full border-2 border-amber-500 bg-amber-50 text-amber-700 flex items-center justify-center font-bold text-xs mb-1.5 shadow-sm">
-                  3
-                </div>
-                <span className="text-xs font-bold text-amber-700">Panic &amp; Urgency</span>
-                <span className="text-[10px] text-amber-600 font-semibold">&ldquo;Act in 2 Hours!&rdquo;</span>
-              </div>
-
-              {/* Protection Boundary */}
-              <div className="flex flex-col items-center px-2 z-10">
-                <div className="h-10 w-[2px] bg-rose-500 mb-1" />
-                <span className="text-[10px] font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200 whitespace-nowrap">
-                  Stop Here Before Paying
-                </span>
-              </div>
-
-              {/* Stage 4 */}
-              <div className="flex flex-col items-center text-center z-10 w-36">
-                <div className="w-8 h-8 rounded-full border-2 border-dashed border-rose-400 bg-rose-50 text-rose-700 flex items-center justify-center font-bold text-xs mb-1.5 shadow-sm">
-                  4
-                </div>
-                <span className="text-xs font-semibold text-rose-800">Payment Request</span>
-                <span className="text-[10px] text-rose-600">UPI / QR / Phishing Link</span>
-              </div>
-            </div>
-
-            <div className="mt-4 pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between text-[11px] text-slate-500 gap-4">
-              <div className="flex items-center gap-3">
-                <span className="inline-flex items-center gap-1 font-medium"><span className="w-2 h-2 rounded-full bg-blue-600"></span> Observed Stage</span>
-                <span className="inline-flex items-center gap-1 font-medium"><span className="w-2 h-2 rounded-full bg-amber-500"></span> Coercion Point</span>
-                <span className="inline-flex items-center gap-1 font-medium"><span className="w-2 h-2 rounded-full bg-rose-500"></span> Fraud Intent</span>
-              </div>
-              <span className="text-blue-700 font-medium">Scanning early stops the scam before any money leaves your account.</span>
-            </div>
-          </div>
+          <ScamJourneyMotion />
         </div>
       </section>
 
